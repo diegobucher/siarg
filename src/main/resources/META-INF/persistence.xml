@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0"
+	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+        http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+        
+	<persistence-unit name="siargPU" transaction-type="JTA">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<jta-data-source>java:jboss/datasources/siarg-ds</jta-data-source>
+		<class>br.gov.caixa.gitecsa.siarg.model.CaixaPostal</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.Menu</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.Perfil</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.Unidade</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.Usuario</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.UsuarioUnidade</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.UsuarioUnidadePK</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.Abrangencia</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.Assunto</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.FluxoAssunto</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.FluxoDemanda</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.Demanda</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.Atendimento</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.Feriado</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.Auditoria</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.Ocorrencia</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.OcorrenciaLida</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.Parametro</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.DemandaContrato</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.MenuPerfil</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.CamposObrigatorios</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.AssuntoCampo</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.DemandaCampo</class>
+		<class>br.gov.caixa.gitecsa.siarg.model.relatorio.DemandaRelatorio</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		
+		<properties>
+			<property name="hibernate.hbm2ddl.auto" value="update" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
+			<property name="hibernate.show_sql" value="false" />
+			<property name="hibernate.format_sql" value="false" />
+			<property name="hibernate.use_sql_comments" value="false" />
+			<property name="hibernate.cache.use_second_level_cache" value="true"/>
+			<property name="hibernate.search.lucene_version" value="LUCENE_CURRENT" />
+			<property name="hibernate.jdbc.batch_size" value="1000" />
+		</properties>
+	</persistence-unit>
+	
+	<persistence-unit name="sisrhPU">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<jta-data-source>java:/jboss/datasources/Sisrh-arg-DS</jta-data-source>
+		<class>br.gov.caixa.gitecsa.siico.vo.FuncaoEmpregadoGerenteVO</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="hibernate.hbm2ddl.auto" value="update" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
+			<property name="hibernate.show_sql" value="false" />
+			<property name="hibernate.format_sql" value="false" />
+			<property name="hibernate.use_sql_comments" value="false" />
+			<property name="hibernate.search.lucene_version" value="LUCENE_CURRENT" />
+			<!-- Ignora a carga de meta dados da base de dados -->
+			<property name="hibernate.temp.use_jdbc_metadata_defaults" value="false" />
+		</properties>
+	</persistence-unit>
+	
+	<persistence-unit name="siicoPU">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<jta-data-source>java:/jboss/datasources/Siico-arg-DS</jta-data-source>
+		<class>br.gov.caixa.gitecsa.siico.vo.UnidadeSiicoVO</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="hibernate.hbm2ddl.auto" value="update" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
+			<property name="hibernate.show_sql" value="false" />
+			<property name="hibernate.format_sql" value="false" />
+			<property name="hibernate.use_sql_comments" value="false" />
+			<property name="hibernate.search.lucene_version" value="LUCENE_CURRENT" />
+			<!-- Ignora a carga de meta dados da base de dados -->
+			<property name="hibernate.temp.use_jdbc_metadata_defaults" value="false" />
+		</properties>
+	</persistence-unit>
+	
+</persistence>

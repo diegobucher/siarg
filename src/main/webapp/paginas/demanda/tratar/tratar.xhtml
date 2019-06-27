@@ -1,0 +1,856 @@
+<ui:composition template="/WEB-INF/templates/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+	<ui:define name="html-head">
+		<h:outputStylesheet library="css" name="font-awesome.min.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="bootstrap-multiselect.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="summernote.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="timeLine.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="datatables.min.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="tratar-demanda.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="chronoline.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="jquery.qtip.min.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="easy-autocomplete.min.css"></h:outputStylesheet>
+
+    	<h:outputScript library="js" name="jquery.easy-autocomplete.min.js"></h:outputScript>
+		<h:outputScript library="js" name="datatables.min.js"></h:outputScript>
+		<h:outputScript library="js" name="summernote.min.js"></h:outputScript>
+		<h:outputScript library="js" name="summernote-pt-BR.min.js"></h:outputScript>
+		<h:outputScript library="js" name="bootstrap-multiselect.js"></h:outputScript>
+		<h:outputScript library="js" name="bootstrap-filestyle.min.js"></h:outputScript>
+		<h:outputScript library="js" name="messages.js"></h:outputScript>
+		
+    	<h:outputScript library="js" name="jquery-1.7.2.min.js"></h:outputScript>
+    	
+    	<script type="text/javascript">
+			j$ = jQuery.noConflict(true);
+    	</script>
+    	
+		<h:outputScript library="js" name="moment.min.js"></h:outputScript>
+		<h:outputScript library="js" name="tratar-demanda.js"></h:outputScript>
+
+    	<h:outputScript library="js" name="jquery.qtip.min.js"></h:outputScript>
+    	<h:outputScript library="js" name="raphael-min.js"></h:outputScript>
+    	<h:outputScript library="js" name="chronoline.js"></h:outputScript>
+	</ui:define>
+
+		<ui:define name="info-unidade">
+			<div class="navbar-form navbar-right">
+				Unidade \ Caixa Postal: <span class="form-control" id="perfil">#{controleAcesso.unidadeSelecionadaDTO.sigla} \ #{tratarDemandaController.caixaPostalSelecionada.sigla}</span>
+	        </div>
+		</ui:define>
+
+	<ui:define name="breadcrumb">
+		<ol class="breadcrumb">
+			<li><strong>Você está em:</strong></li>
+			<li>Demanda <span class="caret-left"></span></li>
+			<li><a href="#{request.contextPath}//paginas/demanda/acompanhamento/acompanhamento.xhtml">Acompanhamento</a><span class="caret-left"></span></li>
+			<li class="active">Tratar Demanda</li>
+		</ol>
+	</ui:define>
+
+	<ui:define name="conteudo-principal">
+	
+		<h:form id="frmDemanda" enctype="multipart/form-data"
+			prependId="false" acceptcharset="utf-8">
+			
+			<h:panelGroup id="pnlDadosDemanda" layout="block">
+			
+				<h1>Tratar Demanda</h1>
+
+				<h:messages id="message" errorClass="alert alert-danger"
+					infoClass="alert alert-success" warnClass="alert alert-info"
+					showDetail="false" />
+
+				<h2>Dados</h2>
+
+				<!-- begin-of: dados  -->
+				<div class="row">
+					<div class="col-md-12">
+		                <div class="panel panel-default panel-dados">
+		                	<div class="panel-body">
+		                    	<h4>Assunto:</h4>
+		                        <span>#{tratarDemandaController.arvoreAssunto}</span>
+		                    </div>
+		                </div>
+		
+		                <div class="panel panel-default panel-dados">
+		                	<div class="panel-body">
+		                    	<h4>Título:</h4>
+		                        <span>#{tratarDemandaController.demanda.titulo}</span>
+		                    </div>
+		                </div>
+		            </div>
+		        </div>
+		
+		        <div class="row">
+		        
+		            <div class="col-md-4">
+		                <div class="panel panel-default panel-dados">
+		                	<div class="panel-body">
+		                    	<h4>Demanda:</h4>
+		                    	 <ul class="lista">
+		                        	<li><strong>Número: </strong>#{tratarDemandaController.numeroDemandaTratado}</li>
+		                    		<li><strong>Demandante: </strong>#{tratarDemandaController.demanda.caixaPostalDemandante.sigla}</li>
+									<li><strong>Data de abertura: </strong>#{tratarDemandaController.dataAbertura}</li>
+		                    	</ul>
+		                    </div>
+		                </div>
+		            </div>
+		            
+		            <div class="col-md-4">
+		                <div class="panel panel-default panel-dados">
+		                    <div class="panel-body">
+		                        <h4>Atendimento:</h4>
+		                        <ul class="lista">
+		                    		<li><strong>Situação: </strong>#{tratarDemandaController.situacaoDemanda}</li>
+		                            <li><strong>Prazo para atendimento: </strong>#{tratarDemandaController.prazoAtendimento}</li>
+									<li><strong>Data de encerramento: </strong>#{tratarDemandaController.dataEncerramento}</li>
+		                        </ul>
+		                    </div>
+		                </div>
+		            </div>
+		
+		            <div class="col-md-4">
+		                <div class="panel panel-default panel-dados">
+		                    <div class="panel-body">
+		                        <h4>Participantes:</h4>
+		                        <ul class="lista">
+		                            <li><strong>Aberta por: </strong>#{tratarDemandaController.abertaPor}</li>
+									<li><strong>Minutada por: </strong>#{tratarDemandaController.minutadaPor}</li>
+									<li><strong>Rascunhada por: </strong>#{tratarDemandaController.rascunhadaPor}</li>
+		                        </ul>
+                        
+		                    </div>
+		                </div>
+		            </div>
+       				<!-- end-of: dados  -->
+		
+		        </div>
+		        
+		        <div class="row">
+					<!-- begin-of: caixas postais predefinidas -->
+		            <div class="col-md-6">
+		                 <div class="panel panel-default panel-dados">
+			                <div class="panel-body">
+			                    <h4>Caixas Postais que estão observando a demanda (com cópia):</h4>
+			                    <ol class="caixasPredefinidas">
+			                    
+				                    <ui:fragment rendered="#{empty tratarDemandaController.observadorAssuntoList}">
+		                        		<li><a href="#">Não existem caixas postais observando a demanda (com cópia).</a></li>
+		                        	</ui:fragment>
+	           				  		<ui:fragment rendered="#{not empty tratarDemandaController.observadorAssuntoList}">
+				                    	<ui:repeat var="caixa" value="#{tratarDemandaController.observadorAssuntoList}" >
+				                        	<li class=""><a href="#">#{caixa.sigla}</a></li>
+				                    	</ui:repeat>
+		                        	</ui:fragment>
+			                    </ol>
+			                </div>
+			            </div>
+		            </div>
+					<!-- end-of: caixas postais predefinidas -->
+		            
+					<!-- begin-of: caixas postais autorizadas -->
+					<div class="col-md-6">
+						<div class="panel panel-default panel-dados">
+		                    <div class="panel-body">
+		                        <h4>Caixas Postais autorizadas a visualizar esta demanda (com cópia):</h4>
+		                        <div class="">
+		                            <h:selectManyMenu id="observadoresDemanda" styleClass="form-control" 
+					                 	converter="omnifaces.SelectItemsConverter" disabled="#{not tratarDemandaController.flagExibirInteracao}"
+					                 	value="#{tratarDemandaController.caixaPostalObservadorSelecionadosList}">
+					                 	<f:selectItems var="item" 
+					                 		value="#{tratarDemandaController.caixaPostalObservadorDisponivesList}" 
+					                 		itemLabel="#{item.sigla}" itemValue="#{item}">
+					                 	</f:selectItems>
+					                 	<p:ajax listener="#{tratarDemandaController.alterarObservador}" update="pnlDadosDemanda" oncomplete="carregarObservadoresDemanda()"/>
+					                 </h:selectManyMenu>
+		                 
+		                        </div>
+		                    </div>
+		                </div>
+		            </div>            
+					<!-- end-of: caixas postais autorizadas -->
+		        </div>
+				
+			</h:panelGroup>
+			
+			<!-- IMPLEMENTAÇÕES DE Nº CONTRATO: OS041  -->
+			<ui:fragment rendered="#{tratarDemandaController.habilitaContrato}">
+				<p:outputPanel id="pnlInsertContrato" >
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel panel-default panel-dados"> 
+								<div class="panel-body">
+									<h4>Nº Contrato:</h4>
+									<div class="col-md-2">
+					                	<div class="input-group">
+					                		<h:inputText id="idInserirContrato" type="text" class="form-control" maxlength="10" 
+					                						placeholder="Inserir Nº Contrato" value="#{tratarDemandaController.contratoTemp}"/>
+					                        <div class="input-group-btn">
+					                        	<h:commandLink styleClass="btn btn-primary" type="button" title="Inserir Contrato" >
+					                        		<span class="fa fa-plus" />
+					                        		<p:ajax process="@form" update="message pnlInsertContrato"
+					                        				listener="#{tratarDemandaController.adicionarContrato()}"/> 
+					                        	</h:commandLink>
+					                        </div>
+					                    </div>
+					             	</div>    
+				                    <div class="col-md-10">
+					                	<ol class="incluir_contrato">
+					                		<ui:repeat var="contrato" value="#{tratarDemandaController.demanda.contratosList}">					                		
+						                    	<li class="">#{contrato.numeroContrato}
+						                    		<h:commandLink title="Excluir Contrato" actionListener="#{tratarDemandaController.removerContrato(contrato)}">
+						                    			<span class="fa fa-times-circle text-red"></span>
+						                    		</h:commandLink>
+						                    	</li>
+					                		</ui:repeat>
+										</ol>
+					            	</div>
+				             	</div>
+							</div>
+						</div>
+						<script type="text/javascript">mascaraContrato();</script>
+					</div>				
+				</p:outputPanel>
+			</ui:fragment>
+			
+			
+			<ui:fragment  rendered="#{tratarDemandaController.flagExibeDemandasVinculadas}">
+				<table id="dtb_demandas_filhas" class="table table-bordered table-condensed table-striped">
+		        	<thead>
+		            	<tr class="bg-cinza">
+		                	<th>Prazo</th>
+		                	<th>Demanda Vinculada</th>                
+		                	<th>Caixa Postal Demandada</th>
+		                	<th>Situação da Demanda</th>
+		                	<th>Resp. Atual</th>
+		                </tr>
+		            </thead>
+		            <tbody>
+		            	<ui:repeat var="filha" value="#{tratarDemandaController.demandasVinculadasList}">
+			            	<tr>
+			                	<td><span class="fa fa-circle #{filha.classePrazo}"></span></td>
+			                	<td><a ></a>
+			                		<h:commandLink action="#{tratarDemandaController.detalharDemandaVinculada(filha.id)}" value="#{filha.id}" style="cursor: pointer;"/>
+			                	</td>
+			                	<td>#{filha.unidadeDemandada}</td>                
+			                	<td>#{filha.situacao}</td>
+			                	<td>#{filha.responsavelAtual}</td>
+			                </tr>
+		            	</ui:repeat>
+		            </tbody>
+		        </table>
+		        
+		        <ui:fragment rendered="#{tratarDemandaController.flagExibirBotaoConsolidar}">
+			         <div class="row">
+			        	<div class="col-md-12">
+							<button type="button" class="btn btn-success" onclick="window.open('#{request.contextPath}/paginas/demanda/tratar/relatorioConsolidado.xhtml')" >
+							<span class="fa fa-download"></span> Consolidar Respostas</button>	
+	<!-- 						<button type="button" class="btn btn-success" onclick="$('#btnConsolidarRespostas').click()" ><span class="fa fa-download"></span> Consolidar Respostas</button>	 -->
+	<!-- 						<h:commandLink id="btnConsolidarRespostas" action="#{tratarDemandaController.}" value="" styleClass="hide" target="_blank"/> -->
+						</div>
+			         </div>
+		        </ui:fragment>
+			
+			</ui:fragment>
+			
+			<!-- begin:of Interacao: Editor e Anexos -->
+			<ui:fragment rendered="#{tratarDemandaController.flagExibirInteracao}">
+				<h2>Iteração</h2>
+				
+				<!-- begin:of busca respostas -->
+				<ui:fragment rendered="#{tratarDemandaController.flagExibirReabrir}">
+					<div class="row">
+						<div class="col-md-12">
+	                    	<div class="form-group">
+								<label class="obrigatorio" for="reabrir_demanda">Motivo reabertura</label>
+								<h:selectOneMenu id="reabrir_demanda" styleClass="form-control"
+									value="#{tratarDemandaController.motivoReaberturaEnum}">
+									<f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+									<f:selectItems value="#{tratarDemandaController.motivosList}"
+										itemValue="#{motivo}" var="motivo"
+										itemLabel="#{motivo.descricao}" />
+								</h:selectOneMenu> 
+	                        </div>
+						</div>
+					</div>
+				</ui:fragment>				
+				
+				<ui:fragment rendered="#{tratarDemandaController.flagExibirPesquisarUltimasRespostas}">
+				
+					<div class="form-group">                
+						<label for="resposta_rapida" class="">Resposta rápida</label>
+	                    <div class="input-group">
+	                        <input type="text" class="form-control" id="resposta_rapida" style="z-index: 0" placeholder="Digite aqui para pesquisar/selecionar últimas respostas desse assunto"/>
+	                        <div class="input-group-btn">
+	                          <button type="button" id="btnLimparRespostaRapida" class="btn btn-warning" title="Limpar" onclick="limparRespostaRapida()">Limpar </button>
+	                        </div>
+	                    </div>
+	 				</div>
+				</ui:fragment>
+	 
+				<!-- begin:of html editor -->
+				<h:panelGroup id="pnlEditor" layout="block">
+					<h:inputHidden id="codigoHtml" value="#{tratarDemandaController.editorContent}"/>
+					<h:inputHidden id="proximaCaixaExterna" value="#{tratarDemandaController.proximaCaixaExterna}"/>
+					
+					<label class="obrigatorio">Descrição</label>
+					<div id="editor"></div>
+					<p:remoteCommand name="rmcSetEditorContent"
+						action="#{tratarDemandaController.setEditorContentFromRemoteCommand()}"
+						update=":frmDemanda:codigoHtml">
+					</p:remoteCommand>
+				</h:panelGroup>
+	  			<ui:fragment rendered="#{tratarDemandaController.flagExibirAvisoAnexo}">
+		  			<div class="alert alert-danger">
+						<strong>ATENÇÃO:</strong> Já existe um arquivo anexado. Caso deseje visualizá-lo 
+						<h:commandLink action="#{tratarDemandaController.downloadRascunhoAnexoDemanda()}" title="Clique aqui para baixar o arquivo.">
+							<strong>Clique aqui.</strong>
+						</h:commandLink>
+					</div>
+	  			</ui:fragment>
+				
+  				<!-- begin:of anexo -->
+	             <div class="row">
+	                 <div class="col-md-8">
+	                 
+  						<h:panelGroup id="pnlAnexo" styleClass="input-group" layout="block">
+	                 
+             				<input type="hidden" id="filename" value="#{tratarDemandaController.anexo.fileName}"  />
+             				<input type="hidden" id="idAssunto" value="#{tratarDemandaController.demanda.assunto.id}"  />
+             				<input type="hidden" id="idCaixaPostal" value="#{tratarDemandaController.caixaPostalSelecionada.id}"  />
+		                     
+		                     <p:fileUpload id="anexo" allowTypes="/(\.|\/)(zip)/" mode="simple" 
+										value="#{tratarDemandaController.anexo}" skinSimple="false">
+							 </p:fileUpload>
+	                     
+	                         <div class="input-group-btn">
+	                             <button type="button" id="btnClearFile" class="btn btn-warning btn-remove-file" title="Limpar anexo"
+	                             	onclick="limparAnexo();">
+	                             	<span class="glyphicon glyphicon-remove"></span> 
+	                             </button>
+	                             <p:remoteCommand name="rmcLimparAnexo"
+									action="#{tratarDemandaController.limparAnexo()}"
+									update="pnlAnexo"
+									oncomplete="FileStyle.init()">
+								</p:remoteCommand>
+	                         </div>
+						 </h:panelGroup>
+	                     <span class="small">Só é permitido anexar arquivo compactado com extensão ZIP.</span>
+	                     
+	                     
+	                 </div>
+	                 <div class="col-md-4">
+  				        <ui:fragment rendered="#{tratarDemandaController.flagExibirSalvarRascunho}">
+		                 	
+		                 	<button type="button" class="btn btn-success" onclick="salvarRascunho();">
+		                 		<span class="glyphicon glyphicon-floppy-disk"></span> Salvar Rascunho
+		                 	</button>	
+		                 	<h:commandButton id="btnSalvarRascunho" action="#{tratarDemandaController.salvarRascunho()}" styleClass="hide"/>
+		                 	
+		                 	<p:remoteCommand name="rmcAtualizaEditorSalvaRascunho"
+								action="#{tratarDemandaController.setEditorContentFromRemoteCommand()}"
+								update=":frmDemanda:codigoHtml"
+								oncomplete="$('#btnSalvarRascunho').click();">
+							</p:remoteCommand>
+		                 	
+	                 	</ui:fragment>
+	                 </div>
+	             </div>
+        	 </ui:fragment>
+        	 
+              <ui:fragment rendered="#{tratarDemandaController.flagExibirBotoes}">
+	  				<!-- begin:of Botoes -->
+	               <div class="row">
+	               
+			        	<div class="col-md-3">
+			        		<ui:fragment rendered="#{ tratarDemandaController.flagExibirBotoesCaixaAnteriorEProxima and tratarDemandaController.flagExibirBotaoCaixaAnterior}">
+				    	       	<button type="button" class="btn btn-default disabled">
+				    	       		<span class=" glyphicon glyphicon-arrow-left"></span> #{tratarDemandaController.caixaAnterior} 
+				    	       	</button>
+			        		</ui:fragment>
+			            </div>
+			
+			        	<div class="col-md-6">
+				            <div class="text-center">
+				            	<div class="btn-group">
+									
+									<ui:fragment rendered="#{tratarDemandaController.flagExibirCancelar}">
+									
+<!-- 				                    	<button type="button" class="btn btn-danger" onclick="cancelarDemanda()"><span class="fa fa-remove"></span> Cancelar</button> -->
+				                    	<button type="button" class="btn btn-danger" onclick="handlerAbrirModalConfirmarCancelar()"><span class="fa fa-remove"></span> Cancelar</button>
+				                    	
+										<!--  -->
+										<p:remoteCommand name="rmcAtualizaEditorCancelar"
+											action="#{tratarDemandaController.setEditorContentFromRemoteCommand()}"
+											update=":frmDemanda:codigoHtml"
+											oncomplete="prepararCamposModalCancelar()">
+										</p:remoteCommand>
+						
+					                    <p:remoteCommand name="rmcValidarAbrirModalCancelar"
+											action="#{tratarDemandaController.validarCamposByRemoteCommand()}"
+											update="message"
+											oncomplete="abrirModalCancelar(xhr, status, args);">
+										</p:remoteCommand>
+											
+										<!--  -->	
+										
+				                    </ui:fragment>
+									<ui:fragment rendered="#{tratarDemandaController.flagExibirReabrir}">
+					                    <button type="button" class="btn btn-primary"  onclick="reabrirDemanda()"><span class="glyphicon glyphicon-arrow-right"></span> Reabrir</button>
+					                    <h:commandButton id="btnReabrir" action="#{tratarDemandaController.reabrir()}" styleClass="hide"/>
+                    			 		<p:remoteCommand name="rmcAtualizaEditorReabrirDemanda"
+											action="#{tratarDemandaController.setEditorContentFromRemoteCommand()}"
+											update=":frmDemanda:codigoHtml"
+											oncomplete="$('#btnReabrir').click();">
+										</p:remoteCommand>
+									</ui:fragment>
+									<ui:fragment rendered="#{tratarDemandaController.flagExibirBotoesResponsavel}">
+										<ui:fragment rendered="#{tratarDemandaController.flagExibirBotaoCaixaAnterior}">
+						                    <button type="button" class="btn btn-primary" onclick="responderDemanda()"><span class="glyphicon glyphicon-arrow-left"></span> Responder</button>
+					                         <h:commandButton id="btnResponder" action="#{tratarDemandaController.responder()}" styleClass="hide"/>
+					                    	<p:remoteCommand name="rmcAtualizaEditorResponderDemanda"
+												action="#{tratarDemandaController.setEditorContentFromRemoteCommand()}"
+												update=":frmDemanda:codigoHtml"
+												oncomplete="$('#btnResponder').click();">
+											</p:remoteCommand>
+											
+						                    
+						                    <button type="button" class="btn btn-primary" onclick="questionarDemanda()"><span class="glyphicon glyphicon-arrow-left"></span> Questionar</button>
+						                    <h:commandButton id="btnQuestionar" action="#{tratarDemandaController.questionar()}" styleClass="hide"/>
+					                    	<p:remoteCommand name="rmcAtualizaEditorQuestionarDemanda"
+												action="#{tratarDemandaController.setEditorContentFromRemoteCommand()}"
+												update=":frmDemanda:codigoHtml"
+												oncomplete="$('#btnQuestionar').click();">
+											</p:remoteCommand>
+											
+										</ui:fragment>
+										<ui:fragment rendered="#{tratarDemandaController.flagExibirFechar}">
+						                    <button type="button" class="btn btn-primary" onclick="handlerAbrirModalConfirmarFechar()"><span class="fa fa-remove"></span> Fechar</button>
+											
+											<!--  -->
+											<p:remoteCommand name="rmcAtualizaEditorFechar"
+												action="#{tratarDemandaController.setEditorContentFromRemoteCommand()}"
+												update=":frmDemanda:codigoHtml"
+												oncomplete="prepararCamposModalFechar()">
+											</p:remoteCommand>
+							
+						                    <p:remoteCommand name="rmcValidarAbrirModalFechar"
+												action="#{tratarDemandaController.validarCamposByRemoteCommand()}"
+												update="message"
+												oncomplete="abrirModalFechar(xhr, status, args);">
+											</p:remoteCommand>
+												
+											<!--  -->	
+										
+										</ui:fragment>
+					                    <ui:fragment rendered="#{tratarDemandaController.flagExibirEncaminhar}">
+						                    <button type="button" class="btn btn-primary" onclick="encaminharDemanda()"><span class="glyphicon glyphicon-arrow-right"></span> Encaminhar</button>
+   		                    			 	<h:commandButton id="btnEncaminhar" action="#{tratarDemandaController.encaminhar()}" styleClass="hide"/>
+   		                    			 	<p:remoteCommand name="rmcAtualizaEditorEncaminharDemanda"
+												action="#{tratarDemandaController.setEditorContentFromRemoteCommand()}"
+												update=":frmDemanda:codigoHtml"
+												oncomplete="$('#btnEncaminhar').click();">
+											</p:remoteCommand>
+					                    </ui:fragment>
+                				        <ui:fragment rendered="#{tratarDemandaController.flagExibirAtualizarConsultar}">
+						                    <button type="button" class="btn btn-success" onclick="atualizarDemanda()"><span class="glyphicon glyphicon-refresh"></span> Atualizar</button>
+		                    			 	<h:commandButton id="btnAtualizar" action="#{tratarDemandaController.atualizar()}" styleClass="hide"/>
+					                    	<p:remoteCommand name="rmcAtualizaEditorAtualizarDemanda"
+												action="#{tratarDemandaController.setEditorContentFromRemoteCommand()}"
+												update=":frmDemanda:codigoHtml"
+												oncomplete="$('#btnAtualizar').click();">
+											</p:remoteCommand>
+											
+						                    <button type="button" class="btn btn-warning" onclick="handlerAbrirModalConsulta()"><span class="glyphicon glyphicon-fullscreen"></span> Consultar</button>
+											
+										 	<p:remoteCommand name="rmcAtualizaEditorConsultar"
+												action="#{tratarDemandaController.setEditorContentFromRemoteCommand()}"
+												update=":frmDemanda:codigoHtml"
+												oncomplete="prepararCamposModalConsultar()">
+											</p:remoteCommand>
+							
+						                    <p:remoteCommand name="rmcValidarAbrirModalConsulta"
+												action="#{tratarDemandaController.validarCamposByRemoteCommand()}"
+												update="message"
+												oncomplete="abrirModalConsulta(xhr, status, args);">
+											</p:remoteCommand>
+											
+					                    </ui:fragment>
+									</ui:fragment>
+
+									<p:remoteCommand name="rmcAtualizaEditorEncaminharExterna"
+										action="#{tratarDemandaController.setEditorContentFromRemoteCommand()}"
+										update=":frmDemanda:codigoHtml"
+										oncomplete="prepararCamposModalEncaminharExterna()">
+									</p:remoteCommand>
+								    <p:remoteCommand name="rmcValidarAbrirModalEncaminharExterna"
+										action="#{tratarDemandaController.validarCamposByRemoteCommand()}"
+										update="message"
+										oncomplete="abrirModalEncaminharExterna(xhr, status, args);">
+									</p:remoteCommand>
+									
+				                </div>
+				              </div>
+			            </div>
+			            
+			        	<div class="col-md-3">
+	    		      		<ui:fragment rendered="#{ tratarDemandaController.flagExibirBotoesCaixaAnteriorEProxima and tratarDemandaController.flagExibirBotaoCaixaProxima}">
+				    	       	<button type="button" class="btn btn-default disabled pull-right">
+				    	       		<span class=" glyphicon glyphicon-arrow-right"></span> #{tratarDemandaController.caixaProxima} 
+				    	       	</button>
+				        	</ui:fragment>
+			            </div>
+			            
+			        </div>
+   	  				<!-- end:of Botoes -->
+             </ui:fragment>
+
+			<hr></hr>
+			
+			<h2>Fluxo e Linha de Tempo</h2>
+        
+			<!-- begin-of: fluxo  -->
+	        <div class="row">
+	        	<div class="col-md-12">
+	                <div class="panel panel-default panel-dados margin-top">
+	                    <div class="panel-body">
+	                        <h4>Fluxo e atores envolvidos na demanda:</h4>
+
+							<h:panelGroup id="pnlFluxo" layout="block">
+								<ol class="fluxoDemanda">
+								
+									<ui:fragment rendered="#{tratarDemandaController.demanda.caixaPostalDemandante.id eq tratarDemandaController.demanda.caixaPostalResponsavel.id}">
+										<li class="active"><a>#{tratarDemandaController.demanda.caixaPostalDemandante.sigla}</a></li>
+									</ui:fragment>
+									
+									<ui:fragment rendered="#{tratarDemandaController.demanda.caixaPostalDemandante.id ne tratarDemandaController.demanda.caixaPostalResponsavel.id}">
+										<li><a>#{tratarDemandaController.demanda.caixaPostalDemandante.sigla}</a></li>
+									</ui:fragment>
+									
+									<ui:repeat var="fluxo" value="#{tratarDemandaController.fluxoDemandaListSemDemandante}">
+									
+											<li class="#{tratarDemandaController.isCaixaResponsavel(fluxo) ? 'active' :''}">
+												<a>#{fluxo.caixaPostal.sigla}
+													<strong>#{fluxo.prazo} dia(s) útil(eis)</strong>
+												</a>
+											</li>
+											
+									</ui:repeat>
+								</ol>
+							</h:panelGroup>
+	                    </div>
+	                </div>
+	            </div>
+			</div>
+			<!-- end-of: fluxo  -->
+			
+			<input type="hidden" id="conteudoJsonGrafico" value="#{tratarDemandaController.conteudoJsonGrafico}"  />
+			<ui:fragment rendered="#{tratarDemandaController.flagExibirLinhaDoTempo}">
+	
+			
+				<!-- begin-of: linha do tempo  -->
+		        <div class="row">
+		        	<div class="col-md-12">
+		                <div class="panel panel-default panel-dados">
+		                    <div class="panel-body">
+		                        <h4>Linha do Tempo:</h4>
+		                         <div id="graficoLinhaTempo" class="timeline-tgt"/>
+		                        
+		                          <div class="legenda2 text-center">
+			                            <ul>
+			                                <li><span class="fa fa-circle-o text-grey"></span> Abertura</li>
+			                                <li><span class="fa fa-circle text-violet"></span> Reabertura</li>
+			                                <li><span class="fa fa-circle text-green"></span> Dentro do Prazo</li>
+			                                <li><span class="fa fa-circle text-red"></span> Fora do Prazo</li>
+			                                <li><span class="fa fa-circle text-yellow"></span> 1 dia antes do Prazo</li>
+			                                <li><span class="fa fa-circle text-blue"></span> Fechada</li>                             
+			                                <li><span class="fa fa-circle text-orange"></span> Consultada</li>
+			                                <li><span class="fa fa-circle  text-grey"></span> Cancelada</li>                                                                   
+			                            </ul>
+			                        </div>
+			                    </div>
+		                </div>
+		            </div>
+				</div>
+				<!-- begin-of: linha do tempo  -->
+			</ui:fragment>
+			
+			
+			<ui:fragment rendered="#{tratarDemandaController.flagExibirHistorico}">
+				<h2>Histórico</h2>
+	        
+		        <button type="button" class="btn btn-primary  pull-right" onclick="window.open('#{request.contextPath}/paginas/demanda/tratar/relatorioHistoricoDemanda.xhtml')">
+		        	<span class="glyphicon glyphicon-print"></span> 
+		        	Gerar Histórico
+	        	</button>
+	        	
+		        <div class="clearfix"></div>	
+		
+				<!-- begin-of: historico  -->
+	           	<div class="row">
+	            	<div class="timeline-centered">
+		        
+		        		<ui:repeat var="atendimento" value="#{tratarDemandaController.historicoList}">
+			                <article class="timeline-entry">
+			                    <div class="timeline-entry-inner">
+			        
+			                        <div class="timeline-icon #{atendimento.classeCor}">
+			                            <i class="entypo-suitcase"></i>#{atendimento.ordem}
+			                        </div>
+			        
+			                        <div class="timeline-label">
+			                            <h2>Ação: <span>#{atendimento.acao}</span></h2>
+			                            <ul class="historico_ul">
+			                            	<li><span class="glyphicon glyphicon-time"></span> 
+			                            		<h:outputText value="#{atendimento.dataAtendimento}">
+													<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" locale="pt_BR"/>
+			                            		</h:outputText>
+			                            	</li>
+			                            	<li><span class="glyphicon glyphicon-home"></span>  De: #{atendimento.origem} - Para: #{atendimento.destino}</li>
+			                                <li><span class="glyphicon glyphicon-user"></span>#{atendimento.matricula} - #{atendimento.nomeUsuario}</li>
+			                                <ui:fragment rendered="#{not empty atendimento.email}">
+				                                <li><span class="glyphicon glyphicon-envelope"></span> #{atendimento.email}</li>
+			                                </ui:fragment>
+	                                        <ui:fragment rendered="#{not empty atendimento.anexo}">
+		                                        <li>
+		                                        	<h:commandLink action="#{tratarDemandaController.downloadAnexoHistorico(atendimento.id)}" 
+		                                        		title="Clique aqui para baixar o arquivo.">
+		                                        		<span class="glyphicon glyphicon-paperclip"></span> 
+														<strong>Anexo</strong>
+													</h:commandLink>
+		                                        </li>
+	                                        </ui:fragment>
+			                            </ul>
+			                            <p>
+			                            	<h:outputText value="#{atendimento.descricao}" escape="false" />
+			                            </p>
+			                        </div>
+			                    </div>
+			        
+			                </article>
+		        		</ui:repeat>
+		        
+	        		</div>
+				</div>
+				<!-- end-of: historico -->
+			</ui:fragment>
+			
+			
+	 <!--MODAL @EXTERNA -->  
+		<div class="modal fade" id="modal_externa" role="dialog">
+            <div class="modal-dialog">
+<!-- 				<h:form id="frmExterna" prependId="false"> -->
+            	
+	              <div class="modal-content">
+		                <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal">&#215;</button>
+		                  <h4 class="modal-title">Seleção de @EXTERNA </h4>
+		                </div>
+		                
+		                <div class="modal-body">
+		                
+		                	<!-- begin-of: message -->
+							<div id="modal-message-externa"></div>
+						
+		                     <div class="row">
+		                        <div class=" col-md-12">
+		                            <div class="form-group">
+		                                <label class="obrigatorio" for="unidade_externa">Selecione a unidade de destino @EXTERNA</label>
+										<h:selectOneMenu id="unidade_externa" styleClass="form-control"
+	                        				converter="omnifaces.SelectItemsConverter"
+											value="#{tratarDemandaController.unidadeExternaSelecionada}">
+											<f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+											<f:selectItems value="#{tratarDemandaController.unidadeExternaList}"
+												itemValue="#{unidade}" var="unidade"
+												itemLabel="#{unidade.sigla} - #{unidade.nome.trim()}" />
+										</h:selectOneMenu> 
+		                            </div>                
+		                        </div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button  type="button" class="btn btn-primary" id="btn_salvaData" onclick="validarEncaminharDemandaExterna()" >OK</button>
+							 <h:commandButton id="btnEncaminharExterna" action="#{tratarDemandaController.encaminharExterna()}" styleClass="hide"/>
+						    
+	                    	<p:remoteCommand name="rmcAtualizaEditorEncaminharDemandaExterna"
+								action="#{tratarDemandaController.setEditorContentFromRemoteCommand()}"
+								update=":frmDemanda:codigoHtml"
+								oncomplete="$('#btnEncaminharExterna').click();">
+							</p:remoteCommand>
+							
+							<button type="button" class="btn btn-warning" data-dismiss="modal">Cancelar</button>
+						</div>
+		            </div>
+<!-- 	            </h:form> -->
+	          </div>
+          </div>
+          
+        <!--MODAL CANCELAR -->
+        <div class="modal fade" id="modal_cancelar" role="dialog">
+            <div class="modal-dialog modal-confirmar">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&#215;</button>
+                      <h4 class="modal-title">Atenção!</h4>
+                  </div>
+                  <div class="modal-body">
+                    <div class="alert-excluir">
+                    	Deseja cancelar a Demanda?
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="$('#btnCancelar').click();">Sim</button>
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">Não</button>
+                    
+                    <h:commandButton id="btnCancelar" action="#{tratarDemandaController.cancelar()}" styleClass="hide"/>
+                  </div>
+              </div>
+            </div>
+       </div> 
+       
+       		
+       <!--MODAL FECHAR -->
+        <div class="modal fade" id="modal_fechar" role="dialog">
+            <div class="modal-dialog modal-confirmar">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&#215;</button>
+                      <h4 class="modal-title">Atenção!</h4>
+                  </div>
+                  <div class="modal-body">
+                    <div class="alert-excluir">
+                    	Deseja fechar a Demanda?
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="$('#btnFechar').click();">Sim</button>
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">Não</button>
+                    
+                  	<h:commandButton id="btnFechar" action="#{tratarDemandaController.fechar()}" styleClass="hide"/>
+                    
+                  </div>
+              </div>
+            </div>
+        </div>
+			
+		<!-- begin-of: modal -->
+		<div class="modal fade" id="mdlConsulta" data-cancelable="false" role="dialog">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title">Consulta</h4> 
+					</div>
+					<div class="modal-body">
+						
+						<!-- begin-of: message -->
+						<div id="modal-message-consulta"></div>
+						
+						<section class="sec-unidades" style="display:none"> 
+						
+<!-- 							<h:form id="frmUnidade" styleClass="form-inline margin-bottom" prependId="false"> -->
+<!-- 							<form id="frmUnidade" class="form-inline margin-bottom form-inline"> -->
+							<div class="form-inline">
+								<div class="form-group">
+		    						<label for="prazo" class="obrigatorio">Prazo para atendimento da demanda (em dias úteis):</label>
+		    						<h:inputText id="prazo" maxlength="3" onkeypress="return somenteNumero(event)" onchange="overSomenteNumeros(this);"
+		    							value="#{tratarDemandaController.prazoConsulta}" styleClass="prazo-demanda form-control text-center" style="margin-left: 4px;"/>
+		 						 </div>
+							</div>
+<!-- 							</form> -->
+<!-- 		 					</h:form> -->
+							
+							<h:form id="frmCaixaPostal">		 						 
+		 						 <div class="panel-group" id="accordion" style="margin-top: 10px;">
+		 						 	
+		 						 	<o:importConstants type="br.gov.caixa.gitecsa.siarg.enumerator.TipoUnidadeEnum" />
+		 						 	
+		 						 	<!-- begin-of: loop unidades -->
+		 						 	<ui:repeat var="agrupamento" varStatus="elm" value="#{tratarDemandaController.agrupamentoCaixaPostal.orderedValues}">
+		 						 	
+			 						 	<div class="panel panel-default">
+			 						 		<div class="panel-heading">
+				                                <h4 class="panel-title">
+				                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse#{elm.index}">#{agrupamento.key}</a>
+				                                </h4>
+				                            </div>
+			                            
+				                            <div id="collapse#{elm.index}" class="panel-collapse collapse ">
+				                            	<div class="panel-body">
+				                            	
+				                            		<div class="row">
+				                            			
+				                            			<div class="col-md-3">
+				                                            <div class="checkbox checkbox_assunto">
+				                                                <label><input type="checkbox" class="check-all" />Todas</label>
+				                                            </div>
+				                                        </div>
+				                                        
+				                                        <!-- begin-of: loop caixas-postais -->
+				                                        <ui:repeat var="caixa" value="#{agrupamento.values}">
+					                                        <div class="col-md-3">
+					                                            <div class="checkbox checkbox_assunto">
+					                                                <label><input type="checkbox" class="check-item" value="#{caixa.id}" />#{caixa.sigla}</label>
+					                                            </div>
+					                                        </div>
+				                                        </ui:repeat>
+				                                        <!-- end-of: loop caixas-postais -->
+				                                        
+				                            		</div>
+				                            	</div>
+				                            </div>
+		 						 		</div>
+		 						 	</ui:repeat>
+		 						 	<!-- end-of: loop unidades -->
+		 						 </div>
+							</h:form>
+						</section>
+					
+						<section class="sec-resumo" style="display:none">
+              
+		                    <div class="row">
+		                        <div class="col-md-12">
+		                            <div class="alert alert-info">
+		                                <p>Unidade(s) selecionada(s): <br/>
+		                                    <span class="resumo-caixas-postais"></span>
+		                                </p>
+		                                <p>Deseja prosseguir com abertura para essa(s) unidade(s)?</p>
+		                            </div>
+		                        </div>    
+		                    </div>
+		              </section>
+					</div>
+					<div class="modal-footer">
+						<!-- begin-of: botões -->
+<!--                 		<button type="button" class="btn btn-primary btn-step1-concluir disabled" disabled="disabled">Concluir</button> -->
+                		<button type="button" class="btn btn-primary btn-step2-concluir">Concluir</button>
+                		<button type="button" class="btn btn-primary btn-step3-concluir" style="display: none;">Sim</button>
+                		
+                	    <h:commandButton id="btnConcluirConsultar" action="#{tratarDemandaController.consultar()}" styleClass="hide"/>
+
+                		<button type="button" class="btn btn-warning btn-step3-voltar" style="display: none;">Não</button>
+           				<button type="button" id="btn_voltar_secao_2" class="btn btn-warning" data-dismiss="modal" >Cancelar</button>
+
+						<p:remoteCommand name="rmcDadosModalConsulta"
+							action="#{tratarDemandaController.setDadosModalConsultaFromRemoteCommand()}"
+							oncomplete="$('#btnConcluirConsultar').click();">
+						</p:remoteCommand>
+						
+						
+			
+              		</div>
+				</div>
+			</div>
+		</div>
+		<!-- end-of: modal -->
+		
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,65 @@
+.panel-dados {
+    position: relative;
+    border: 1px solid #ccc;
+}
+
+.panel-dados h4 {
+    position: absolute;
+    left: 10px;
+    top: -20px;
+    background-color: #fff;
+    padding: 0px 5px 0px 5px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.text-azul-caixa {
+    color: #0039ba;
+}
+
+
+/*
+		.well-mensagem{ height:350px; overflow:auto;}
+*/		
+.header_msg{ list-style-type:none; padding:0;}
+
+.box_mensagem{  height:300px; overflow:auto;}
+.meuCarousel{ padding:20px 100px 50px 100px;}
+.carousel-indicators .active{ background-color:#0039ba;}
+.carousel-indicators li{cursor:default; border:1px solid #0039ba;}
+@media screen and (min-width: 768px){
+.carousel-control .glyphicon-chevron-left, 
+.carousel-control .glyphicon-chevron-right, 
+.carousel-control .icon-prev, 
+.carousel-control .icon-next {
+	width: 50px;
+	height: 50px;
+	margin-top: -10px;
+	font-size: 50px;
+	margin-left:-20px;
+	margin-right:-20px;
+
+}
+
+/*.carousel .item{ height:300px; overflow:auto;}*/
+.carousel .item .item_body {
+	height: 200px;
+	overflow: auto;
+}
+.carousel-control {
+	width: 10%;
+}
+.carousel-control.left {
+	background-image: none;
+	background-image: none;
+	background-image: none;
+	background-image: none;
+	background-repeat: no-repeat;
+}
+.carousel-control.right {
+	background-image: none;
+	background-image: none;
+	background-image: none;
+	background-image: none;
+	background-repeat: no-repeat;
+}

@@ -1,0 +1,213 @@
+<ui:composition template="/WEB-INF/templates/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="html-head">
+
+		<h:outputStylesheet library="css" name="datatables.min.css" />
+		<h:outputStylesheet library="css" name="jquery-ui.min.css" />
+		<h:outputStylesheet library="css" name="relacaoAssunto.css" />
+
+		<h:outputScript library="js" name="datatables.min.js" />
+		<h:outputScript library="js" name="jquery-ui.min.js" />
+		<h:outputScript library="js" name="relacaoAssunto.js" />
+
+	</ui:define>
+
+	<ui:define name="conteudo-principal">
+		<ol class="breadcrumb">
+			<li><strong>Você está em:</strong></li>
+			<li>Relatório<span class="caret-left"></span></li>
+			<li class="active">Relação de Assuntos</li>
+		</ol>
+
+		<h1>Relatórios</h1>
+		<h2>Relação de Assuntos</h2>
+
+		<h:form id="frmRelatorioAssunto" styleClass="form-inline"
+			prependId="false">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="margin-bottom">
+						<div class="form-group" style="">
+							<label for="select_unidade" class="">Unidade</label> <br />
+							<h:selectOneMenu id="idUnidade" styleClass="form-control"
+								converter="omnifaces.SelectItemsConverter"
+								value="#{relacaoAssuntosController.unidadeSelecionadaDTO}">
+								<f:selectItem itemLabel="TODAS" noSelectionOption="true" />
+								<f:selectItems
+									value="#{relacaoAssuntosController.listaUnidadesDTOCombo}"
+									itemValue="#{unidadeDTO}" var="unidadeDTO"
+									itemLabel="#{unidadeDTO.sigla}" />
+								<f:ajax execute="@form" event="change"
+									render=":frmRelatorioAssunto"
+									listener="#{relacaoAssuntosController.alterarUnidadeSelecionada()}" />
+							</h:selectOneMenu>
+						</div>
+						<div class=" pull-right">
+
+							<p:commandLink update="messages" ajax="false"
+								styleClass="btn btn-primary margin-btn-top btnRelatorios">
+								<span>Planilha de Migração de Assuntos</span>
+								<p:fileDownload
+									value="#{relacaoAssuntosController.downloadPlanilhaMigracaoAssunto()}" />
+							</p:commandLink>
+
+							<a style="margin-left: 5px"
+								class="btn btn-primary margin-btn-top btnRelatorios"
+								onclick="rmcExibirModalExportarTransacoes()"> <span>Planilha
+									de Migração de Demandas</span>
+							</a>
+
+							<p:commandLink update="messages" ajax="false"
+								style="margin-left : 5px"
+								styleClass="btn btn-primary margin-btn-top btnRelatorios">
+								<span>Excel</span>
+								<p:fileDownload
+									value="#{relacaoAssuntosController.downloadExcel()}" />
+							</p:commandLink>
+
+							<p:commandLink update="messages" ajax="false"
+								style="margin-left : 5px"
+								styleClass="btn btn-primary margin-btn-top btnRelatorios">
+								<span>PDF</span>
+								<p:fileDownload
+									value="#{relacaoAssuntosController.downloadPdf()}" />
+							</p:commandLink>
+
+						</div>
+					</div>
+				</div>
+
+
+			</div>
+			<h:inputHidden id="irDtRelacaoAssunto"
+				value="#{relacaoAssuntosController.tamanhoDTOList}" />
+			<h:dataTable id="dtRelacaoAssunto"
+				styleClass="table table-striped  table-bordered dt-responsive table-condensed"
+				width="100%"
+				value="#{relacaoAssuntosController.relacaoAssuntosDTOList}"
+				var="item">
+				<h:column headerClass="bg-cinza">
+					<h:outputText />
+				</h:column>
+
+				<h:column headerClass="bg-cinza">
+					<f:facet name="header">
+						<h:outputText value="Nº" />
+					</f:facet>
+					<h:panelGroup>
+						<h:outputText value="#{item.numeroAssunto}" />
+					</h:panelGroup>
+				</h:column>
+
+				<h:column headerClass="bg-cinza">
+					<f:facet name="header">
+						<h:outputText value="Assunto" />
+					</f:facet>
+					<h:panelGroup>
+						<h:outputText value="#{item.nomeAssunto}" />
+					</h:panelGroup>
+				</h:column>
+
+				<h:column headerClass="bg-cinza">
+					<f:facet name="header">
+						<h:outputText value="Responsável" />
+					</f:facet>
+					<h:panelGroup>
+						<h:outputText value="#{item.responsavel}" />
+					</h:panelGroup>
+				</h:column>
+
+				<h:column headerClass="bg-cinza ">
+					<f:facet name="header">
+						<h:outputText value="Atores do Fluxo" />
+					</f:facet>
+					<h:panelGroup>
+						<h:outputText value="#{item.atoresFluxo}" />
+					</h:panelGroup>
+				</h:column>
+
+				<h:column headerClass="bg-cinza">
+					<f:facet name="header">
+						<h:outputText value="Observadores Autorizados" />
+					</f:facet>
+					<h:panelGroup>
+						<h:outputText value="#{item.observadoresAutorizados}" />
+					</h:panelGroup>
+				</h:column>
+
+				<h:column headerClass="bg-cinza none">
+					<f:facet name="header">
+						<h:outputText value="Demandantes pré definidos" />
+					</f:facet>
+					<h:panelGroup styleClass="none">
+						<h:outputText value="#{item.demandantesPreDefinidos}" />
+					</h:panelGroup>
+				</h:column>
+
+			</h:dataTable>
+			<script type="text/javascript">montarDataTable();</script>
+			<p:remoteCommand
+				actionListener="#{relacaoAssuntosController.handlerExibirModalSituacoes()}"
+				oncomplete="showModalExportarDemandas()"
+				name="rmcExibirModalExportarTransacoes" update=":formModalExportar">
+			</p:remoteCommand>
+		</h:form>
+
+		<div class="modal fade" id="modalExportarDemanda" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<h:form id="formModalExportar" prependId="false">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&#215;</button>
+							<h4 class="modal-title">Exportação de demandas</h4>
+						</div>
+
+						<div class="modal-body">
+							<div class="form-group" style="">
+
+								<h:messages id="message" errorClass="alert alert-danger"
+									infoClass="alert alert-success" warnClass="alert alert-info"
+									showDetail="false" />
+
+								<label for="situacaoDemanda" class="">Selecione a
+									situação das demandas</label> <br />
+								<h:selectOneMenu id="situacaoDemanda" styleClass="form-control"
+									value="#{relacaoAssuntosController.situacaoTransacaoSelecionada}">
+									<f:selectItem itemValue="" itemLabel="Selecione"
+										noSelectionOption="true" />
+									<f:selectItems
+										value="#{relacaoAssuntosController.situacaoTransacaoList}" />
+									<f:ajax execute="@form" event="change"
+										listener="#{relacaoAssuntosController.verificaDemandaList()}"
+										update="message" />
+								</h:selectOneMenu>
+							</div>
+						</div>
+						<div id="" class="modal-footer">
+
+							<p:commandLink ajax="false"
+								onclick="$('#modalExportarDemanda').modal('hide')"
+								style="margin-left : 5px"
+								styleClass="btn btn-primary btnRelatorios"
+								id="btnExportarDemanda"
+								disabled="#{!relacaoAssuntosController.isListaDemandasCheia or relacaoAssuntosController.situacaoTransacaoSelecionada eq null}">
+								<span>Exportar</span>
+								<p:fileDownload
+									value="#{relacaoAssuntosController.downloadPlanilhaMigracaoDemanda()}" />
+							</p:commandLink>
+
+							<button type="button" class="btn btn-warning"
+								data-dismiss="modal">Cancelar</button>
+						</div>
+					</h:form>
+				</div>
+			</div>
+		</div>
+
+	</ui:define>
+</ui:composition>

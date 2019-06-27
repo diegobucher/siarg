@@ -1,0 +1,104 @@
+.btn-colorselector {
+	width: 12px;
+	height: 12px;
+}
+
+.wrapColorSelector {
+	position: absolute;
+	top: 5px;
+	right: 245px;
+	z-index: 2000;
+}
+
+.wrapTable {
+	position: relative;
+}
+
+.wrapTable .formFilter {
+	position: absolute;
+	top: -10px;
+	left: 0;
+}
+
+.ocultaConteudo {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 350px;
+}
+
+.atualizado {
+	position: absolute;
+	right: 10px;
+	top: 0;
+}
+
+.container {
+	position: relative;
+}
+
+.dropdown-colorselector>.dropdown-menu {
+	top: 90%;
+	left: -100px;
+	padding: 4px;
+	min-width: 130px;
+	max-width: 130px;
+}
+
+.cellSelect {
+	padding-right: 0px !important;
+	width: 16px !important;
+}
+
+.expansao {
+	padding-left: 5px !important;
+	padding-right: 11px !important;
+}
+
+.text-azul-caixa{
+	color:#0036ba;
+}
+
+.caixaExterna {
+	padding-left: 3px;   
+	font-weight: 700;  
+	text-decoration: underline;
+}
+
+.table-hover > tbody > tr:hover {
+	background-color: #c3cfed;
+}
+
+.linkClicavel{
+   /* display: block;
+    height: 100%;
+    text-decoration: none;
+    color: #333;
+    width: 100%;*/
+}
+
+.linkClicavel:hover, .linkClicavel:focus{
+  	text-decoration: none;
+    color: #333;
+}
+
+.tdClicavel{
+	cursor: pointer;
+}
+
+.width-rowns ul{ 
+	width:100%;
+}
+
+.table-margintop-null{
+	margin-top: -28px !important;
+	border: none;
+}
+.table-margintop-null td{
+    padding: 0.5em 0 !important;
+        border-bottom: 1px solid #efefef !important;
+}
+
+.table-margintop-null .text-bold{font-weight: bold;}
+
+

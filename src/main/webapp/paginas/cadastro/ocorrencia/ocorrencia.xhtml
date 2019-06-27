@@ -1,0 +1,241 @@
+<ui:composition template="/WEB-INF/templates/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:param name="breadcrumbs" value="#{bundle['geral.breadcrumb.home']}" />
+
+	<ui:define name="html-head">
+		<h:outputStylesheet library="css" name="datatables.min.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="jquery-ui-timepicker-addon.min.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="jquery-ui.min.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="datePickerCustom.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="ocorrencia.css"></h:outputStylesheet>
+		
+		<h:outputScript library="js" name="datatables.min.js" />
+		<h:outputScript library="js" name="jquery-ui.min.js" />
+		<h:outputScript library="js" name="datepicker-pt-br.js" />
+		<h:outputScript library="js" name="maskIt.js" />
+		<h:outputScript library="js" name="messages.js"/>
+		<h:outputScript library="js" name="ocorrencia.js"/>
+		
+	</ui:define>
+	
+	<ui:define name="conteudo-principal">
+		
+  		<ol class="breadcrumb">
+            <li><strong>Você está em:</strong> </li>
+            <li>Cadastro <span class="caret-left"></span></li>
+            <li class="active">Ocorrências</li>
+        </ol>
+        
+        <h1>Cadastro de Ocorrências</h1>
+		
+		<h:form id="formOcorrencias" prependId="false">
+		
+			<h:messages id="message" errorClass="displayNone" infoClass="alert alert-info" warnClass="alert alert-success" showDetail="false" globalOnly="true" />
+			
+			<div class="row">
+				<div class="form-group">
+
+           			<div class="col-md-2">
+						<label for="idUnidade">Unidade:</label>
+           				<br />
+						<h:selectOneMenu id="idUnidade" styleClass="form-control" disabled="#{ocorrenciaController.pesquisaDireta}"
+							converter="omnifaces.SelectItemsConverter"
+							value="#{ocorrenciaController.unidadeSelecionadaDTO}">
+							<f:selectItem itemLabel="SELECIONE" noSelectionOption="true" />  
+							<f:selectItems value="#{ocorrenciaController.listaUnidadesDTOCombo}"  
+											itemValue="#{unidadeDTO}" 
+											var="unidadeDTO" 
+											itemLabel="#{unidadeDTO.sigla}" />
+								<f:ajax execute="@form" event="change" render=":formOcorrencias" 
+											listener="#{ocorrenciaController.pesquisar()}" />
+						</h:selectOneMenu>
+           			</div>
+           			<ui:fragment rendered="#{ocorrenciaController.unidadeMatriz}">
+	           			<div class="col-md-1">
+							<h:commandLink  styleClass="btn btn-primary margin-btn-top" style="height: 31px !important;" 
+											actionListener="#{ocorrenciaController.carregarModalNovo()}" value="Nova Ocorrência">
+								<p:ajax process="@form" update=":formOcorrencias :formModalNovo" />	
+							</h:commandLink>
+	           			</div>
+           			
+           			</ui:fragment>
+				</div>
+			</div>
+			
+			<h:inputHidden id="irTbOcorrencia" value="#{ocorrenciaController.tamanhoDTOList}" />
+	        <table id="tbOcorrencia" class="table table-striped table-bordered dt-responsive" width="100%">
+	            <thead>
+	                <tr class="bg-cinza">
+	                  <th width="" class="text-left">Título</th>
+	                  <th width="" class="text-center">Unidade</th>
+	                  <th width="" class="text-center">Matrícula</th>
+					  <th width="" class="text-center">Data de Publicação</th>
+					  <th width="" class="text-center">Data de Expiração</th>
+	                  <th width="" class="text-center">Ação</th>
+	               </tr>
+	            </thead>
+	            <tbody>
+	            	<ui:repeat var="ocorrencia" value="#{ocorrenciaController.listaOcorrencias}">
+		                <tr>
+		                    <td>
+		                    	<div>
+			                    	#{ocorrencia.titulo}
+		                    	</div>
+		                    </td>
+		                    <td class="text-center">#{ocorrencia.unidade.sigla}</td>
+		                    <td class="text-center">#{ocorrencia.matricula}</td>
+							<td class="text-center">
+								<h:outputText value="#{ocorrencia.dhPublicacao}">
+		                    		<f:convertDateTime pattern="dd/MM/yyyy"/>/>
+		                    	</h:outputText>	
+							</td>
+							<td class="text-center">
+								<h:outputText value="#{ocorrencia.dhExpiracao}">
+		                    		<f:convertDateTime pattern="dd/MM/yyyy"/>/>
+		                    	</h:outputText>	
+		                    </td>
+							<td style="text-align: center;">
+								<div class="btn-group">
+		                            <button id="acoes_menu" class="btn btn-primary dropdown-toggle btn-xs" type="button" data-toggle="dropdown" title="Clique para ações">
+		                                <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true" ></span>
+		                            </button>
+		                            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+		                                <li>			                                
+											<h:commandLink styleClass="btnEditarAssunto" >
+	                            				<span class="fa fa-pencil margin-icon-right" aria-hidden="true" /> Alterar Ocorrência
+	                            				<f:ajax listener="#{ocorrenciaController.carregarAlteracao(ocorrencia)}" 
+	                            					execute="@this" render=":formOcorrencias :formModalNovo" />	
+	                            			</h:commandLink> 
+		                                </li>
+										<li>
+											<h:commandLink styleClass="btnExcluirAssunto" >
+	                            				<span class="fa fa-trash margin-icon-right" aria-hidden="true" /> Excluir Ocorrência
+	                            				<f:ajax listener="#{ocorrenciaController.carregarExclusao(ocorrencia)}" 
+	                            					execute="@this" render=":formOcorrencias :formModalExcluir" />	
+	                            			</h:commandLink> 
+										</li>
+		                            </ul>
+		                        </div>
+		                    </td>
+		                </tr>
+	            	</ui:repeat>
+	            </tbody>
+	        </table>			
+			<script type="text/javascript">montarDataTable();</script>
+		</h:form>
+		
+		
+		<!--| INICIO Modal Novo - Edição. |--> 
+    	<div class="modal fade" id="modalNovo" role="dialog">
+      		<div class="modal-dialog modal-novo">
+                <div class="modal-content">
+                    <h:form id="formModalNovo" prependId="false">
+                    	<div class="modal-header">
+                        	<button type="button" class="close" data-dismiss="modal">&#215;</button>
+                        	<ui:fragment rendered="#{!ocorrenciaController.modoEdicao}">
+	                        	<h4 class="modal-title">Incluir Nova Ocorrência</h4>
+                        	</ui:fragment>
+                        	<ui:fragment rendered="#{ocorrenciaController.modoEdicao}">
+	                        	<h4 class="modal-title">Alterar Ocorrência</h4>
+                        	</ui:fragment>
+                        </div>
+                        <div class="modal-body"> 
+                        	<div class="message-box">
+	                        	<h:messages id="messageModal" errorClass="alert alert-danger" infoClass="displayNone" warnClass="displayNone" showDetail="false" globalOnly="true" />
+                        	</div>
+                        	
+                        	<div id="modal-message"></div>
+                        	
+	                    	<div class="form-group">
+		                        <label for="titulo" class="obrigatorio">Título:</label>
+		                        <h:inputText id="titulo" styleClass="form-control" 
+		                        				value="#{ocorrenciaController.ocorrenciaSelecionada.titulo}"   
+		                        	 			placeholder="Digite o nome da ocorrência a ser inserida" maxlength="200" width=""/>
+		                    </div>
+	                    	<div class="form-group">
+								<div class="col-md-6" style="padding-left: 0px !important; padding-bottom: 10px !important;">
+									<label for="idDtPublicacao" class="obrigatorio">Data de Publicação:</label><br />
+									<h:inputText id="idDtPublicacao" styleClass="form-control datepicker date dataPublicacao"
+													converterMessage="Data Início inválida!" 
+													maxlength="10" onkeyup="maskIt(this, event, '##/##/#####', false, false)"
+													value="#{ocorrenciaController.ocorrenciaSelecionada.dhPublicacao}">
+										<f:convertDateTime pattern="dd/MM/yyyy" />
+									</h:inputText>
+								</div>
+	                    	</div>
+	                    	<div class="form-group">
+								<div class="col-md-6" style="padding-left: 0px !important; padding-bottom: 10px !important; ">
+									<label for="idDtExpiracao" class="obrigatorio">Data de Expiração:</label><br />
+									<h:inputText id="idDtExpiracao" styleClass="form-control datepicker date dataExpiracao"
+													converterMessage="Data Início inválida!"
+													maxlength="10" onkeyup="maskIt(this, event, '##/##/#####', false, false)"
+													value="#{ocorrenciaController.ocorrenciaSelecionada.dhExpiracao}">
+										<f:convertDateTime pattern="dd/MM/yyyy" />
+									</h:inputText>
+								</div>	
+							</div>
+							
+		                    <div class="form-group">
+		                        <label class="obrigatorio" for="idConteudo">Conteúdo:</label>
+		                        <h:inputTextarea styleClass="form-control" id="idConteudo" rows="5" 
+                                					value="#{ocorrenciaController.ocorrenciaSelecionada.conteudo}" />
+		                    </div>
+	           			</div>	
+		                <div id="" class="modal-footer">
+		                	<ui:fragment rendered="#{!ocorrenciaController.modoEdicao}">
+			                	<h:commandLink  styleClass="btn btn-primary" value="Salvar" >
+									<p:ajax process="@form" update=":formOcorrencias :formModalNovo" 
+											listener="#{ocorrenciaController.adicionar()}" />	
+								</h:commandLink>
+		                	</ui:fragment>
+		                	<ui:fragment rendered="#{ocorrenciaController.modoEdicao}">
+			                	<h:commandLink  styleClass="btn btn-primary" value="Salvar" >
+									<p:ajax process="@form" update=":formOcorrencias :formModalNovo" 
+											listener="#{ocorrenciaController.alterar()}" />	
+								</h:commandLink>
+		                	</ui:fragment>
+		         			<button type="button" class="btn btn-warning" data-dismiss="modal">Cancelar</button>
+		                </div>
+		                <script type="text/javascript">formatarData();</script>
+	              	</h:form>
+               	</div>
+			</div>
+    	</div>
+		<!--| FIM Modal Novo - Edição. |--> 
+		
+		
+		
+		<!--| INICIO Modal Exclusao. |--> 
+    	<div class="modal fade" id="modalExclusao" role="dialog">
+      		<div class="modal-dialog modal-excluir">
+                <div class="modal-content">
+                    <h:form id="formModalExcluir" prependId="false">
+                    	<div class="modal-header">
+                        	<button type="button" class="close" data-dismiss="modal">&#215;</button>
+                        	<h4 class="modal-title">Atenção!</h4>
+                        </div>
+                        <div class="modal-body"> 
+                        	<div class="alert-excluir">
+                   				Deseja excluir a Ocorrência?
+                   			</div>
+                   		</div>
+                        <div id="" class="modal-footer">
+                        	<h:commandLink  styleClass="btn btn-primary" value="Sim"
+										actionListener="#{ocorrenciaController.excluir()}" >
+								<p:ajax process="@this" update=":formOcorrencias :formModalExcluir" resetValues="true"/>	
+							</h:commandLink>
+                            <button type="button" class="btn btn-warning" data-dismiss="modal">Não</button>
+                        </div>
+                       </h:form>
+               	</div>
+			</div>
+    	</div>
+		<!--| FIM Modal Exclusao. |--> 
+
+	</ui:define>
+</ui:composition>

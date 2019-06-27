@@ -1,0 +1,254 @@
+<ui:composition template="/WEB-INF/templates/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="html-head">
+
+		<h:outputStylesheet library="css" name="datatables.min.css" />
+		<h:outputStylesheet library="css" name="jquery-ui.min.css" />
+		<h:outputStylesheet library="css" name="relatorio-demandas-unidades.css" />
+
+		<h:outputScript library="js" name="datatables.min.js" />
+		<h:outputScript library="js" name="jquery-ui.min.js" />
+		<h:outputScript library="js" name="datepicker-pt-br.js" />
+		<h:outputScript library="js" name="jquery.mask.min.js" />
+		<h:outputScript library="js" name="mask-function.js" />
+		<h:outputScript library="js" name="maskIt.js" />
+		<h:outputScript library="js" name="relatorio-demandas-unidades.js" />
+
+	</ui:define>
+
+	<ui:define name="conteudo-principal">
+		<ol class="breadcrumb">
+			<li><strong>Você está em:</strong></li>
+			<li>Relatórios <span class="caret-left"></span></li>
+			<li class="active">Visão geral por SUEG - Consolidado da quantidade de Demandas por Unidade</li>
+		</ol>
+
+		<h1>Relatórios</h1>
+		<h2>Visão geral por SUEG - Consolidado da quantidade de Demandas por Unidade</h2>
+
+		<h:form id="frmRelDemandasUnidades" styleClass="form-inline" prependId="false">
+
+			<h:messages id="message" errorClass="alert alert-danger" infoClass="alert alert-info" warnClass="alert alert-success" showDetail="false" globalOnly="true" />
+
+			<div class="row">
+				<div class="col-md-12">
+					<div class="margin-bottom">
+						<div class="form-group">
+							<label for="select_unidade" class="">Unidade</label>
+	           				<br />
+							<h:selectOneMenu id="idUnidade" styleClass="form-control" 
+								converter="omnifaces.SelectItemsConverter"
+								value="#{relatorioQtdDemandasVsUnidadeController.unidadeSelecionada}">
+								<f:selectItem itemLabel="TODAS" noSelectionOption="true" />
+								<f:selectItems value="#{relatorioQtdDemandasVsUnidadeController.listaUnidades}"
+												itemValue="#{unidade}"
+												var="unidade"
+												itemLabel="#{unidade.nomeSUEGParaCombo}" />
+							</h:selectOneMenu>
+						</div>
+
+						<div class="form-group">
+							<label for="idDtInicio" class="obrigatorio">Data Início</label><br />
+							<h:inputText id="idDtInicio" class="form-control datepicker date data"
+								maxlength="10"
+								onkeyup="maskIt(this, event, '##/##/#####', false, false)"
+								value="#{relatorioQtdDemandasVsUnidadeController.dataInicialString}">
+							</h:inputText>
+						</div>
+						<div class="form-group">
+							<label for="idDtFim" class="obrigatorio">Data Fim</label><br />
+							<h:inputText id="idDtFim" class="form-control datepicker date data"
+								maxlength="10"
+								onkeyup="maskIt(this, event, '##/##/#####', false, false)"
+								value="#{relatorioQtdDemandasVsUnidadeController.dataFinalString}">
+							</h:inputText>
+						</div>
+						<h:commandLink id="btPesquisar" style="margin-left : 5px"
+							styleClass="btn btn-primary" value="Pesquisar"
+							action="#{relatorioQtdDemandasVsUnidadeController.pesquisar()}">
+							<f:ajax execute="@form" render=":frmRelDemandasUnidades" />
+						</h:commandLink>
+
+						<div class="pull-right">
+							<p:commandLink update="messages" ajax="false"
+								style="margin-left : 5px"
+								styleClass="btn btn-primary margin-btn-top btnRelatorios">
+								<span>Excel</span>
+								<p:fileDownload
+									value="#{relatorioQtdDemandasVsUnidadeController.downloadExcel()}" />
+							</p:commandLink>
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<script type="text/javascript">data();</script>
+			<br />
+			<p:outputPanel id="pnlDataTable">
+				<h:inputHidden id="irDtg_demanda_unidade" value="#{relatorioQtdDemandasVsUnidadeController.tamanhoList}" />
+					
+				<table id="dtg_demanda_unidade" class="table table-bordered table-striped table-bordered table-condensed ">
+        			<thead>
+            			<col /><col /><col /><col /><col /><col /><col /><col /><col />
+						<tr class="bg-cinza">
+                			<th colspan="3"></th>
+		                	<th colspan="3" class="text-center">DEMANDAR PARA TRATAR</th>
+		                	<th colspan="3" class="text-center">DEMANDAS REALIZADAS PELA UNIDADE</th>
+		                </tr>
+		            	<tr class="bg-cinza">
+		                	<th>SUEG</th>
+		                	<th>Cód</th>
+		                    <th>Nome</th>
+		                    <th class="text-right">Abertas</th>
+		                    <th class="text-right">Fechadas</th>
+		                    <th class="text-right">Total</th>
+		                    <th class="text-right">Abertas</th>
+		                    <th class="text-right">Fechadas</th>
+		                    <th class="text-right">Total</th>
+		                </tr>
+            		</thead>
+            		<ui:fragment rendered="#{relatorioQtdDemandasVsUnidadeController.pesquisaAtiva}">
+			            <tfoot>
+			            	<tr class="bg-cinza">
+			                	<th colspan="5" class="text-right">Total Geral ( Demanda para Tratar )</th>
+			                	<th colspan="1" class="text-right">#{relatorioQtdDemandasVsUnidadeController.totalDemandasAtratar}</th>
+			                	<th colspan="2" class="text-right">Total Geral ( Demanda Realizadas )</th>
+			                    <th colspan="1" class="text-right">#{relatorioQtdDemandasVsUnidadeController.totalDemandasRealizadas}</th>
+			            	</tr>
+			            </tfoot>
+            		</ui:fragment>
+            		<ui:fragment rendered="#{not relatorioQtdDemandasVsUnidadeController.pesquisaAtiva}">
+			            <tfoot>
+			            	<tr class="bg-cinza">
+			                	<th colspan="5" class="text-right">Total Geral ( Demanda para Tratar )</th>
+			                	<th colspan="1" class="text-right">0</th>
+			                	<th colspan="2" class="text-right">Total Geral ( Demanda Realizadas )</th>
+			                    <th colspan="1" class="text-right">0</th>
+			            	</tr>
+			            </tfoot>
+            		</ui:fragment>
+		            
+		            <tbody>
+		            	<ui:fragment rendered="#{not relatorioQtdDemandasVsUnidadeController.pesquisaAtiva}">
+			                    <th colspan="9" class="text-center">Nenhum registro encontrado.</th>
+		            	</ui:fragment>
+		            	<ui:fragment rendered="#{relatorioQtdDemandasVsUnidadeController.pesquisaAtiva}">
+		            		
+		            		<ui:fragment rendered="#{relatorioQtdDemandasVsUnidadeController.suega.size() ne 0}">
+		            			<ui:repeat var="item" value="#{relatorioQtdDemandasVsUnidadeController.suega}">
+					            	<tr>
+					                	<td class="text-center">A</td>
+					                    <td>#{item.unidadeDemandante.cgcUnidade}</td>
+					                    <td>#{item.unidadeDemandante.sigla}</td>
+					                    <td class="text-right">#{item.demandasAbertasTratar}</td>
+					                    <td class="text-right">#{item.demandasFechadasTratar}</td>
+					                    <td class="text-right">#{item.totalDemandasTratar}</td>
+					                    <td class="text-right">#{item.demandasAbertasRealizadas}</td>
+					                    <td class="text-right">#{item.demandasFechadasRealizadas}</td>
+					                    <td class="text-right">#{item.totalDemandasRealizadas}</td>
+					                </tr>
+		            			</ui:repeat>
+				            	<tr class="bg-cinza">
+				                	<th colspan="5" class="text-right">Total ( SUEG A ):</th>
+				                	<th colspan="1" class="text-right">#{relatorioQtdDemandasVsUnidadeController.totalDemandasTratarSUEGA}</th>
+				                	<th colspan="2" class="text-right">Total:</th>
+				                    <th colspan="1" class="text-right">#{relatorioQtdDemandasVsUnidadeController.totalDemandasRealizadasSUEGA}</th>
+				            	</tr>
+		            		</ui:fragment>
+		            		<ui:fragment rendered="#{relatorioQtdDemandasVsUnidadeController.suegb.size() ne 0}">
+		            			<ui:repeat var="item2" value="#{relatorioQtdDemandasVsUnidadeController.suegb}">
+					            	<tr>
+					                	<td class="text-center">B</td>
+					                    <td>#{item2.unidadeDemandante.cgcUnidade}</td>
+					                    <td>#{item2.unidadeDemandante.sigla}</td>
+					                    <td class="text-right">#{item2.demandasAbertasTratar}</td>
+					                    <td class="text-right">#{item2.demandasFechadasTratar}</td>
+					                    <td class="text-right">#{item2.totalDemandasTratar}</td>
+					                    <td class="text-right">#{item2.demandasAbertasRealizadas}</td>
+					                    <td class="text-right">#{item2.demandasFechadasRealizadas}</td>
+					                    <td class="text-right">#{item2.totalDemandasRealizadas}</td>
+					                </tr>
+		            			</ui:repeat>
+				            	<tr class="bg-cinza">
+				                	<th colspan="5" class="text-right">Total ( SUEG B ):</th>
+				                	<th colspan="1" class="text-right">#{relatorioQtdDemandasVsUnidadeController.totalDemandasTratarSUEGB}</th>
+				                	<th colspan="2" class="text-right">Total:</th>
+				                    <th colspan="1" class="text-right">#{relatorioQtdDemandasVsUnidadeController.totalDemandasRealizadasSUEGB}</th>
+				            	</tr>
+		            		</ui:fragment>
+		            		<ui:fragment rendered="#{relatorioQtdDemandasVsUnidadeController.suegc.size() ne 0}">
+		            			<ui:repeat var="item3" value="#{relatorioQtdDemandasVsUnidadeController.suegc}">
+					            	<tr>
+					                	<td class="text-center">C</td>
+					                    <td>#{item3.unidadeDemandante.cgcUnidade}</td>
+					                    <td>#{item3.unidadeDemandante.sigla}</td>
+					                    <td class="text-right">#{item3.demandasAbertasTratar}</td>
+					                    <td class="text-right">#{item3.demandasFechadasTratar}</td>
+					                    <td class="text-right">#{item3.totalDemandasTratar}</td>
+					                    <td class="text-right">#{item3.demandasAbertasRealizadas}</td>
+					                    <td class="text-right">#{item3.demandasFechadasRealizadas}</td>
+					                    <td class="text-right">#{item3.totalDemandasRealizadas}</td>
+					                </tr>
+		            			</ui:repeat>
+				            	<tr class="bg-cinza">
+				                	<th colspan="5" class="text-right">Total ( SUEG C ):</th>
+				                	<th colspan="1" class="text-right">#{relatorioQtdDemandasVsUnidadeController.totalDemandasTratarSUEGC}</th>
+				                	<th colspan="2" class="text-right">Total:</th>
+				                    <th colspan="1" class="text-right">#{relatorioQtdDemandasVsUnidadeController.totalDemandasRealizadasSUEGC}</th>
+				            	</tr>
+		            		</ui:fragment>
+		            		<ui:fragment rendered="#{relatorioQtdDemandasVsUnidadeController.suegd.size() ne 0}">
+		            			<ui:repeat var="item4" value="#{relatorioQtdDemandasVsUnidadeController.suegd}">
+					            	<tr>
+					                	<td class="text-center">D</td>
+					                    <td>#{item4.unidadeDemandante.cgcUnidade}</td>
+					                    <td>#{item4.unidadeDemandante.sigla}</td>
+					                    <td class="text-right">#{item4.demandasAbertasTratar}</td>
+					                    <td class="text-right">#{item4.demandasFechadasTratar}</td>
+					                    <td class="text-right">#{item4.totalDemandasTratar}</td>
+					                    <td class="text-right">#{item4.demandasAbertasRealizadas}</td>
+					                    <td class="text-right">#{item4.demandasFechadasRealizadas}</td>
+					                    <td class="text-right">#{item4.totalDemandasRealizadas}</td>
+					                </tr>
+		            			</ui:repeat>
+				            	<tr class="bg-cinza">
+				                	<th colspan="5" class="text-right">Total ( SUEG D ):</th>
+				                	<th colspan="1" class="text-right">#{relatorioQtdDemandasVsUnidadeController.totalDemandasTratarSUEGD}</th>
+				                	<th colspan="2" class="text-right">Total:</th>
+				                    <th colspan="1" class="text-right">#{relatorioQtdDemandasVsUnidadeController.totalDemandasRealizadasSUEGD}</th>
+				            	</tr>
+		            		</ui:fragment>
+		            		<ui:fragment rendered="#{relatorioQtdDemandasVsUnidadeController.suege.size() ne 0}">
+		            			<ui:repeat var="item5" value="#{relatorioQtdDemandasVsUnidadeController.suege}">
+					            	<tr>
+					                	<td class="text-center">E</td>
+					                    <td>#{item5.unidadeDemandante.cgcUnidade}</td>
+					                    <td>#{item5.unidadeDemandante.sigla}</td>
+					                    <td class="text-right">#{item5.demandasAbertasTratar}</td>
+					                    <td class="text-right">#{item5.demandasFechadasTratar}</td>
+					                    <td class="text-right">#{item5.totalDemandasTratar}</td>
+					                    <td class="text-right">#{item5.demandasAbertasRealizadas}</td>
+					                    <td class="text-right">#{item5.demandasFechadasRealizadas}</td>
+					                    <td class="text-right">#{item5.totalDemandasRealizadas}</td>
+					                </tr>
+		            			</ui:repeat>
+				            	<tr class="bg-cinza">
+				                	<th colspan="5" class="text-right">Total ( SUEG E ):</th>
+				                	<th colspan="1" class="text-right">#{relatorioQtdDemandasVsUnidadeController.totalDemandasTratarSUEGE}</th>
+				                	<th colspan="2" class="text-right">Total:</th>
+				                    <th colspan="1" class="text-right">#{relatorioQtdDemandasVsUnidadeController.totalDemandasRealizadasSUEGE}</th>
+				            	</tr>
+		            		</ui:fragment>
+		            	</ui:fragment>
+		            </tbody>
+        		</table>
+				<script type="text/javascript">montarDataTable();</script>
+			</p:outputPanel>
+		</h:form>
+	</ui:define>
+</ui:composition>

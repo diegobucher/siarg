@@ -1,0 +1,72 @@
+<ui:composition template="/WEB-INF/templates/template_login.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+	<ui:define name="conteudo-principal">
+	
+		<script type="text/javascript">
+		
+			$(document).ready(function($){
+				
+			  $('#mainForm\\:usuario').mask('C000000', {translation: {
+				  'C':{pattern:/[a-zA-Z.]/} 
+			  	 } 
+			   });
+
+			  $('#mainForm\\:usuario').focus();
+			   
+			});
+		
+		   document.addEventListener("keypress", function(event) {
+	           var tecla = event.keyCode || event.witch;
+	           if (tecla == 13) {	
+	                  $("#mainForm\\:btnEntrar").click();   
+	           }
+	       });
+	    </script>
+	
+		<div class="row">
+        	<div class="col-xs-offset-2  col-xs-8 col-sm-offset-4  col-sm-4 margin-login-top">
+	          	<div class="box-login">
+	            	<h:form id="mainForm">
+	                	<legend>#{bundle['login.label.loginUsuario']}</legend>
+						<h:messages id="messages" errorClass="msgLogin" showDetail="false" />
+	                
+	                	<div class="form-group">
+	                  		<label for="usuario">#{bundle['login.label.usuario']}:</label>
+	                  		<div class="input-group">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+	                    		<h:inputText id="usuario" styleClass="form-control" maxlength="7"
+	                    						value="#{controleAcesso.credentials.login}"/>
+	                  		</div>
+	                	</div>
+	                	<div class="form-group">
+		                	<label for="senha">#{bundle['login.label.senha']}:</label>
+		                  	<div class="input-group">
+		                    	<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+		                    	<h:inputSecret id="senha" styleClass="form-control" maxlength="8"
+												value="#{controleAcesso.credentials.senha}"  />
+		                  	</div>
+	                	</div>	                
+	                	<h:commandLink id="btnEntrar" 
+	                					title="#{bundle['login.toltip.button.entrar']}"
+	                					action="#{controleAcesso.autenticarLdap}" 
+	                					value="#{bundle['login.label.entrar']}" 
+	                					onfocus="$(this).addClass('btnSelected');" 
+										onblur="$(this).removeClass('btnSelected');"
+	                					styleClass="btn btn-warning pull-right" 
+	                					update="@form"
+	                					process="@form">
+							<i class="glyphicon glyphicon-arrow-right"></i>
+						</h:commandLink>
+	              	</h:form>
+	            </div>              
+          	</div>
+        </div><!--/row-->
+
+	</ui:define>
+	
+</ui:composition>

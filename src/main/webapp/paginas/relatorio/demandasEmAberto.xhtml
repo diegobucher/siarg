@@ -1,0 +1,150 @@
+<ui:composition template="/WEB-INF/templates/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="html-head">
+
+		<h:outputStylesheet library="css" name="datatables.min.css" />
+		<h:outputStylesheet library="css" name="jquery-ui.min.css" />
+		<h:outputStylesheet library="css" name="relacaoAssunto.css" />
+		<h:outputStylesheet library="css" name="datePickerCustom.css"/>
+
+		<h:outputScript library="js" name="datatables.min.js" />
+		<h:outputScript library="js" name="jquery-ui.min.js" />
+		<h:outputScript library="js" name="datepicker-pt-br.js" />
+		<h:outputScript library="js" name="jquery.mask.min.js" />
+		<h:outputScript library="js" name="mask-function.js" />
+		<h:outputScript library="js" name="maskIt.js" />
+		<h:outputScript library="js" name="demEmAberto.js" />
+
+	</ui:define>
+
+	<ui:define name="conteudo-principal">
+		<ol class="breadcrumb">
+			<li><strong>Você está em:</strong></li>
+			<li>Relatório<span class="caret-left"></span></li>
+			<li class="active">Demandas em Aberto</li>
+		</ol>
+
+		<h1>Relatórios</h1>
+		<h2>Demandas em Aberto</h2>
+
+		<h:form id="frmRelatorioAssunto" styleClass="form-inline"
+			prependId="false">
+			
+			<h:messages id="message" errorClass="alert alert-danger" infoClass="alert alert-info" warnClass="alert alert-success" showDetail="false" globalOnly="true" />
+			
+			<div class="row">
+				<div class="col-md-12">
+					<div class="margin-bottom">
+						<div class="form-group">
+							<label for="select_unidade" class="">Unidade Demandada</label> <br />
+							<h:selectOneMenu id="idUnidade" styleClass="form-control"
+								converter="omnifaces.SelectItemsConverter"
+								value="#{demandasEmAbertoController.unidadeSelecionada}">
+								<f:selectItems
+									value="#{demandasEmAbertoController.listaUnidadesStringCombo}"
+									itemValue="#{unidadeDTO}" var="unidadeDTO"/>
+								<f:ajax execute="@form" event="change"
+									render=":frmRelatorioAssunto"
+									listener="#{demandasEmAbertoController.alterarUnidadeSelecionada()}" />
+							</h:selectOneMenu>
+						</div>
+						<div class="form-group">
+							<label for="idDtInicio" class="obrigatorio">Data Inicial</label><br />
+							<h:inputText id="idDtInicio" class="form-control date datepicker" maxlength="10"
+											onkeyup="maskIt(this, event, '##/##/#####', false, false)"
+											value="#{demandasEmAbertoController.dataInicialString}">
+							</h:inputText>
+						</div>
+            			<div class="form-group">
+							<label for="idDtFim" class="obrigatorio">Data Final</label><br />
+							<h:inputText id="idDtFim" class="form-control dt_emissao datepicker date" maxlength="10"
+											onkeyup="maskIt(this, event, '##/##/#####', false, false)"
+											value="#{demandasEmAbertoController.dataFinalString}">
+							</h:inputText>
+						</div>
+						
+            			<div class="form-group">
+							<label for="idDtFim" class="obrigatorio">Situação de Prazo</label><br />
+							<h:selectOneMenu id="situacaoPrazo" styleClass="form-control" 
+				                 	value="#{demandasEmAbertoController.situacaoDemandaSelecionada}">
+				                 	<f:selectItems var="item"
+				                 		value="#{demandasEmAbertoController.situacaoPrazoList}" 
+				                 		itemLabel="#{item.label}" itemValue="#{item}">
+				                 	</f:selectItems>
+			                 </h:selectOneMenu>
+						</div>
+						                 
+						                 
+						<div class="form-group" style="">
+							<label for="select_assunto" class="">Assunto</label> <br />
+							<h:selectOneMenu id="idAssunto" styleClass="form-control"
+								converter="omnifaces.SelectItemsConverter"
+								value="#{demandasEmAbertoController.assunto}">
+								<f:selectItem itemLabel="TODOS" noSelectionOption="true"/>
+								<f:selectItems
+									value="#{demandasEmAbertoController.listaAssuntosCombo}"
+									itemValue="#{assunto}" var="assunto"
+									itemLabel="#{assunto.arvoreCompleta} (#{assunto.caixaPostal.sigla}) " />
+							</h:selectOneMenu>
+						</div>
+						<h:commandLink id="btPesquisar" style="margin-left : 5px"
+											styleClass="btn btn-primary margin-btn-top"
+											value="Pesquisar" action="#{demandasEmAbertoController.pesquisar()}" >
+											<f:ajax execute="@form" render=":frmRelatorioAssunto"/>
+						</h:commandLink>
+						
+						<div class=" pull-right">
+						<p:commandLink update="messages" ajax="false" disabled="#{empty demandasEmAbertoController.listaDemandasDTO}"
+								style="margin-left : 5px"
+								styleClass="btn btn-primary margin-btn-top btnRelatorios">
+								<span>Excel</span>
+								<p:fileDownload
+									value="#{demandasEmAbertoController.downloadExcel()}" />
+							</p:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+			<p:outputPanel id="pnlDataTable">
+				<h:inputHidden id="irDemEmAberto" value="#{demandasEmAbertoController.tamanhoList}" />
+		    	 <table id="dtDemEmAberto" class="table table-striped  table-bordered dt-responsive table-condensed small tamanhoTotal">
+		            <thead>
+		                <tr class="bg-cinza">
+		                  <th class="text-center" >Caixa Demandada</th>
+		                  <th class="text-center" >Assunto</th>
+		                  <th class="text-center" >Nº da Demanda</th>
+		                  <th class="text-center" >Prazo Vencimento</th>
+		               </tr>        
+		            </thead>
+		            <tbody>
+	                	<ui:repeat var="item" value="#{demandasEmAbertoController.listaDemandasDTO}">
+			                <tr>
+			                    <td class="text-center">#{item.areaDemandateAnterior}</td>
+			                    <td>#{item.assunto}</td>
+			                    
+			                    <td class="text-right">
+			                    	<h:commandLink id="idNumerSiarg" value="#{item.numeroDemandaFormatado}" action="#{acompanhamentoController.redirectTratarDemanda(item.numeroDemanda)}" />
+			                    </td>
+			                    <td>
+			                    	<span class="hide">#{item.dtPrazoVencimentoOrdenacao}</span>
+			                    	<h:outputText rendered="#{item.situacaoVencimento lt 0}" styleClass="fa fa-circle text-green"/>
+			                    	<h:outputText rendered="#{item.situacaoVencimento eq 0}" styleClass="fa fa-circle text-orange"/>
+			                    	<h:outputText rendered="#{item.situacaoVencimento gt 0}" styleClass="fa fa-circle text-red"/>
+			                    	#{item.dtPrazoVencimento}
+			                    </td>
+			                </tr>
+	                	</ui:repeat>
+		            </tbody>
+		        </table> 
+			<script type="text/javascript">data();</script>
+			<script type="text/javascript">montarDataTable();</script>  
+			</p:outputPanel>
+		</h:form>
+
+	</ui:define>
+</ui:composition>

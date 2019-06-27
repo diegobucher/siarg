@@ -1,0 +1,299 @@
+<ui:composition template="/WEB-INF/templates/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:param name="breadcrumbs" value="#{bundle['geral.breadcrumb.home']}" />
+
+	<ui:define name="html-head">
+		<h:outputStylesheet library="css" name="font-awesome.min.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="bootstrap-multiselect.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="summernote.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="datatables.min.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="configurar-fluxo.css"></h:outputStylesheet>
+
+		<h:outputScript library="js" name="datatables.min.js"></h:outputScript>
+		<h:outputScript library="js" name="summernote.min.js"></h:outputScript>
+		<h:outputScript library="js" name="summernote-pt-BR.min.js"></h:outputScript>
+		<h:outputScript library="js" name="bootstrap-multiselect.js"></h:outputScript>
+		<h:outputScript library="js" name="jquery.mask.min.js" />
+		
+		<h:outputScript library="js" name="configurar-fluxo.js"></h:outputScript>
+
+		
+	</ui:define>
+	
+	<ui:define name="conteudo-principal">
+		
+  		 <ol class="breadcrumb">
+            <li><strong>Você está em:</strong> </li>
+            <li>Cadastro <span class="caret-left"></span></li>
+            <li>Cadastro Assunto <span class="caret-left"></span></li>
+            <li>Configurar Fluxo</li>
+            
+        </ol>
+        
+        <h1>Configurar Fluxo</h1>
+		<h:form id="formFluxo" prependId="false" styleClass="form-inline">
+	        
+			<div>
+				<!-- 
+		    	<label class="checkbox-inline">
+		    	  <h:selectBooleanCheckbox id="idContratoObrigatorio" value="#{cadastrarAssuntoFluxoController.assunto.contrato}">		    	   		    	   
+		    	  </h:selectBooleanCheckbox>
+		    	   Contrato Obrigatório
+		    	</label>
+		    	 -->
+				
+				<ui:repeat var="camposObrigatorios"
+					value="#{cadastrarAssuntoFluxoController.camposObrigatoriosList}"
+					varStatus="status">
+					<tr>
+						<td class="text-nowrap"><label class="checkbox-inline">
+								<h:selectBooleanCheckbox value="#{camposObrigatorios.marcado}" >
+									<p:ajax update="inpQtd" listener="#{cadastrarAssuntoFluxoController.limparCheck(camposObrigatorios)}"/>
+								</h:selectBooleanCheckbox>
+								#{camposObrigatorios.nome}
+								<h:inputText  id="inpQtd" maxlength="2" size="2" onkeypress="return somenteNumero(event)" onchange="overSomenteNumeros(this); "
+		    							value="#{camposObrigatorios.quantidade}" disabled="#{!camposObrigatorios.marcado}" required="#{!camposObrigatorios.marcado}" placeholder="Qtd"/>
+						</label>
+						</td>
+					</tr>
+				</ui:repeat>			 			 
+				 
+	        </div>
+	        
+	        
+	        <h2>Categoria: #{cadastrarAssuntoFluxoController.arvoreAssuntoStr}</h2>
+	        
+	        <div class="row">
+	        	<div class="col-md-12">
+					
+					<h:messages id="message" errorClass="alert alert-danger" styleClass="messages"
+						infoClass="alert alert-success" warnClass="alert alert-info"
+						showDetail="false" globalOnly="true" />
+						
+	        		
+        			<div class="form-group">
+						<label for="assunto" class="obrigatorio">Assunto</label><br/>
+						<h:inputText id="assunto" value="#{cadastrarAssuntoFluxoController.assunto.nome}" styleClass="form-control assunto" placeholder="Nome do Assunto"
+							disabled="#{not empty cadastrarAssuntoFluxoController.assunto.id}"/>
+					</div>
+						
+                    <div class="form-group">
+                        <label for="resp_assunto" class="obrigatorio">Responsável pelo Assunto</label><br/>
+                        <h:selectOneMenu id="responsavel" styleClass="form-control resp_assunto" 
+		                 	converter="omnifaces.SelectItemsConverter"
+		                 	value="#{cadastrarAssuntoFluxoController.assunto.caixaPostal}">
+		                 	<f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+		                 	<f:selectItems var="item"
+		                 		value="#{cadastrarAssuntoFluxoController.caixaPostalResponsavelList}" 
+		                 		itemLabel="#{item.sigla}" itemValue="#{item}">
+		                 	</f:selectItems>
+		                 	<p:ajax update="fluxoDemaisDemandantes" process="@this"/>
+		                 </h:selectOneMenu>
+	                 
+                    </div>
+	                    
+                    <div class="form-group">
+                        <label for="prazo_dias" class="obrigatorio">Prazo (dias)</label><br/>
+                        <h:inputText id="prazo_dias" value="#{cadastrarAssuntoFluxoController.assunto.prazo}" styleClass="form-control prazo_dias numeric" placeholder="0">
+			                 	<p:ajax update="fluxoDemaisDemandantes" process="@this"/>
+                        </h:inputText>
+                        
+                    </div>
+	
+                    <div class="form-group">
+                        <label for="situacao" class="">Status</label><br/>
+                        <h:selectOneMenu id="situacao" value="#{cadastrarAssuntoFluxoController.assunto.ativo}" class="form-control situacao" >
+                        	<f:selectItem itemValue="#{true}" itemLabel="Ativo"/>
+                        	<f:selectItem itemValue="#{false}" itemLabel="Inativo"/>
+                        </h:selectOneMenu>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="permissao" class="">Permissão</label><br/>
+                        <h:selectOneMenu id="permissao" value="#{cadastrarAssuntoFluxoController.assunto.permissaoAbertura}" class="form-control permissao">
+                           	<f:selectItem itemValue="#{true}" itemLabel="Todos podem abrir"/>
+                        	<f:selectItem itemValue="#{false}" itemLabel="Somente gestores podem abrir"/>                   
+                        </h:selectOneMenu>
+                    </div>
+
+
+					<h2>Caixas Postais autorizadas a visualizar demandas deste
+						assunto(Com Cópia)</h2>
+
+					<div class="form-group">
+
+						<h:selectManyMenu id="observadoresAssunto"
+							styleClass="form-control caixas_postais"
+							converter="omnifaces.SelectItemsConverter"
+							value="#{cadastrarAssuntoFluxoController.caixaPostalObservadorSelecionadosList}">
+							<f:selectItems var="item"
+								value="#{cadastrarAssuntoFluxoController.caixaPostalObservadorList}"
+								itemLabel="#{item.sigla}" itemValue="#{item}">
+							</f:selectItems>
+						</h:selectManyMenu>
+
+					</div>
+
+					<br /> <br />
+
+					<h:inputHidden id="codigoHtml" value="#{cadastrarAssuntoFluxoController.editorContent}"/>
+               
+                	<label class="">Descrição Padrão</label><br/>
+                
+	                <div id="editor"></div>
+	               	<p:remoteCommand name="rmcSetEditorContent"
+						action="#{cadastrarAssuntoFluxoController.setEditorContentFromRemoteCommand()}"
+						update=":formFluxo:codigoHtml">
+					</p:remoteCommand>
+	                
+	                <h2>Fluxo quando o demandante é pré-selecionado</h2>
+	                
+	                <label class="">Unidades que seguirão o fluxo pré-selecionado</label><br/>
+	                
+	                <div class="form-group">
+	                        <h:selectManyMenu id="demandantes" styleClass="form-control caixas_postais" 
+		                 	converter="omnifaces.SelectItemsConverter"
+		                 	value="#{cadastrarAssuntoFluxoController.unidadeDemandanteSelecionadaList}">
+		                 	<f:selectItems var="item"
+		                 		value="#{cadastrarAssuntoFluxoController.unidadeDemandanteDisponivelList}" 
+		                 		itemLabel="#{item.sigla}" itemValue="#{item}">
+		                 	</f:selectItems>
+		                 </h:selectManyMenu>
+	                  </div>
+	                <br/> <br/>
+		
+					<h:panelGroup id="fluxoDestino" layout="block" styleClass="atualizar">
+						
+		                <div class="form-group">
+	                      <label for="unidade_destino">Caixa Postal Destino</label><br/>
+	                      <h:selectOneMenu id="unidade_destino" styleClass="form-control unidade_destino" 
+			                 	converter="omnifaces.SelectItemsConverter"
+			                 	value="#{cadastrarAssuntoFluxoController.fluxoEdicao.caixaPostal}">
+			                 	<f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+			                 	<f:selectItems var="item"
+			                 		value="#{cadastrarAssuntoFluxoController.caixaPostalDestinoList}" 
+			                 		itemLabel="#{item.sigla}" itemValue="#{item}">
+			                 	</f:selectItems>
+			                 </h:selectOneMenu>
+		                </div>
+		
+		                <div class="form-group">
+		                    <label for="prazo_dias_2">Prazo (dias)</label><br/>
+		                    <h:inputText value="#{cadastrarAssuntoFluxoController.fluxoEdicao.prazo}" styleClass="form-control prazo_dias numeric" />
+		                </div>
+		                
+						<div class="form-group">
+		                    <label for="ordem">Ordem</label><br/>
+<!-- 							<h:inputText value="#{cadastrarAssuntoFluxoController.fluxoEdicao.ordem}" styleClass="form-control" disabled="true" style="width: 70px;"/> -->
+							
+							 <h:selectOneMenu styleClass="form-control" 
+			                 	value="#{cadastrarAssuntoFluxoController.ordemFluxo}">
+			                 	<f:selectItems var="item"
+			                 		value="#{cadastrarAssuntoFluxoController.ordemFluxoList}" 
+			                 		itemLabel="#{item}" itemValue="#{item}">
+			                 	</f:selectItems>
+			                 </h:selectOneMenu>
+							
+							
+		                    
+		                </div>
+		                
+						<div class="btn-group">
+							<ui:fragment rendered="#{empty cadastrarAssuntoFluxoController.fluxoEdicao.referenciaTransiente}">
+								<h:commandLink actionListener="#{cadastrarAssuntoFluxoController.adicionarFluxoAssunto()}" styleClass="btn btn-primary">
+									Incluir
+									<p:ajax update="message @(.atualizar)" process="@(.atualizar)" oncomplete="validarFluxoAssunto(xhr, status, args)"/>
+								</h:commandLink>
+			                	<button id="" type="button" class="btn btn-primary" disabled="disabled">Alterar</button>
+							</ui:fragment>
+							<ui:fragment rendered="#{not empty cadastrarAssuntoFluxoController.fluxoEdicao.referenciaTransiente}">
+								<button id="" type="button" class="btn btn-primary" disabled="disabled">Incluir</button>
+								<h:commandLink actionListener="#{cadastrarAssuntoFluxoController.alterarFluxoAssunto()}" styleClass="btn btn-primary">
+									Alterar
+									<p:ajax update="message @(.atualizar)" process="@(.atualizar)" oncomplete="validarFluxoAssunto(xhr, status, args)"/>
+								</h:commandLink>
+							</ui:fragment>
+							
+		                	
+		                	<h:commandLink actionListener="#{cadastrarAssuntoFluxoController.limparFluxoAssunto()}" styleClass="btn btn-primary">
+								Limpar
+								<p:ajax update="@(.atualizar)" process="@this" oncomplete="carregarMascaras()"/>
+							</h:commandLink>
+		                	
+							<ui:fragment rendered="#{empty cadastrarAssuntoFluxoController.fluxoEdicao.referenciaTransiente}">
+								<button id="" type="button" class="btn btn-primary" disabled="disabled">Excluir</button>
+		                	</ui:fragment>
+		                	<ui:fragment rendered="#{not empty cadastrarAssuntoFluxoController.fluxoEdicao.referenciaTransiente}">
+		                		<h:commandLink actionListener="#{cadastrarAssuntoFluxoController.excluirFluxoAssunto()}" styleClass="btn btn-primary">
+									Excluir
+									<p:ajax update="@(.atualizar)" process="@(.atualizar)" oncomplete="carregarMascaras()"/>
+								</h:commandLink>
+		                	</ui:fragment>
+						</div>
+					</h:panelGroup>
+	
+					<h:panelGroup id="desenhoFluxo" layout="block" styleClass="row atualizar">
+<!-- 	                <div class="row atualizar"> -->
+						<div class="col-md-12">
+							<div class="panel panel-default panel-dados margin-top">
+								<div class="panel-body">
+									<ol class="fluxoDemanda">
+									
+										<ui:repeat var="fluxo" value="#{cadastrarAssuntoFluxoController.fluxoAssuntoPreDefinido}" varStatus="status">
+											<li class="#{cadastrarAssuntoFluxoController.getClasseCaixaSelecionada(fluxo)}">
+											
+												<h:commandLink actionListener="#{cadastrarAssuntoFluxoController.editarFluxoAssunto(fluxo)}">
+													#{fluxo.caixaPostal.sigla} <strong>#{fluxo.prazo} dias úteis</strong>
+													<p:ajax update="@(.atualizar)" process="@this" oncomplete="carregarMascaras()"/>
+												</h:commandLink>
+											
+											</li>
+										</ui:repeat>
+									</ol>
+								</div>
+							</div>
+						</div>
+<!-- 					</div> -->
+					</h:panelGroup>					
+						
+					<h2>Fluxo Demais Demandantes:</h2>
+					<h:panelGroup id="fluxoDemaisDemandantes" styleClass="row" layout="block">
+<!-- 					<div class="row"> -->
+						<div class="col-md-12">
+							<div class="panel panel-default panel-dados margin-top">
+								<div class="panel-body">
+									<ol class="fluxoDemanda">
+										<li class=""><a>DEMANDANTE</a></li>
+										<li class=""><a>#{cadastrarAssuntoFluxoController.assunto.caixaPostal.sigla} <strong>#{cadastrarAssuntoFluxoController.assunto.prazo} dias úteis</strong></a></li>
+									</ol>
+								</div>
+							</div>
+						</div>
+<!-- 					</div> -->
+					</h:panelGroup>
+					
+					<hr/>
+	
+		                
+	                <a class="btn btn-primary" onclick="salvar()">Salvar</a> 
+					<a class="btn btn-warning" onclick="$('#btnCancelarHidden').click()">Cancelar</a>
+
+                	<p:remoteCommand name="rmcAtualizaEditorSalvar"
+						action="#{cadastrarAssuntoFluxoController.setEditorContentFromRemoteCommand()}"
+						update=":formFluxo:codigoHtml"
+						oncomplete="$('#btnSalvarHidden').click();">
+					</p:remoteCommand>
+	                <h:commandLink id="btnSalvarHidden"  action="#{cadastrarAssuntoFluxoController.salvar()}" value="Salvar" styleClass="hide"/>
+	                
+	                <h:commandLink id="btnCancelarHidden" action="#{cadastrarAssuntoFluxoController.cancelar()}" value="Cancelar" styleClass="hide"/>
+				
+	            </div>
+	        </div> 
+	  	</h:form>
+	</ui:define>
+</ui:composition>

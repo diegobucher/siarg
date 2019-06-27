@@ -1,0 +1,523 @@
+<ui:composition template="/WEB-INF/templates/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:o="http://omnifaces.org/ui">
+	
+	<ui:param name="controller" value="#{inclusaoDemandaController}" />
+	
+	<ui:define name="html-head">
+		<h:outputStylesheet library="css" name="font-awesome.min.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="bootstrap-multiselect.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="summernote.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="incluir-demanda.css"></h:outputStylesheet>
+		
+		<h:outputScript library="js" name="summernote.min.js"></h:outputScript>
+    	<h:outputScript library="js" name="summernote-pt-BR.min.js"></h:outputScript>
+		<h:outputScript library="js" name="bootstrap-multiselect.js"></h:outputScript>
+    	<h:outputScript library="js" name="bootstrap-filestyle.min.js"></h:outputScript>
+    	<h:outputScript library="js" name="messages.js"></h:outputScript>
+    	<h:outputScript library="js" name="incluir-demanda.js"></h:outputScript>
+    	<h:outputScript library="js" name="maskIt.js" />
+	</ui:define>
+	
+	<ui:define name="info-unidade">
+		<div class="navbar-form navbar-right">
+			Unidade: <span class="form-control" id="perfil">#{controleAcesso.unidadeSelecionadaDTO.sigla}</span>
+        </div>
+	</ui:define>
+	
+	<ui:define name="breadcrumb">
+		<ol class="breadcrumb">
+            <li><strong>Você está em:</strong> </li>
+            <li>Demanda <span class="caret-left"></span></li>
+            <li><a href="#">Inclusão</a><span class="caret-left"></span></li>
+            <li class="active">Incluir Demanda</li>
+        </ol>
+	</ui:define>
+		
+	<ui:define name="conteudo-principal">
+		
+		<!-- begin-of: modal -->
+		<div class="modal fade" id="mdlAssunto" data-cancelable="false" role="dialog">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title">Assunto</h4> 
+					</div>
+					<div class="modal-body">
+						
+						<!-- begin-of: message -->
+						<div id="modal-message"></div>
+						
+						<section class="sec-assuntos">
+							<!-- begin-of: filtro -->
+							<div class="row">
+								<div class="col-md-6">
+									<div class="input-group">
+										<input type="text" class="form-control" id="busca" placeholder="Pesquisar Assunto" />
+										<div class="input-group-btn">
+											<button class="btn btn-primary btn-search-assunto" type="button" title="Clique aqui para pesquisar">
+												<i class="glyphicon glyphicon-search"></i>
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+							<h:form id="frmArvore">
+								<!-- begin-of: treeview -->
+								<div class="tree">
+									<ul>
+										<!-- begin-of: nível 0 -->
+										<ui:repeat var="nivel0" value="#{controller.arvoreAssunto}">
+											<li>
+												<span title="Abrir"><i class="fa fa-folder"></i> #{nivel0.nome}</span>
+												<ul>
+													<!-- begin-of: nível 1 -->
+													<ui:repeat var="nivel1" value="#{nivel0.assuntosList}">
+														<li style="display:none">
+															<span title="Abrir" data-id="#{nivel1.id}" data-prazo="#{nivel1.prazo}" data-responsavel="#{controller.demandante.equals(nivel1.caixaPostal)}"><i class="fa #{empty nivel1.assuntosList ? 'fa-file-o' : 'fa-folder'}"></i> #{nivel1.nomeEResponsavel}</span>
+															<ui:fragment rendered="#{!empty nivel1.assuntosList}">
+																<ul>
+																	<!-- begin-of: nível 2 -->
+																	<ui:repeat var="nivel2" value="#{nivel1.assuntosList}">
+																		<li style="display:none">
+																			<span title="Abrir" data-id="#{nivel2.id}" data-prazo="#{nivel2.prazo}" data-responsavel="#{controller.demandante.equals(nivel2.caixaPostal)}"><i class="fa #{empty nivel2.assuntosList ? 'fa-file-o' : 'fa-folder'}"></i> #{nivel2.nomeEResponsavel}</span>
+																			<ui:fragment rendered="#{!empty nivel2.assuntosList}">
+																				<ul>
+																					<!-- begin-of: nível 3 -->
+																					<ui:repeat var="nivel3" value="#{nivel2.assuntosList}">
+																						<li style="display:none">
+																							<span data-id="#{nivel3.id}" data-prazo="#{nivel3.prazo}" data-responsavel="#{controller.demandante.equals(nivel3.caixaPostal)}"><i class="fa fa-file-o"></i> #{nivel3.nomeEResponsavel}</span>
+																						</li>
+																					</ui:repeat>
+																				</ul>
+																			</ui:fragment>
+																		</li>
+																	</ui:repeat>
+																</ul>
+															</ui:fragment>
+														</li>
+													</ui:repeat>
+												</ul>
+											</li>
+										</ui:repeat>
+									</ul>
+								</div>
+							</h:form>
+						</section>
+						
+						<section class="sec-unidades" style="display:none"> 
+						
+							<h:form id="frmUnidade" styleClass="form-inline margin-bottom">
+								<div class="form-group">
+		    						<label for="prazo" class="obrigatorio">Prazo para atendimento da demanda (em dias úteis):</label>
+		    						<input type="text" id="prazo" maxlength="3" class="prazo-demanda form-control text-center" 
+		    							onkeypress="return somenteNumero(event)" onchange="overSomenteNumeros(this);" />
+		 						 </div>
+		 					</h:form>
+							
+							<h:form id="frmCaixaPostal">		 						 
+		 						 <div class="panel-group" id="accordion">
+		 						 	
+		 						 	<o:importConstants type="br.gov.caixa.gitecsa.siarg.enumerator.TipoUnidadeEnum" />
+		 						 	
+		 						 	<!-- begin-of: loop unidades -->
+		 						 	<ui:repeat var="agrupamento" varStatus="elm" value="#{controller.agrupamentoCaixaPostal.orderedValues}">
+		 						 	
+			 						 	<div class="panel panel-default">
+			 						 		<div class="panel-heading">
+				                                <h4 class="panel-title">
+				                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse#{elm.index}">#{agrupamento.key}</a>
+				                                </h4>
+				                            </div>
+			                            
+				                            <div id="collapse#{elm.index}" class="panel-collapse collapse ">
+				                            	<div class="panel-body">
+				                            	
+				                            		<div class="row">
+				                            			
+				                            			<div class="col-md-3">
+				                                            <div class="checkbox checkbox_assunto">
+				                                                <label><input type="checkbox" class="check-all" />Todas</label>
+				                                            </div>
+				                                        </div>
+				                                        
+				                                        <!-- begin-of: loop caixas-postais -->
+				                                        <ui:repeat var="caixa" value="#{agrupamento.values}">
+					                                        <div class="col-md-3">
+					                                            <div class="checkbox checkbox_assunto">
+					                                                <label><input type="checkbox" class="check-item" value="#{caixa.id}" />#{caixa.sigla}</label>
+					                                            </div>
+					                                        </div>
+				                                        </ui:repeat>
+				                                        <!-- end-of: loop caixas-postais -->
+				                                        
+				                            		</div>
+				                            	</div>
+				                            </div>
+		 						 		</div>
+		 						 	</ui:repeat>
+		 						 	<!-- end-of: loop unidades -->
+		 						 </div>
+							</h:form>
+						</section>
+					
+						<section class="sec-resumo" style="display:none">
+              
+		                    <div class="row">
+		                        <div class="col-md-12">
+		                            <div class="alert alert-info">
+		                                <p>Unidade(s) selecionada(s): <br/>
+		                                    <span class="resumo-caixas-postais"></span>
+		                                </p>
+		                                <p>Deseja prosseguir com abertura para essa(s) unidade(s)?</p>
+		                            </div>
+		                        </div>    
+		                    </div>
+		              </section>
+					</div>
+					<div class="modal-footer">
+						<!-- begin-of: botões -->
+                		<button type="button" class="btn btn-primary btn-step1-concluir disabled" disabled="disabled">Concluir</button>
+                		<button type="button" class="btn btn-primary btn-step2-concluir" style="display: none;">Concluir</button>
+                		<button type="button" class="btn btn-primary btn-step3-concluir" style="display: none;">Sim</button>
+		                        
+                		<button type="button" class="btn btn-warning btn-step1-voltar">Voltar</button>
+                		<button type="button" class="btn btn-warning btn-step2-voltar" style="display: none;">Voltar</button>
+                		<button type="button" class="btn btn-warning btn-step3-voltar" style="display: none;">Não</button>
+              		</div>
+				</div>
+			</div>
+		</div>
+		<!-- end-of: modal -->
+		
+		<h:form id="frmDemanda" enctype="multipart/form-data"  prependId="false" acceptcharset="utf-8">
+		
+			<h:panelGroup id="pnlDadosDemanda" layout="block">
+				<h:inputHidden id="codigoHtml" value="#{controller.editorContent}"/>
+			
+				<h1>Incluir Demanda</h1>
+			
+				
+				<h:messages id="message" errorClass="alert alert-danger"
+					infoClass="alert alert-success" warnClass="alert alert-info"
+					showDetail="false" />
+				
+				<h2>Dados do Assunto</h2>
+				
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-default panel-dados">
+							<div class="panel-body">
+								<h4>Assunto:</h4>
+								<!-- begin-of: assunto -->
+								<h:panelGroup id="pnlAssunto" layout="block">
+									<div class="col-md-10">
+										<ol class="fluxoAssunto">
+											<ui:repeat var="assunto" varStatus="status" value="#{controller.hierarquiaAssuntoSelecionado}">
+												<li class="#{status.last ? 'active':''}">#{assunto.nome}</li>
+											</ui:repeat>
+										</ol>
+									</div>
+									<div class="col-md-2">
+										<button class="btn btn-primary pull-right btn-modal-assunto">Alterar Assunto</button>
+									</div>
+								</h:panelGroup>
+								<!-- end-of: assunto -->
+							</div>
+						</div>
+					</div>
+				</div>
+	
+				<div class="row">
+					<!-- begin-of: demandante -->
+					<div class="col-md-3">
+						<div class="panel panel-default panel-dados">
+		                    <div class="panel-body">
+		                        <h4>Demandante:</h4>
+		                        <h:selectOneMenu id="demanda" styleClass="form-control comboBox" 
+		                        	converter="omnifaces.SelectItemsConverter"
+		                        	value="#{controller.demandante}">
+		                        	<f:selectItems var="item"
+		                        		value="#{controller.caixaPostalList}" 
+		                        		itemLabel="#{item.sigla}" itemValue="#{item}">
+		                        	</f:selectItems>
+		                        	<f:ajax event="change" listener="#{controller.onChangeDemandante}"
+		                        		onevent="app.onCompleteChangeDemandante" 
+		                        		render=":frmArvore :frmUnidade :frmCaixaPostal pnlAssunto pnlPrazo limite pnlDestino pnlFluxo pnlCopia pnlButton message" />
+		                        </h:selectOneMenu>
+		                    </div>
+		                </div>
+					</div>
+					
+					<!-- begin-of: prazo -->
+					<div class="col-md-3">
+						<div class="panel panel-default panel-dados">
+							<div class="panel-body">
+								<h4>Prazo:</h4>
+								<h:panelGroup id="pnlPrazo" layout="block">#{controller.prazo} dias úteis</h:panelGroup>
+							</div>
+						</div>
+					</div>
+					<!-- begin-of: data limite -->
+					<div class="col-md-3">
+						<div class="panel panel-default panel-dados">
+							<div class="panel-body">
+								<h4>Limite:</h4>
+								<h:outputText id="limite" value="#{controller.dataLimite}">
+									<f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR" />
+								</h:outputText>
+							</div>
+						</div>
+					</div>
+					<!--  begin-of: destino -->
+					<div class="col-md-3">
+						<div class="panel panel-default panel-dados">
+							<div class="panel-body">
+								<h4>Destino:</h4>
+								<h:panelGroup id="pnlDestino" layout="block">#{controller.destino}</h:panelGroup>
+							</div>
+						</div>
+					</div> 
+				</div>
+				             	
+             	<ui:repeat var="campoObrigatorio" value="#{controller.camposObrigatoriosList}" varStatus="status" id="repeat">
+	             	<p:outputPanel id="pnlInsertCampo">
+		             	<div class="row">
+			             	<div class="col-md-12">
+			             		<div class="panel panel-default panel-dados">
+				             		<div class="panel-body">
+				             			<h4>#{campoObrigatorio.nome}: <span style="color:red">*</span></h4>
+				             			<div class="col-md-2">
+						                	<div class="input-group">
+						                		<h:inputText id="idInserirCampo" type="text" class="form-control" placeholder="#{campoObrigatorio.descricao}" value="#{campoObrigatorio.demandaCampo}"
+						                			maxlength="#{empty campoObrigatorio.mascara ? campoObrigatorio.tamanho : campoObrigatorio.mascara.length()}" 
+								         			onkeyup="aplicarMascaraCampo(this, event, '#{campoObrigatorio.mascara}', '#{campoObrigatorio.tipo.typeHtml}')"
+								         			onchange="verificarMascaraValida(this, '#{campoObrigatorio.mascara}', '#{campoObrigatorio.tipo.typeHtml}')"/>
+									         	<div class="input-group-btn">
+						                        	<p:commandLink styleClass="btn btn-primary" type="button" title="Inserir #{campoObrigatorio.nome}" update="message pnlInsertCampo" ajax="false"
+						                        	 	action="#{controller.adicionarCampo(campoObrigatorio)}">
+						                        		<span class="fa fa-plus"/>
+						                        	</p:commandLink>
+						                        </div>	
+						                	</div>
+							             </div>
+							             <div class="col-md-10">
+						                		<ui:repeat var="campo" value="#{controller.obterListaCamposObrigatorios(campoObrigatorio.id)}">
+						                			<p:outputLabel value="#{campo.descDemandaCampoFormatada}" rendered="#{campo.camposObrigatorios.id == campoObrigatorio.id}" style="margin-left: 5px;"/>					                		
+						                    		<h:commandLink title="Excluir Campo" actionListener="#{controller.removerCampo(campo)}" rendered="#{campo.camposObrigatorios.id == campoObrigatorio.id}">
+						                    			<span class="fa fa-times-circle text-red"></span>
+						                    		</h:commandLink>
+						                		</ui:repeat>
+						            	</div>
+				             		</div>
+			             		</div>
+			             	</div>
+		             	</div>
+	             	</p:outputPanel>
+             	</ui:repeat>
+				
+				<!-- IMPLEMENTAÇÕES DE Nº CONTRATO: OS041  -->
+				<!-- <ui:fragment rendered="#{controller.habilitaContrato}">
+					<p:outputPanel id="pnlInsertContrato" >
+						<div class="row">
+							<div class="col-md-12">
+								<div class="panel panel-default panel-dados">
+									<div class="panel-body">
+										<h4>Nº Contrato:</h4>
+										<div class="col-md-2">
+						                	<div class="input-group">
+						                		<h:inputText id="idInserirContrato" type="text" class="form-control" maxlength="10" 
+						                						placeholder="Inserir Nº Contrato" value="#{controller.contratoTemp}"/>
+						                        <div class="input-group-btn">
+						                        	<h:commandLink styleClass="btn btn-primary" type="button" title="Inserir Contrato">
+						                        		<span class="fa fa-plus" />
+						                        		<p:ajax process="@form" update="message pnlInsertContrato" 
+						                        				resetValues="true"	listener="#{controller.adicionarContrato()}"/>
+						                        	</h:commandLink>
+						                        </div>
+						                    </div>
+						             	</div>    
+					                    <div class="col-md-10">
+						                	<ol class="incluir_contrato">
+						                		<ui:repeat var="contrato" value="#{controller.instance.contratosList}">					                		
+							                    	<li class="">#{contrato.numeroContrato}
+							                    		<h:commandLink title="Excluir Contrato" actionListener="#{controller.removerContrato(contrato)}">
+							                    			<span class="fa fa-times-circle text-red"></span>
+							                    		</h:commandLink>
+							                    	</li>
+						                		</ui:repeat>
+											</ol>
+						            	</div>
+					             	</div>
+								</div>
+							</div>
+							<script type="text/javascript">mascaraContrato();</script>
+						</div>				
+					</p:outputPanel>
+				</ui:fragment>-->
+	
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-default panel-dados">
+							<div class="panel-body">
+								<h4>Fluxo e atores envolvidos na demanda:</h4>
+								<h:panelGroup id="pnlFluxo" layout="block">
+									<ol class="fluxoDemanda">
+										<li>#{controller.demandante.sigla}</li>
+										
+										<o:importConstants type="br.gov.caixa.gitecsa.siarg.enumerator.TipoFluxoEnum" />
+										
+										<ui:fragment rendered="#{!TipoFluxoEnum.DEMANDANTE_RESPONSAVEL.equals(controller.tipoFluxoAssunto)}">
+											<ui:repeat var="fluxo" value="#{controller.fluxoListSemDemandante}">
+												<li>#{fluxo.caixaPostal.sigla} <strong>#{fluxo.prazo} dia(s) útil(eis)</strong></li>
+											</ui:repeat>
+										</ui:fragment>
+										
+										<ui:fragment rendered="#{TipoFluxoEnum.DEMANDANTE_RESPONSAVEL.equals(controller.tipoFluxoAssunto)}">
+											<li>#{controller.atoresDemanda} <strong>#{controller.prazo} dia(s) útil(eis)</strong></li>
+										</ui:fragment>
+									</ol>
+								</h:panelGroup>
+							</div>
+						</div>
+					</div>
+				</div>
+	
+				<div class="form-group">
+					<label for="titulo_demanda" class="obrigatorio">Título</label>
+					<h:inputText type="text" id="titulo" styleClass="form-control" placeholder="Título da Demanda" maxlength="150" value="#{controller.instance.titulo}" />
+				</div>
+				
+				<!-- begin:of html editor -->
+				<h:panelGroup id="pnlEditor" layout="block">
+					<label class="obrigatorio">Descrição</label>
+					<div id="editor"></div>
+				</h:panelGroup>
+				
+				<h:panelGroup id="pnlCopia" layout="block">
+					<div class="row">
+		                <div class="col-md-12">
+			                <div class="panel panel-default panel-dados">
+			                    <div class="panel-body">
+			                        <h4>Caixas Postais pré-definidas pelo responsável (com cópia):</h4>
+			                        <ol class="caixasPredefinidas">
+			                        	<ui:fragment rendered="#{empty controller.caixaPostalPredefinidaList}">
+			                        		<li><a href="#">Não existem caixas postais pré-definidas para o assunto selecionado (com cópia).</a></li>
+			                        	</ui:fragment>
+			                        	
+			                        	<ui:fragment rendered="#{!empty controller.caixaPostalPredefinidaList}">
+				                        	<ui:repeat var="item" value="#{controller.caixaPostalPredefinidaList}">
+				                            	<li><a href="#">#{item.sigla}</a></li>
+				                            </ui:repeat>
+			                            </ui:fragment>
+			                        </ol>
+			                    </div>
+			                </div>
+		                </div>
+		            </div>
+				
+					<div class="form-group">
+						<label for="caixas_postais">Caixas Postais autorizadas a visualizar esta demanda (Com Cópia):</label>
+						<h:selectManyMenu id="autorizadas" styleClass="form-control select-caixas-postais" 
+		                 	converter="omnifaces.SelectItemsConverter"
+		                 	value="#{controller.caixaPostalAutorizadaList}">
+		                 	<f:selectItems var="item"
+		                 		value="#{controller.caixaPostalObservadorList}" 
+		                 		itemLabel="#{item.sigla}" itemValue="#{item}">
+		                 	</f:selectItems>
+		                 </h:selectManyMenu>
+					</div>
+				</h:panelGroup>
+		
+			</h:panelGroup>
+
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<h:panelGroup id="pnlAnexo" styleClass="noupdate" layout="block">
+							<input type="hidden" id="filename" value="#{controller.anexo.fileName}"  />
+							<p:fileUpload id="anexo" allowTypes="/(\.|\/)(zip)/" mode="simple" 
+								value="#{controller.anexo}" skinSimple="false">
+							</p:fileUpload>
+							<span class="small">Só é permitido anexar arquivo compactado com extensão ZIP.</span>
+						</h:panelGroup>
+					</div>
+				</div>
+				
+				<div class="col-md-6">
+					<div class="form-group">
+						<button type="button" class="btn btn-warning btn-remove-file" title="Limpar anexo">
+							<span class="glyphicon glyphicon-remove"></span>
+						</button>
+					</div>
+				</div>
+				  
+			</div>
+			<hr/>
+			
+			<!-- begin-of: buttons -->
+			<h:panelGroup id="pnlButton" layout="block">
+			
+				<!-- salvar aberta/miunta -->
+				<button class="btn btn-primary margin-right btn-save">Incluir Demanda</button>
+				
+				<!-- salvar rascunho -->
+				<ui:fragment rendered="#{controller.canSalvarRascunho()}">
+					<button class="btn btn-warning margin-right btn-save-draft">Salvar Rascunho</button>
+				</ui:fragment>
+				
+			</h:panelGroup>
+			
+			<!-- hidden buttons -->
+			<h:commandButton styleClass="btn-fake hide"
+				update="message"
+				action="#{controller.salvar()}">
+			</h:commandButton>
+			
+			<h:commandButton styleClass="btn-fake-draft hide"
+				update="message"
+				action="#{controller.salvarRascunho()}">
+			</h:commandButton>
+		</h:form>
+		
+		<!-- Remote Commands -->
+		<h:form id="frmRMC">
+			<p:remoteCommand name="rmcSelecionarAssunto"
+				action="#{controller.selectAssuntoFromRemoteCommand()}"
+				oncomplete="app.onCompleteSelecionarAssunto()"
+				update=":frmDemanda:pnlDadosDemanda :frmDemanda:pnlButton">
+			</p:remoteCommand>
+			
+			<p:remoteCommand name="rmcSetEditorContent"
+				action="#{controller.setEditorContentFromRemoteCommand()}"
+				update=":frmDemanda:codigoHtml"
+				oncomplete="app.onSave()">
+			</p:remoteCommand>
+			
+			<p:remoteCommand name="rmcMarcarCaixasPostais"
+				action="#{controller.markCaixasPostaisFromRemoteCommand()}"
+				update=":frmDemanda:pnlDestino :frmDemanda:pnlFluxo">
+			</p:remoteCommand>
+			
+			<p:remoteCommand name="rmcSetPrazo"
+				action="#{controller.setPrazoFromRemoteCommand()}"
+				update=":frmDemanda:pnlPrazo :frmDemanda:limite">
+			</p:remoteCommand>
+			
+			<p:remoteCommand name="rmcGoBack"
+				action="#{controller.getCallbackUrl()}">
+			</p:remoteCommand>
+			
+			<p:remoteCommand name="rmcLimparAnexo"
+				action="#{controller.limparAnexo()}"
+				update=":frmDemanda:pnlAnexo"
+				oncomplete="app.onCompleteLimparAnexo()">
+			</p:remoteCommand>
+		</h:form>
+	</ui:define>
+	
+</ui:composition>

@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PeriodoPorAssunto" pageWidth="1080" pageHeight="595" orientation="Landscape" whenNoDataType="NoDataSection" columnWidth="1040" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isSummaryWithPageHeaderAndFooter="true" isIgnorePagination="true" uuid="bcbf179b-5ec5-4a76-a459-b96180737b4e">
+	<property name="ireport.zoom" value="3.2210200000000024"/>
+	<property name="ireport.x" value="903"/>
+	<property name="ireport.y" value="58"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<style name="Style1">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{qtdComparativo} < 0]]></conditionExpression>
+			<style forecolor="#FF0000"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="NOME_SISTEMA" class="java.lang.String"/>
+	<parameter name="NOME_UNIDADE" class="java.lang.String"/>
+	<parameter name="LOGO_CAIXA" class="java.lang.String"/>
+	<parameter name="DATA_INICIO" class="java.util.Date"/>
+	<parameter name="DATA_FIM" class="java.util.Date"/>
+	<parameter name="DATA_INICIO_PER_FINAL" class="java.util.Date"/>
+	<parameter name="DATA_FIM_PER_FINAL" class="java.util.Date"/>
+	<field name="areaDemandada" class="java.lang.String">
+		<fieldDescription><![CDATA[areaDemandada]]></fieldDescription>
+	</field>
+	<field name="nomeAssunto" class="java.lang.String">
+		<fieldDescription><![CDATA[nomeAssunto]]></fieldDescription>
+	</field>
+	<field name="qtdAbertaPeriodoInicial" class="java.lang.Long">
+		<fieldDescription><![CDATA[qtdAbertaPeriodoInicial]]></fieldDescription>
+	</field>
+	<field name="qtdFechadaPeriodoInicial" class="java.lang.Long">
+		<fieldDescription><![CDATA[qtdFechadaPeriodoInicial]]></fieldDescription>
+	</field>
+	<field name="qtdTotalPeriodoInicial" class="java.lang.Long">
+		<fieldDescription><![CDATA[qtdTotalPeriodoInicial]]></fieldDescription>
+	</field>
+	<field name="qtdTotalPeriodoFinal" class="java.lang.Long">
+		<fieldDescription><![CDATA[qtdTotalPeriodoFinal]]></fieldDescription>
+	</field>
+	<field name="qtdAbertaPeriodoFinal" class="java.lang.Long">
+		<fieldDescription><![CDATA[qtdAbertaPeriodoFinal]]></fieldDescription>
+	</field>
+	<field name="qtdFechadaPeriodoFinal" class="java.lang.Long">
+		<fieldDescription><![CDATA[qtdFechadaPeriodoFinal]]></fieldDescription>
+	</field>
+	<field name="qtdComparativo" class="java.lang.Long">
+		<fieldDescription><![CDATA[qtdComparativo]]></fieldDescription>
+	</field>
+	<pageHeader>
+		<band height="121" splitType="Stretch">
+			<image isUsingCache="true">
+				<reportElement x="19" y="13" width="90" height="20" isPrintWhenDetailOverflows="true" uuid="983c3c42-0e28-4435-9130-8df83ab06294"/>
+				<imageExpression><![CDATA[$P{LOGO_CAIXA}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="0" y="59" width="1040" height="15" uuid="962a70ff-b08f-4309-84f1-c8c076169fc1"/>
+				<box>
+					<pen lineWidth="1.25"/>
+					<topPen lineWidth="1.25"/>
+					<leftPen lineWidth="1.25"/>
+					<bottomPen lineWidth="1.25"/>
+					<rightPen lineWidth="1.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Relatório - Comparativo por Período por Assunto Todas Unidades]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="210" y="40" width="103" height="15" uuid="ffabf45d-252c-4359-b8f9-4ecf41ebd067"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Período Inicial:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="165" y="13" width="646" height="20" uuid="01127f76-abbd-4aff-a9a7-34395b4e83d1"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{NOME_SISTEMA}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="420" y="40" width="73" height="15" uuid="d109a2df-2874-4588-9dc5-469ce6a5439c"/>
+				<textElement textAlignment="Center">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DATA_FIM}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="395" y="40" width="25" height="15" uuid="601a5081-2b21-4cbd-9808-80b4b2c8efae"/>
+				<textElement textAlignment="Center">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[até]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="89" width="80" height="32" isPrintWhenDetailOverflows="true" uuid="87f3c6e4-3a34-4220-b636-29d1a58708b0">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph firstLineIndent="2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[Qtde Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="500" y="89" width="80" height="32" isPrintWhenDetailOverflows="true" uuid="1576ff01-6bc5-4466-b806-f5e4d8786043"/>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph firstLineIndent="2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[Em Aberto]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="740" y="89" width="80" height="32" isPrintWhenDetailOverflows="true" uuid="e2dbc460-0b5f-4993-ae35-35fba85a1c96">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph firstLineIndent="2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[Em Aberto]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="89" width="96" height="32" isPrintWhenDetailOverflows="true" uuid="5bf7e607-4c26-44e8-8bb0-12d6819bd007"/>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph firstLineIndent="2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[Caixa Demandada]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="96" y="89" width="324" height="32" isPrintWhenDetailOverflows="true" uuid="af329cc6-e337-4c9c-9c8c-4b815428a571"/>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph firstLineIndent="2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[Assunto]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="580" y="89" width="80" height="32" isPrintWhenDetailOverflows="true" uuid="ad4a62ee-0d4d-4ec9-9e96-ed401d3f5a00">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph firstLineIndent="2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[Fechadas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="660" y="89" width="80" height="32" isPrintWhenDetailOverflows="true" uuid="fab1dacf-9907-4217-b27e-98ef710da1b1"/>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph firstLineIndent="2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[Qtde Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="820" y="89" width="80" height="32" isPrintWhenDetailOverflows="true" uuid="a0b494fe-9b16-4df1-9e64-e3aab8ec7f63">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph firstLineIndent="2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[Fechadas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="900" y="89" width="140" height="32" isPrintWhenDetailOverflows="true" uuid="9da79404-234d-4634-9aaa-5a7f5ba9512e"/>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph firstLineIndent="2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[Período Final - Período Inicial]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="313" y="40" width="82" height="15" uuid="dd0e07fe-af64-470f-b371-2ba4cd7aea55"/>
+				<textElement textAlignment="Center">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DATA_INICIO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="420" y="74" width="240" height="15" uuid="9bbb2553-5167-4585-9fd3-21c541c38292"/>
+				<box>
+					<pen lineWidth="1.25"/>
+					<topPen lineWidth="1.25"/>
+					<leftPen lineWidth="1.25"/>
+					<bottomPen lineWidth="1.25"/>
+					<rightPen lineWidth="1.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Período Inicial]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="660" y="74" width="240" height="15" uuid="7977a43d-3c0f-4826-a875-6177acd684c7"/>
+				<box>
+					<pen lineWidth="1.25"/>
+					<topPen lineWidth="1.25"/>
+					<leftPen lineWidth="1.25"/>
+					<bottomPen lineWidth="1.25"/>
+					<rightPen lineWidth="1.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Período Final]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="900" y="74" width="140" height="15" uuid="9cbb5465-7a04-4de3-a693-6c1fe60586a1"/>
+				<box>
+					<pen lineWidth="1.25"/>
+					<topPen lineWidth="1.25"/>
+					<leftPen lineWidth="1.25"/>
+					<bottomPen lineWidth="1.25"/>
+					<rightPen lineWidth="1.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Comparativo]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="690" y="40" width="73" height="15" uuid="2751379e-1c6c-4304-8cb0-f7d8a06bfc8a"/>
+				<textElement textAlignment="Center">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DATA_FIM_PER_FINAL}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="583" y="40" width="82" height="15" uuid="e0df2d61-753e-4631-83d8-b76a3f75034a"/>
+				<textElement textAlignment="Center">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DATA_INICIO_PER_FINAL}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="510" y="40" width="73" height="15" uuid="6bf866e0-6f6f-4ac5-a803-69313ccd5d64"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Período Final:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="665" y="40" width="25" height="15" uuid="a26b5085-e314-4045-af5f-eb78313c7cf1"/>
+				<textElement textAlignment="Center">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[até]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="20">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" mode="Transparent" x="0" y="0" width="96" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="5a0f8647-b0ee-4968-a131-6f918be11b61"/>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<paragraph firstLineIndent="2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{areaDemandada}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" mode="Transparent" x="96" y="0" width="324" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" backcolor="#F0F0F0" uuid="fe287f01-a5fd-47cc-9b46-4b6dabb26dda"/>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<paragraph firstLineIndent="2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nomeAssunto}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" mode="Transparent" x="500" y="0" width="80" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" backcolor="#F0F0F0" uuid="5e7e8d6d-68c4-4d30-8317-b56a133ac09a"/>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<paragraph firstLineIndent="2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{qtdAbertaPeriodoInicial}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" mode="Transparent" x="580" y="0" width="80" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" backcolor="#F0F0F0" uuid="694f19e1-5ed4-4b0a-80a5-a344a6dc255c">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<paragraph firstLineIndent="2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{qtdFechadaPeriodoInicial}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" mode="Transparent" x="660" y="0" width="80" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" backcolor="#F0F0F0" uuid="fe86ef42-167c-4107-b420-32f44dab9c70"/>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<paragraph firstLineIndent="2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{qtdTotalPeriodoFinal}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" mode="Transparent" x="740" y="0" width="80" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" backcolor="#F0F0F0" uuid="e8909402-21d1-4eef-b740-c4f5899d6ebf">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<paragraph firstLineIndent="2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{qtdAbertaPeriodoFinal}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" mode="Transparent" x="820" y="0" width="80" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" backcolor="#F0F0F0" uuid="bcb3e477-8fa0-4b58-8043-95a394a9fb86">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<paragraph firstLineIndent="2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{qtdFechadaPeriodoFinal}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="true">
+				<reportElement key="" stretchType="RelativeToTallestObject" mode="Transparent" x="420" y="0" width="80" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" backcolor="#F0F0F0" uuid="947809f5-a217-4d50-b713-5d0379144ad4">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<paragraph firstLineIndent="2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{qtdTotalPeriodoInicial}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0" isBlankWhenNull="true">
+				<reportElement style="Style1" stretchType="RelativeToTallestObject" mode="Transparent" x="900" y="0" width="140" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" backcolor="#F0F0F0" uuid="3deca341-4584-49ed-830f-b521bdb8ad0c"/>
+				<box>
+					<leftPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<paragraph firstLineIndent="2" leftIndent="2" rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{qtdComparativo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,19 @@
+h3 {
+  color:#002aa8;
+  margin: 16px 0;
+  font:Arial, Helvetica, sans-serif;
+  font-size:18px; font-weight:bold;
+  padding-bottom:5px;
+  
+}
+
+.combo label{
+	font-weight: normal;
+    margin-left: 8px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.combo input	{
+	font-weight: normal;
+}

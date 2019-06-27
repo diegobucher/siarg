@@ -1,0 +1,49 @@
+@charset "utf-8";
+/*--------------------------------------------------------------------------------------------
+						|	layout básico	|
+--------------------------------------------------------------------------------------------- */
+
+/*-------------------------------------------------------------------------------------------------
+							|	Componentes	|
+--------------------------------------------------------------------------------------------------- */
+
+.msgErro {padding:8px; color:#F00; border:1px solid #F00; font-size:11px; font-weight:bold; background:#fde1e1; list-style-type: none; }
+.msgSucesso {padding:8px; color:#3d7726; border:1px solid #cbe9c2; font-size:11px; font-weight:bold; background:#eaefe8; list-style-type: none; }
+.msgLogin{ font: 11px Arial, Helvetica, sans-serif; color:#cc2626; font-style:italic; list-style-type: none; }
+
+
+.carregando{ height:100px; width:115px; border:1px solid #9BABCF; background:url(#{request.contextPath}/resources/imagens/carregando.gif) no-repeat -25px -30px; position:absolute; top:250px; left:46%; z-index:2100; display:none;}
+
+.carregando span{ position:absolute; top:70px; left:17px; font-weight:bold;}
+
+.col-width7{
+	width: 7%;
+}
+.col-width10{
+	width: 10%;
+}
+.col-width12{
+	width: 12%;
+}
+.col-width13{
+	width: 13%;
+}
+.col-width15{
+	width: 15%;
+}
+.col-width16{
+	width: 16%;
+}
+.col-width17{
+	width: 17%;
+}
+.col-width8{
+	width: 18%;
+}
+.col-width19{
+	width: 19%;
+}
+.col-width20{
+	width: 20%;
+}
+ 

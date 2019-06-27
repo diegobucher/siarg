@@ -1,0 +1,149 @@
+<ui:composition template="/WEB-INF/templates/template_sem_menu.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:param name="breadcrumbs" value="#{bundle['geral.breadcrumb.home']}" />
+	
+	<ui:define name="html-head">
+		<h:outputStylesheet library="css" name="selecionarCaixaPostal.css"></h:outputStylesheet>
+	</ui:define>
+
+	<ui:define name="conteudo-principal">
+		 <div class="row">
+			<div class="col-xs-offset-2  col-xs-8 col-sm-offset-4  col-sm-4 margin-login-top">
+                <div class="panel panel-default panel-dados">
+                    <div class="panel-body">
+                    
+                        <h:form>
+                        	<ui:fragment rendered="#{selecionarCaixaPostalController.abrangencia eq null || selecionarCaixaPostalController.flagExisteOcorrenciaNaoLida}">
+	                      	 	<h4 class="text-azul-caixa">Selecionar Abrangência:</h4>
+                        	</ui:fragment>
+                        	<ui:fragment rendered="#{!selecionarCaixaPostalController.flagExisteOcorrenciaNaoLida and selecionarCaixaPostalController.abrangencia ne null}">
+	                      	 	<h4 class="text-azul-caixa">Selecionar Caixa Postal:</h4>
+                        	</ui:fragment>
+
+                            <div class="form-group">
+                            
+                            	<label for="abrangencia">Abrangência</label>
+                                <h:selectOneMenu id="abrangencia" styleClass="form-control" disabled="#{selecionarCaixaPostalController.desabilitarComboAbrangencia()}"
+									converter="omnifaces.SelectItemsConverter"
+									value="#{selecionarCaixaPostalController.abrangencia}">
+									<f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+									<f:selectItems value="#{selecionarCaixaPostalController.abrangenciaList}"
+										itemValue="#{abran}" var="abran"
+										itemLabel="#{abran.nome}" />
+										<p:ajax event="change" listener="#{selecionarCaixaPostalController.onChangeAbrangencia()}" update="@form :formCarrosel"/>
+								</h:selectOneMenu>		
+                            </div>
+                            
+                            <ui:fragment rendered="#{!selecionarCaixaPostalController.flagExisteOcorrenciaNaoLida and selecionarCaixaPostalController.abrangencia ne null}">
+	                            <div class="form-group">
+	                            
+	                            	<label for="unidade">Unidade</label>
+	                                <h:selectOneMenu id="unidade" styleClass="form-control" disabled="#{selecionarCaixaPostalController.desabilitarComboUnidade()}"
+										converter="omnifaces.SelectItemsConverter"
+										value="#{selecionarCaixaPostalController.unidade}">
+										<f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+										<f:selectItems value="#{selecionarCaixaPostalController.unidadeList}"
+											itemValue="#{unidade}" var="unidade"
+											itemLabel="#{unidade.sigla}" />
+											<p:ajax event="change" listener="#{selecionarCaixaPostalController.onChangeUnidade()}" update="@form"/>
+									</h:selectOneMenu>		
+	                            </div>
+	
+	                        	<div class="form-group">
+	                                <label for="caixa_postal">Caixa Postal</label>
+	                                <h:selectOneMenu id="caixa_postal" styleClass="form-control" disabled="#{selecionarCaixaPostalController.desabilitarComboCaixaPostal()}"
+										converter="omnifaces.SelectItemsConverter"
+										value="#{selecionarCaixaPostalController.caixaPostal}">
+										<f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+										<f:selectItems value="#{selecionarCaixaPostalController.caixaPostalList}"
+											itemValue="#{caixa}" var="caixa"
+											itemLabel="#{caixa.sigla}" />
+										<p:ajax event="change" listener="#{selecionarCaixaPostalController.onChangeCaixaPostal()}" update="@form" oncomplete="redirectAcompanhar()"/>
+									</h:selectOneMenu>		
+									<p:remoteCommand action="#{selecionarCaixaPostalController.redirectAcompanhar()}" name="redirectAcompanhar"/>
+	                            </div>
+                            </ui:fragment>
+                            
+                             <ui:fragment rendered="#{selecionarCaixaPostalController.flagExisteOcorrenciaNaoLida}">
+	                             <div class="checkbox">
+	                                <label>
+	                                	<h:selectBooleanCheckbox id="confirmacao" value="#{selecionarCaixaPostalController.checkboxLida}" >
+	                                		<p:ajax listener="#{selecionarCaixaPostalController.confirmarLeituraOcorrencias()}" update="@form"/>
+	                                	</h:selectBooleanCheckbox>
+	                                	Confirmo que li a mensagem abaixo
+	                                </label>
+	                            </div>
+                             </ui:fragment>
+                        </h:form>   
+                    </div>
+                </div>
+            </div>            
+        </div>
+        
+        <h:form id="formCarrosel">
+	        <ui:fragment rendered="#{not empty selecionarCaixaPostalController.ocorrenciaList}">
+	        	<h:panelGroup id="divCarrosel" layout="block">
+	        	
+	<!-- 	         <div class="row"> -->
+		            <div class="col-sm-6 col-sm-offset-3 ">
+		
+		 				<div id="myCarousel" class="carousel slide" data-ride="carousel">
+		                    <ol class="carousel-indicators">
+		                    	
+		                    	<ui:repeat var="ocorrencia" value="#{selecionarCaixaPostalController.ocorrenciaList}" varStatus="status">
+			                    	<li data-target="#myCarousel" class="#{status.index == 0? 'active' : ''}"></li>
+		                    	</ui:repeat>                                                
+		                    </ol>
+		 				
+		                    <!--WRAPPER FOR SLIDES-->
+		                    <div class="well meuCarousel">
+		                        <div class="carousel-inner">
+		                        
+			                        <ui:repeat var="ocorrencia" value="#{selecionarCaixaPostalController.ocorrenciaList}" varStatus="status">
+			                        	  <div class="item #{status.index == 0? 'active' : ''}" >
+				                            <h2>#{ocorrencia.titulo}</h2>
+				                            <ul class="header_msg">
+				                                <li><span class="glyphicon glyphicon-time"></span> 
+				                                	<h:outputText value=" "/>
+													<h:outputText value="#{ocorrencia.dhPublicacao}">
+														<f:convertDateTime pattern="dd/MM/yyyy - HH:mm"/>
+													</h:outputText>
+				                                </li>
+				                                <li><span class="glyphicon glyphicon-home"></span> De: #{ocorrencia.unidade.sigla}</li>
+				                            </ul>                              
+											<div class="item_body">
+				                            <p>#{ocorrencia.conteudo}</p>
+				                        	</div>
+				                        </div>
+			                        </ui:repeat>
+		                        </div>
+		                        
+		                    </div>
+		                    <a href="#myCarousel" class="left carousel-control" data-slide="prev">
+		                    	<span class="glyphicon glyphicon-chevron-left text-azul-caixa"></span>
+		                        <span class="sr-only">Anterior</span>
+		                    </a>
+		
+		                    <a href="#myCarousel" class="right carousel-control" data-slide="next">
+		                    	<span class="glyphicon glyphicon-chevron-right text-azul-caixa"></span>
+		                        <span class="sr-only">Próximo</span>
+		                    </a>
+		
+		                </div>
+		                
+		            </div>
+	            </h:panelGroup>
+	<!-- 	        </div> -->
+	        
+	        </ui:fragment>
+        
+        </h:form>
+        
+	</ui:define>
+	
+</ui:composition>

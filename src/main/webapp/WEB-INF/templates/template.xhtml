@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:of="http://omnifaces.org/functions"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:caixa="http://java.sun.com/jsf/composite/caixa"
+	xmlns:pt= "http://xmlns.jcp.org/jsf/passthrough">
+<h:head>
+	<f:view contentType="text/html;charset=UTF-8" encoding="UTF-8" />
+	
+	<f:facet name="first">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta charset="UTF-8" />
+	</f:facet>
+
+	<title>#{bundle['geral.nomesistema']}</title> 
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<h:outputStylesheet library="css" name="bootstrap.min.css" />
+	<h:outputStylesheet library="css" name="font-awesome.min.css"/>
+	<h:outputStylesheet library="css" name="caixa-theme.css" />
+	
+	<h:outputScript library="js" name="jquery-3.1.1.min.js" />
+	<h:outputScript library="js" name="bootstrap.min.js" />
+	<h:outputScript library="js" name="jquery.blockUI.js" />
+	<h:outputScript library="js" name="jquery.mask.min.js" />
+	
+	<h:outputScript library="js" name="geral.js" />
+	<h:outputScript library="js" name="template.js" />
+
+	<ui:insert name="html-head" />
+	
+	<script type="text/javascript">
+		var ctx = "${facesContext.externalContext.requestContextPath}/";
+	</script>
+
+</h:head>
+
+<h:body>
+
+	<!-- 	<div id="controls-wrapper"></div> -->
+	<h:form id="formTop">
+		<div class="container-fluid header-gradient hidden-xs">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+						<img src="#{request.contextPath}/resources/images/logo-caixa.svg"	alt="CAIXA ECONÔMICA FEDERAL" style="height: 28; width: 122" class="logo-caixa" />
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="container-fluid header-color hidden-xs">
+			<div class="container">
+				<div class="row">
+					<div class=" col-md-6">
+						<h1 class="sigla-sitema ">
+							#{bundle['geral.nomesistema']} <span>-
+								#{bundle['geral.subnomesistema']}</span>
+						</h1>
+					</div>
+					<div class=" col-md-6">
+						<div class="identificacao pull-right hidden-xs hidden-sm ">
+							<ul class="identificacao-usuario">
+								<li>Olá <h:outputText value="#{controleAcesso.primeiroNomeUsuario}" />,
+									Seja bem-vindo.
+								</li>
+								<li><h:outputText value="#{dataDiaExtenso}" /></li>
+							</ul>
+							<div class="btn-group margin-right bnt-identificacao-top">
+								<div class="dropdown">
+									<button class="btn btn-primary dropdown-toggle btn-sm"
+										type="button" data-toggle="dropdown">
+										Infos <span class="caret"></span>
+									</button>
+									<ul class="dropdown-menu box-infos">
+										<li class="dropdown-header">Responsável</li>
+										<li><a href="#">#{controleAcesso.usuarioLdap.nomeUsuario}</a></li>
+										<li role="separator" class="divider"></li>
+										<li class="dropdown-header">Perfil:</li>
+										<li><a href="#">#{controleAcesso.perfilUsuario}#{controleAcesso.gerente ? ' - Gerencial' : ''}</a></li>
+									</ul>
+								</div>
+							</div>
+							<h:commandLink value="" action="#{controleAcesso.logout()}"
+								title="Clique aqui para sair"
+								styleClass="btn btn-warning btn-sm pull-right bnt-identificacao-top">
+								<span>Sair</span>
+							</h:commandLink>
+							<div class="clearfix"></div>
+						</div>
+						<!--/btn-group-->
+					</div>
+				</div>
+				<!--/row-->
+			</div>
+		</div>
+		
+    	<!-- Fixed navbar navbar-fixed-top -->
+		<nav class="navbar navbar-default navbar-static-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+						<span class="sr-only">Menu</span> 
+						<span class="icon-bar"></span> 
+						<span class="icon-bar"></span> 
+						<span class="icon-bar"></span>
+					</button>
+					<img class="navbar-brand visible-xs" src="#{request.contextPath}/resources/images/logo-caixa.svg" style="height: 28; width: 122">
+						<a class="navbar-brand  visible-xs" href="#" title="Sistema de Atendimento a Rede Governo"> SIARG</a>
+					</img>
+				</div>
+
+				<div id="navbar" class="collapse navbar-collapse navbar-responsive">
+					<header class="wrap-user visible-xs">
+						<div class="icon-user">
+							<span class="fa fa-user fa-2x"></span>
+						</div>
+						<div class="name-user">
+							<strong>Olá! #{controleAcesso.usuarioLdap.nomeUsuario}</strong>
+						</div>
+					</header>
+					<ul class="nav navbar-nav">
+						<ui:repeat var="menuItem" value="#{controleAcesso.menuList}">
+							<li class="dropdown">
+							
+							   <ui:fragment rendered="#{not empty menuItem.menuFilhosList}">
+									<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+										aria-expanded="false">#{menuItem.nome}<span class="caret"></span>
+									</a>
+									<ul class="dropdown-menu">
+										<ui:repeat var="menuItemFilho" value="#{menuItem.menuFilhosList}">
+											<li><a href="#{request.contextPath}#{menuItemFilho.link}">#{menuItemFilho.nome}</a></li>									
+										</ui:repeat>
+									</ul>
+							   </ui:fragment>
+							   <ui:fragment rendered="#{empty menuItem.menuFilhosList}">
+							   		<a href="#{request.contextPath}#{menuItem.link}">#{menuItem.nome}</a>
+							   </ui:fragment>
+							   
+							</li>						
+						</ui:repeat>
+					</ul>
+					
+					<ui:insert name="info-unidade" />
+					
+					<ui:insert name="combo-unidade" />		
+					
+					<!-- Pesquisa Rapida -->
+					<div class="navbar-form navbar-right">
+				        <div class="input-group margin-icon-right">
+				        	<h:inputText id="idNumeroDemandaBusca" styleClass="form-control numeroDemandaBusca" pt:placeholder="Buscar demanda pelo nº" value="#{pesquisaRapidaDemandaController.numeroDemanda}"/>
+			                  <div class="input-group-btn">
+			                      <button id="btn_pesquisar_demanda" class="btn btn-primary" type="button" title="Clique aqui para pesquisar"
+			                      	onclick="$('.btnPesquisaRapidaClass').click()">
+			                      		<i class="glyphicon glyphicon-search"></i>
+			                      </button>
+			                      <p:commandButton styleClass="hide btnPesquisaRapidaClass" actionListener="#{pesquisaRapidaDemandaController.pesquisar()}" 
+			                       oncomplete="abrirModalValidacao(xhr, status, args);" update="idNumeroDemandaBusca @(.alertText)"/>
+			                       
+			                       <h:commandLink id="btnRedirectTratarDemanda" action="#{pesquisaRapidaDemandaController.redirectTratarDemanda()}"/>
+			                  </div>
+		                </div>
+					</div>			
+					
+					<h:inputHidden id="flagErroValidacao" value="#{pesquisaRapidaDemandaController.flagErroValidacao}" />
+					
+					<script type="text/javascript">
+						$('.numeroDemandaBusca').mask('000000000000000000');
+
+						function abrirModalValidacao(xhr, status, args){
+
+							if(args.validationFailed || args.naoValido){
+								$("#modal_pesquisa_rapida").modal({
+									backdrop:"static",
+									keyboard:"false",	
+								});
+							} else {
+								$('#formTop\\:btnRedirectTratarDemanda').click()
+							}
+
+						}
+
+						function okModal(){
+							$("#modal_pesquisa_rapida").modal('hide');
+	                        $('.numeroDemandaBusca').focus();
+						}
+
+					</script>
+				</div>
+				<!--/.nav-collapse -->
+			</div>
+		</nav>
+		
+		 <div class="container">
+	        <div id="modal_pesquisa_rapida" class="modal fade"  role="dialog">
+	          <div class="modal-dialog modal-lg">
+	            <div class="modal-content">
+	                <div class="alert-condition">
+	                	<h:panelGroup id="textoValidacaoPesquisa" styleClass="alertText" layout="block">
+	                    	<h:outputText value="#{pesquisaRapidaDemandaController.mensagemValidacao}" escape="false"/>
+	                	</h:panelGroup>
+	                </div>
+	                <div class="modal-footer">
+	                    <button  type="button" class="btn btn-primary btn_sim" onclick="okModal()">OK</button>
+	                </div>
+	            </div><!-- /.modal-content -->
+	          </div><!-- /.modal-dialog -->
+	        </div>
+		</div>
+	</h:form>
+
+	<!--	Conteúdo principal - Centro da Página. -->
+	<div class="container">
+		<ui:insert name="breadcrumb" />
+		<ui:insert name="conteudo-principal" />
+
+		<div id="idLoad" class="modal-carregando">
+			<div class="aguarde">
+				<p>Aguarde</p>
+			</div>
+		</div>
+		<div id="modal_aguarde"></div>
+
+		<p:ajaxStatus id="ajaxStatusPanel" onstart="showStatus();" oncomplete="hideStatus();"></p:ajaxStatus>
+	</div>
+	
+	<!-- 	Rodapé da página. -->
+	 <footer class="footer">
+      <div class="container">
+       <ul>
+         <li>#{bundle['geral.caixaEconomica']}</li>
+         <li>#{bundle['geral.rodape']}<span class="pull-right">#{bundle['geral.versao']}</span></li>
+       </ul>
+      </div>
+    </footer>
+</h:body>
+</html>

@@ -1,0 +1,88 @@
+@media ( min-width : 768px) {
+	.form-inline .form-group {
+		margin-bottom: 5px;
+		vertical-align: baseline;
+	}
+	.form-inline .radio, .form-inline .checkbox {
+		display: inline-block;
+		margin-top: 0;
+		margin-bottom: 0;
+		vertical-align: sub;
+	}
+	.resp_assunto {
+		width: 200px !important;
+	}
+	.prazo_dias {
+		width: 150px !important;
+	}
+	.situacao {
+		width: 100px !important;
+	}
+	.documentacao_relacionada {
+		width: 500px !important;
+	}
+	.unidade_origem, .unidade_destino {
+		width: 150px !important;
+	}
+	.receber_email {
+		width: 120px !important;
+	}
+	.assunto{width:700px !important;}
+	.prazo_dias {
+    	width: 100px !important;
+	}	
+}
+
+.fluxoDemanda {
+	padding: 8px 0px;
+	margin-bottom: 0px;
+	list-style: none;
+	border-radius: 4px;
+}
+
+.fluxoDemanda>li {
+	display: inline-block;
+}
+
+.fluxoDemanda>li+li:before {
+	content: "\f0ec";
+	padding: 0 5px;
+	font-family: 'FontAwesome';
+	color: #F90;
+}
+
+.fluxoDemanda a {
+	text-decoration: none;
+	color: #333;
+}
+
+.fluxoDemanda>.active a {
+	color: #000;
+	background-color: #ddd;
+	border: 1px solid #ccc;
+	padding: 4px 8px;
+	border-radius: 4px;
+	display: inline-block !important;
+}
+
+.fluxoAssunto {
+	padding: 8px 0px;
+	margin-bottom: 0px;
+	list-style: none;
+	border-radius: 4px;
+}
+
+.fluxoAssunto>li {
+	display: inline-block;
+}
+
+.fluxoAssunto>li+li:before {
+	content: "\f061";
+	padding: 0 5px;
+	font-family: 'FontAwesome';
+	color: #F90;
+}
+
+.fluxoAssunto>.active {
+	color: #0039ba;
+}

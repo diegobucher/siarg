@@ -1,0 +1,313 @@
+<ui:composition template="/WEB-INF/templates/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:param name="breadcrumbs" value="#{bundle['geral.breadcrumb.home']}" />
+	
+	<ui:define name="html-head">
+		<h:outputStylesheet library="css" name="font-awesome.min.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="datatables.min.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="cadastrar-usuario.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="jquery-ui.min.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="datePickerCustom.css"></h:outputStylesheet>
+
+		<h:outputScript library="js" name="datatables.min.js"></h:outputScript>
+		<h:outputScript library="js" name="messages.js"></h:outputScript>
+		<h:outputScript library="js" name="jquery.mask.min.js" />
+		<h:outputScript library="js" name="jquery-ui.min.js" />
+		<h:outputScript library="js" name="datepicker-pt-br.js" />
+		<h:outputScript library="js" name="jquery.mask.min.js" />
+		
+		<h:outputScript library="js" name="cadastrar-usuario.js"></h:outputScript>
+	</ui:define>
+
+	<ui:define name="conteudo-principal">
+
+	   <ol class="breadcrumb">
+            <li><strong>Você está em:</strong> </li>
+            <li>Cadastro<span class="caret-left"></span></li>
+            <li class="active">Usuário</li>
+        </ol>
+
+        <h1>Usuário</h1>
+        
+        <h:form id="usuarioForm" prependId="false">
+        
+        	<h:messages id="message" errorClass="alert alert-danger"
+					infoClass="alert alert-success" warnClass="alert alert-info"
+					showDetail="false" />
+        	
+        	<p:remoteCommand name="atualizarUsuarioForm" update="@form" oncomplete="carregarComponentes()"/>
+        	
+	        <div class="row">
+	        
+	        	<div class="col-md-2">
+	            	<label class="obrigatorio" for="matricula_usuario">Matrícula:</label>
+	                <div class="input-group">
+	                    <h:inputText id="matricula_usuario" value="#{cadastrarUsuarioController.matricula}" styleClass="form-control"/>
+	                    <div class="input-group-btn">
+	                        <button id="btn_pesquisarUsuario" class="btn btn-primary" type="button" title="Clique aqui para pesquisar o usuário">
+	                       		 <i class="glyphicon glyphicon-search"></i>
+	                        </button>
+	                        <h:commandButton id="btnPesquisarHidden" actionListener="#{cadastrarUsuarioController.pesquisarUsuario()}" value="" styleClass="hide">
+	                        	<f:ajax execute="@form" render="@form" onevent="carregarComponentes"/>
+	                        </h:commandButton>
+	                    </div>
+	                </div>
+	            </div>
+	            
+	            <ui:fragment rendered="#{not empty cadastrarUsuarioController.usuario}">
+	            
+		            <section id="secao_dadosUsuario" class="">
+		              
+			            <div class="col-md-4">
+			                <div class="form-group">
+			                    <label for="nome_usuario">Nome:</label>
+	       	                    <h:inputText id="nome_usuario" value="#{cadastrarUsuarioController.usuarioLdap.nomeUsuario}" styleClass="form-control" disabled="true"/>
+			                    
+			                </div>                
+			            </div>
+			            <div class="col-md-4">
+			                <div class="form-group">
+			                    <label for="lotacao_usuario">Lotação:</label>
+			                    <h:inputText id="lotacao_usuario" value="#{cadastrarUsuarioController.usuarioLdap.nomeLotacao}" styleClass="form-control" disabled="true"/>
+			                </div>                
+			            </div>
+			
+			            <div class="col-md-2">
+			                <div class="form-group">
+			                    <label class="obrigatorio" for="perfilMaster">Perfil:</label>
+	                    		<h:selectOneMenu id="perfilMaster" styleClass="form-control" 
+									converter="omnifaces.SelectItemsConverter"
+									value="#{cadastrarUsuarioController.usuario.perfil}">
+									<f:selectItems value="#{cadastrarUsuarioController.perfilList}"
+										itemValue="#{perfil}" var="perfil"
+										itemLabel="#{perfil.nome}" />
+								</h:selectOneMenu>	
+			                </div>                
+			            </div>
+		            
+		           </section> 
+		        </ui:fragment>
+	        </div>
+	        
+			<ui:fragment rendered="#{not empty cadastrarUsuarioController.usuario}">
+		         <section id="secao_unidadesVinculadas" class="">
+					
+		            <h2>Unidades Vinculadas</h2>
+		
+					<div class="row">
+		                <div class="col-md-2">
+		                    <div class="form-group">
+		                        <button  type="button" id="btn_incluiUnidade" class="btn btn-primary  btn_incluiUnidade" title="Clique aqui para incluir unidade">Incluir Unidade </button>
+		                        <p:remoteCommand name="rmcHandlerAbrirNovaUnidadeModal" actionListener="#{cadastrarUsuarioController.handlerAbrirModalNovaUnidade()}"
+		                        	oncomplete="abrirModalIncluirUnidade()" update=":novaUnidadeModalForm"/>
+		                    </div>                
+		                </div>
+		            </div>
+				
+		          <table id="table_unidadesVinculadas" class="table table-striped table-bordered dt-responsive nowrap" width="100%">
+		                <thead>
+		                  <tr class="bg-cinza">
+		                  	<th class="th_order"></th>
+							<th>CGC</th>
+		                    <th>Sigla</th>
+		                    <th>Unidade</th>
+		                    <th>Tipo de Unidade</th>
+							<th>Abrangência</th>
+		                    <th>Data início</th>
+		                    <th>Data fim</th>
+		                    <th class="none">Observação:</th>
+		                    <th class="text-center th_order">Ações</th>
+		                  </tr>
+		                </thead>
+			            <tbody>
+			            	<ui:repeat var="usuarioUnidade" value="#{cadastrarUsuarioController.usuarioUnidadeList}" varStatus="status">
+				                  <tr>
+				                  	<td></td>
+				                    <td>
+				                    	#{usuarioUnidade.unidade.cgcUnidade}
+				                    </td>
+				                    <td>#{usuarioUnidade.unidade.sigla}</td>
+				                    <td>#{usuarioUnidade.unidade.nome}</td>
+				                    <td>#{usuarioUnidade.unidade.tipoUnidade.descricao}</td>
+									<td>#{usuarioUnidade.unidade.abrangencia.nome}</td>
+				                    <td>
+				                    	<h:outputText value="#{usuarioUnidade.dataInicio}">
+				                    		<f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR"/>
+				                    	</h:outputText>
+				                    </td>
+				                    <td>
+				                    	<h:outputText value="#{usuarioUnidade.dataFim}">
+				                    		<f:convertDateTime pattern="dd/MM/yyyy" locale="pt_BR"/>
+				                    	</h:outputText>
+				                    </td>
+				                    <td>
+										#{usuarioUnidade.observacao} 
+				                    </td>
+				                    <td class="text-center">
+				                        <button type="button" class="btn btn-default btn-xs btn_editaData" onclick="rmcHandlerAbrirEditarUnidadeModal#{status.index}()" >
+				                            <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Clique aqui para editar"></span>
+				                        </button>
+			                           <p:remoteCommand name="rmcHandlerAbrirEditarUnidadeModal#{status.index}" actionListener="#{cadastrarUsuarioController.handlerAbrirModalEditarUnidade(usuarioUnidade)}"
+	                        			oncomplete="abrirModalEditarUnidade()" update=":editarUnidadeModalForm"/>
+				                    </td>
+				                  </tr>
+			            	</ui:repeat>
+			                </tbody>
+			            </table>
+		            
+		            <button id="btn_salva_usuario" type="button" class="btn btn-primary " 
+		            	disabled="#{empty cadastrarUsuarioController.usuarioUnidadeList? 'disabled' : ''}"
+		            	data-dismiss="modal">Salvar</button>
+		            
+		            
+<!-- 		            <h:commandButton id="btnHiddenSalvarUsuario" actionListener ="#{cadastrarUsuarioController.salvarUsuario()}" value="" styleClass="hide"> -->
+<!-- 		            </h:commandButton> -->
+<!--     		          <f:ajax execute="@this" render="@form" onevent="salvarUsuario()"/> -->
+		            
+		            <p:remoteCommand name="rmcSalvarUsuario" actionListener="#{cadastrarUsuarioController.salvarUsuario()}" update="@form" oncomplete="salvarUsuario()"/>
+    		          
+		            <button id="btn_limpa_usuario" type="button" class="btn btn-warning" data-dismiss="modal">Limpar</button>
+		            <h:commandButton id="btnHiddenLimparTela" action="#{cadastrarUsuarioController.limparTela()}" value="" styleClass="hide">
+    		          <f:ajax execute="@this" render="@form" onevent="carregarComponentes"/>
+		            </h:commandButton>
+		        </section>
+			</ui:fragment>
+        </h:form>
+        
+		<!-- begin-of: MODAL NOVO DATA-->
+        <div class="modal fade" id="modal_novo" role="dialog">
+        	<h:form id="novaUnidadeModalForm" prependId="false">
+
+	            <div class="modal-dialog">
+	              <div class="modal-content">
+	                <div class="modal-header">
+	                  <button type="button" class="close" data-dismiss="modal">&#215;</button>
+	                  <h4 class="modal-title">Nova </h4>
+	                </div>
+	                <div class="modal-body">
+		    			<h:messages id="messageModalNovo" styleClass="messages" errorClass="alert alert-danger" infoClass="alert alert-success" warnClass="alert alert-info" showDetail="false" />
+						<div class="row">
+							<div class="col-md-12">
+								<div class="form-group">
+									<label class="obrigatorio" for="unidade_usuario">Unidade:</label>
+									
+									<h:selectOneMenu id="unidade_usuario" styleClass="form-control" 
+										converter="omnifaces.SelectItemsConverter"
+										value="#{cadastrarUsuarioController.usuarioUnidade.unidade}">
+										<f:selectItem itemLabel="Selecione" noSelectionOption="true"/>
+										<f:selectItems value="#{cadastrarUsuarioController.carregarUnidades()}"
+											itemValue="#{unidade}" var="unidade"
+											itemLabel="#{unidade.sigla}" />
+									</h:selectOneMenu>				
+									
+								</div>                
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label class="obrigatorio" for="data_inicio">Data Início:</label>
+									<h:inputText id="data_inicio" value="#{cadastrarUsuarioController.usuarioUnidade.dataInicio}" styleClass="form-control datepicker date"
+										converterMessage="Data Início inválida!">
+										<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+									</h:inputText>
+								</div>                
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="data_fim">Data Fim:</label>
+									<h:inputText id="data_fim" value="#{cadastrarUsuarioController.usuarioUnidade.dataFim}" styleClass="form-control datepicker date"
+										converterMessage="Data Fim inválida!">
+										<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+									</h:inputText>
+								</div>                
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12">
+								<div class="form-group">
+									<label for="observacao">Observação:</label>
+									<h:inputTextarea value="#{cadastrarUsuarioController.usuarioUnidade.observacao}" rows="5" styleClass="form-control" />
+<!-- 									<textarea rows="5" class="form-control" maxlength="200" id=""></textarea> -->
+								</div>                
+							</div>
+						</div>
+	                </div>
+	                <div class="modal-footer">
+	                  <button type="button" class="btn btn-primary" id="btn_salvaUnidade" onclick="adicionarNovaUnidade()">Salvar</button>
+					  <p:remoteCommand name="adicionarNovaUnidade" actionListener="#{cadastrarUsuarioController.adicionarNovaUnidade()}" oncomplete="validarSalvarNovaUnidade(xhr, status, args)" 
+					  	update="messageModalNovo"/>
+	                  <button type="button" class="btn btn-warning" data-dismiss="modal">Cancelar</button>
+	                </div>
+	              
+	              </div>
+	             
+	            </div>
+        	</h:form>
+         </div>
+		<!-- end-of: MODAL NOVO DATA-->
+		
+		<!-- begin-of: MODAL EDITAR DATA-->
+        <div class="modal fade" id="modal_editaData" role="dialog">
+	        <h:form id="editarUnidadeModalForm" prependId="true">
+	            <div class="modal-dialog">
+	              <div class="modal-content">
+	                <div class="modal-header">
+	                  <button type="button" class="close" data-dismiss="modal">&#215;</button>
+	                  <h4 class="modal-title">Editar </h4>
+	                </div>
+	                <div class="modal-body">
+		           		     <h:messages id="messageModalEditar" styleClass="messages" errorClass="alert alert-danger" infoClass="alert alert-success" warnClass="alert alert-info" showDetail="false" />
+		                     <div class="row">
+		                        <div class=" col-md-6">
+		                            <div class="form-group">
+		                                <label class="obrigatorio" for="data_inicioEdicao">Data Início:</label>
+		                               	<h:inputText id="data_inicioEdicao" value="#{cadastrarUsuarioController.usuarioUnidade.dataInicio}" styleClass="form-control datepicker date"
+											converterMessage="Data Início inválida!">
+											<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+										</h:inputText>
+		                            </div>                
+		                        </div>
+		                        <div class=" col-md-6">
+		                            <div class="form-group">
+		                                <label for="data_fimEdicao">Data Fim:</label>
+										<h:inputText id="data_fimEdicao" value="#{cadastrarUsuarioController.usuarioUnidade.dataFim}" styleClass="form-control datepicker date"
+											converterMessage="Data Fim inválida!">
+											<f:convertDateTime type="date" pattern="dd/MM/yyyy"/>
+										</h:inputText>                            
+									</div>                
+		                        </div>
+		                    </div>
+							<div class="row">
+								<div class="col-md-12">
+		                            <div class="form-group">
+		                                <label for="observacao">Observação:</label>
+										<h:inputTextarea value="#{cadastrarUsuarioController.usuarioUnidade.observacao}" rows="5" styleClass="form-control" />
+		                            </div>                
+		                        </div>
+							</div>
+	                </div>
+	                <div class="modal-footer">
+	                      <button type="button" class="btn btn-primary" id="btn_salvaEditarUnidade" onclick="salvarEditarUnidade()">Salvar</button>
+						  <p:remoteCommand name="salvarEditarUnidade" actionListener="#{cadastrarUsuarioController.editarUnidade()}" oncomplete="validarSalvarEditarUnidade(xhr, status, args)" 
+						  	update="messageModalEditar"/>
+						  	
+	                  <button type="button" class="btn btn-warning" data-dismiss="modal">Cancelar</button>
+	                </div>
+	              
+	              </div>
+	             
+	            </div>
+			</h:form>
+          </div>
+          <!-- end-of: MODAL EDITAR DATA-->
+          
+		        
+	</ui:define>
+	
+</ui:composition>

@@ -1,0 +1,67 @@
+@charset "utf-8";
+/* CSS Document */
+
+.date{ width:110px !important;}
+.form-inline .box_fieldset{ 
+	position:relative; 
+	border:1px solid #ccc; 
+	display:block; 
+	padding:15px;
+	border-radius:4px;
+	margin-right:10px;
+	margin-bottom:10px;
+	float:left;
+}
+.form-inline .box_fieldset h4{ 
+	position:absolute; 
+	top:-20px; 
+	left:20px; 
+	background-color:#fff; 
+	font-size:16px;
+	font-weight:bold; 
+}
+
+
+/********************
+	comparativo_periodo_assunto.html
+*******************************/
+
+
+.btn-pesquisar{ margin-top:40px;}
+.vertical-align{ vertical-align:middle !important}
+
+.dl-alert{margin-bottom:0px;} 
+.dl-alert dd:before,
+.dl-alert dd:after{
+	content: " ";
+	 display: table;
+}
+.dl-alert dd:after{
+	 clear: both;
+}
+
+.dl-alert dt {
+	  float:left;
+	  width: 110px;
+	  clear: right;
+	  text-align: left;
+	  overflow: hidden;
+	  text-overflow: ellipsis;
+	  white-space: nowrap;
+ }
+ .dl-alert dd {
+  margin-left: 80px;
+ }
+
+ 
+.wrap_dtbAcompanhamento{ position:relative;}
+.btn_excel{ position:absolute; top:0; left:0;}
+
+#tableRelatorio.table > tbody > tr > td.active{
+	background-color:#d9edf7;
+}
+ 
+ .expansao {
+	padding-left: 5px !important;
+	padding-right: 11px !important;
+}

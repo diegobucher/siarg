@@ -1,0 +1,622 @@
+<ui:composition template="/WEB-INF/templates/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<ui:define name="html-head">
+	
+		<h:outputStylesheet library="css" name="datatables.min.css" /> 
+		<h:outputStylesheet library="css" name="jquery-ui-timepicker-addon.min.css" />
+		<h:outputStylesheet library="css" name="font-awesome.min.css" />
+		<h:outputStylesheet library="css" name="jquery-ui.min.css" />
+		<h:outputStylesheet library="css" name="bootstrap-colorselector.css" />
+		<h:outputStylesheet library="css" name="acompanhamento.css" />
+	
+		<h:outputScript library="js" name="datatables.min.js" />
+		<h:outputScript library="js" name="jquery.mask.min.js" />
+		<h:outputScript library="js" name="mask-function.js" />
+		<h:outputScript library="js" name="jquery-ui.min.js" />
+		<h:outputScript library="js" name="datepicker-pt-br.js" />
+		<h:outputScript library="js" name="bootstrap-colorselector.js" />
+		<h:outputScript library="js" name="acompanhamento.js" />
+    
+	</ui:define>
+
+	<ui:define name="combo-unidade">
+		<h:form id="cbUnidade">
+			<div class="navbar-form navbar-right">
+				<h:selectOneMenu id="idUnidade" styleClass="form-control" 
+					converter="omnifaces.SelectItemsConverter"
+					value="#{controleAcesso.unidadeSelecionadaDTO}">
+					<f:selectItems value="#{controleAcesso.unidadesPorAbrangenciaList}"
+						itemValue="#{unidadeDTO}" var="unidadeDTO"
+						itemLabel="#{unidadeDTO.sigla}" />
+						<p:ajax  event="change" listener="#{controleAcesso.setUnidadeSelecionadaDTOSessao()}" 
+							oncomplete="reloadPage();"/>
+				</h:selectOneMenu>
+			</div>
+		</h:form>
+	</ui:define>
+
+	<ui:define name="conteudo-principal">
+		<div class="atualizado">
+			<div class="text-right">
+				<h:form id="frmAtualizar" prependId="false">
+					<h:inputHidden id="setTimeRefresh" value="#{acompanhamentoController.setTimeRefresh}" />
+					<p:remoteCommand name="refresh" process="@this" update=":frmDemandaAtuacao :frmDemaisDemandas :frmAtualizar"
+								actionListener="#{acompanhamentoController.pesquisar()}"/>
+					<strong>Atualizado em: </strong>
+					<h:outputText value="#{acompanhamentoController.dataHoraAtual}">
+						<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+					</h:outputText>
+				</h:form>
+			</div>
+			<div class="legenda2">
+				<ul>
+					<li><strong>Prazo:</strong></li>
+					<li><span class="fa fa-circle text-green"></span> Dentro</li>
+					<li><span class="fa fa-circle text-orange"></span> Falta 1 dia</li>
+					<li><span class="fa fa-circle text-red"></span> Fora</li>
+				</ul>
+			</div>
+		</div>
+
+		<ol class="breadcrumb">
+			<li><strong>Você está em:</strong></li>
+			<li>Demanda<span class="caret-left"></span></li>
+			<li class="active">Acompanhamento</li>
+		</ol>
+
+		<h1>Acompanhamento</h1>
+		
+		<h:messages id="message" errorClass="alert alert-danger" infoClass="alert alert-success" warnClass="alert alert-info" showDetail="false" />
+		
+		<h:form id="formAcompanhamento" prependId="false">
+			<ul class="nav nav-pills">
+				<ui:repeat var="caixaPostal" value="#{acompanhamentoController.caixasPostaisList}">
+					<li class="#{acompanhamentoController.caixaPostalSelecionada.id == caixaPostal.id ? 'active' : '' }">
+						<h:commandLink data-toggle="pill" value="#{caixaPostal.sigla}" styleClass="linkClicavel"
+									actionListener="#{acompanhamentoController.alterarAbaCaixaPostalAtual(caixaPostal.id)}">
+							<span class="badge">#{caixaPostal.totalDemandasDaCaixaPostal}</span>
+							<f:ajax execute="@this" render=":formAcompanhamento :frmDemandaAtuacao :frmDemaisDemandas :frmAtualizar" />
+						</h:commandLink>
+					</li>
+				</ui:repeat>
+			</ul>
+		</h:form>
+
+		<div class="tab-content">
+			<div id="pnlAtendimento" class="tab-pane fade in active">
+				<h2>Relação de Demandas Aguardando Atuação ou Fechadas nos últimos 10 dias</h2>
+				<div class="wrapTable margin-top">
+					<h:form id="frmDemandaAtuacao" prependId="false" class="form-inline margin-top margin-bottom">
+						<div class="formFilter">
+							<div class="form-group input-group-sm">
+								<label for="cboResponsavel">Responsável: </label>
+								<h:selectOneMenu id="cboResponsavel" styleClass="form-control"
+									style="margin-left: 5px"
+									value="#{acompanhamentoController.responsavelFiltro}">
+									<f:selectItem itemLabel="Todas" noSelectionOption="true"/>
+									<f:selectItem
+										itemLabel="#{acompanhamentoController.caixaPostalSelecionada.sigla}"
+										itemValue="#{acompanhamentoController.caixaPostalSelecionada.id}" />
+									<f:selectItem itemLabel="@Externa" itemValue="@Externa" />
+									<f:ajax listener="#{acompanhamentoController.alterarResponsavelComboPrioridade()}"
+											 event="change" render="pnlPrioridade" />
+								</h:selectOneMenu>
+							</div>
+							<div class="form-group input-group-sm">
+								<label for="cboSituacao">Situação: </label>
+								<h:selectOneMenu id="cboSituacao" styleClass="form-control"
+									style="margin-left: 5px"
+									converter="omnifaces.SelectItemsConverter"
+									value="#{acompanhamentoController.situacaoPrioriFiltro}">
+									<f:selectItem itemLabel="Todas" noSelectionOption="true"/>
+									<f:selectItems value="#{acompanhamentoController.listaSituacoesFiltrada}"  
+															itemValue="#{situacao}"
+															var="situacao"
+															itemLabel="#{situacao.descricao}" />
+									<f:ajax listener="#{acompanhamentoController.alterarSituacaoComboPrioridade()}"
+											 event="change" render="pnlPrioridade " />
+								</h:selectOneMenu>
+							</div>
+						</div>
+						<p:outputPanel id="pnlPrioridade">
+							<h:inputHidden id="irTbPriori" value="#{acompanhamentoController.demandasPrioridadesList.size()}" />
+							<h:dataTable id="tbDemandaAtuacao"
+								styleClass="table table-striped table-hover table-bordered dt-responsive table-condensed width-rowns"
+								width="100%"
+								value="#{acompanhamentoController.demandasPrioridadesList}"
+								var="itemPriori">
+		
+								<h:column headerClass="bg-cinza">
+									<h:outputText  />
+								</h:column>
+		
+								<h:column headerClass="bg-cinza">
+									<f:facet name="header">
+										<h:outputText value="Número" />
+									</f:facet>
+									<h:panelGroup styleClass="descendingFirstPriori">
+										<h:outputText rendered="#{itemPriori.flagDemandaFilha}" value="#{itemPriori.idDemandaPai}/" />
+										<h:outputText value="#{itemPriori.numero}" />
+									</h:panelGroup>									
+								</h:column>
+								
+			      				<h:column headerClass="bg-cinza">
+			      					<f:facet name="header">
+			      						<h:outputText value="Situação"/>
+			      					</f:facet>
+			      					<h:panelGroup>
+			      						<h:outputText rendered="#{itemPriori.flagDemandaPai}" style="padding-right: 4px;"
+			      										styleClass="fa fa-share-alt text-azul-caixa" 
+			      										title="Possui demanda vinculada"/>
+			      						<h:outputText rendered="#{itemPriori.situacao.valor eq 4 }" style="padding-right: 4px;"
+			      										styleClass="fa fa-edit text-azul-caixa" 
+			      										title="Demanda minutada"/>
+			      						<h:outputText rendered="#{itemPriori.flagConsulta}" style="padding-right: 4px;"
+			      										styleClass="fa fa-search text-azul-caixa" 
+			      										title="Demanda do tipo consulta"/>
+			      						<h:outputText rendered="#{itemPriori.flagRascunho}" style="padding-right: 4px;"
+			      										styleClass="fa fa-file-text text-azul-caixa" 
+			      										title="Possui rascunho"/>
+			      						<h:outputText value="#{itemPriori.situacao.descricao}" />
+			      					</h:panelGroup>      					
+			      				</h:column>
+			      				
+			      				<h:column headerClass="bg-cinza">
+			      					<f:facet name="header">
+			      						<h:outputText value="Prazo" title="Prazo Demanda" />
+			      					</f:facet>
+			      					<h:panelGroup>
+			      						<h:outputText rendered="#{itemPriori.prazoDemanda gt 1 and (itemPriori.situacao.valor eq 1)}" 
+			      							styleClass="fa fa-circle text-green"/>
+			      						<h:outputText rendered="#{(itemPriori.prazoDemanda eq 1 or itemPriori.prazoDemanda eq 0)  and (itemPriori.situacao.valor eq 1)}"
+			      							styleClass="fa fa-circle text-orange"/>
+			      						<h:outputText rendered="#{itemPriori.prazoDemanda lt 0  and (itemPriori.situacao.valor eq 1)}" 
+			      							styleClass="fa fa-circle text-red"/>
+			      						<h:outputText rendered="#{itemPriori.situacao.valor eq 1}"
+			      							style="padding-left: 3px;" value="#{itemPriori.prazoDemanda}" />
+			      						<h:outputText rendered="#{itemPriori.situacao.valor ne 1}"
+			      							style="padding-left: 3px;" value="0" />
+			      							
+			      					</h:panelGroup>      					
+			      				</h:column>
+			      				
+								<h:column headerClass="bg-cinza">
+									<f:facet name="header">
+										<h:outputText value="Data"/>
+									</f:facet>
+									<h:panelGroup>
+										<h:outputText value="#{itemPriori.dataAberturaDemanda}">
+											<f:convertDateTime pattern="dd/MM/yyyy" />
+										</h:outputText>
+									</h:panelGroup>
+								</h:column>
+								
+			      				<h:column headerClass="bg-cinza">
+			      					<f:facet name="header">
+			      						<h:outputText value="Demandante" />
+			      					</f:facet>
+			      					<h:panelGroup>
+			      						<h:outputText value="#{itemPriori.demandante}" />
+			      					</h:panelGroup>      					
+			      				</h:column>
+			      				<h:column headerClass="bg-cinza">
+			      					<f:facet name="header">
+			      						<h:outputText value="Aberta por" />
+			      					</f:facet>
+			      					<h:panelGroup>
+			      						<h:outputText value="#{itemPriori.matricula.toUpperCase()}" />
+			      					</h:panelGroup>      					
+			      				</h:column>
+			      				
+								<!-- Assunto Resumido -->
+			      				<h:column headerClass="bg-cinza">
+			      					<f:facet name="header">
+			      						<h:outputText value="Assunto"/>
+			      					</f:facet>
+			      					<h:panelGroup  rendered="#{itemPriori.assunto.length() gt 35}">
+			      						<h:outputText value="#{acompanhamentoController.obterAssuntoConcatenado(itemPriori.assunto).toUpperCase()}" />
+			      					</h:panelGroup>      					
+			      					<h:panelGroup  rendered="#{itemPriori.assunto.length() le 35}">
+			      						<h:outputText value="#{itemPriori.assunto.toUpperCase()}" />
+			      					</h:panelGroup>      					
+			      				</h:column>
+			      				
+			      				<h:column headerClass="none hidden-xs ocultaConteudo" style="width: 100%;">
+			      					<f:facet name="header">
+			      						<h:outputText value="Assunto" />
+			      					</f:facet>
+			      					<h:panelGroup>
+			      						<h:outputText value="#{itemPriori.assunto}" />
+			      					</h:panelGroup>      					
+			      				</h:column>
+			      				
+			      				<h:column headerClass="none hidden-xs ocultaConteudo">
+			      					<f:facet name="header">
+			      						<h:outputText value="Título" />
+			      					</f:facet>
+			      					<h:panelGroup>
+			      						<h:outputText value="#{itemPriori.titulo}" />
+			      					</h:panelGroup>      					
+			      				</h:column>
+			      				
+								<!-- Título Resumido -->
+			      				<h:column headerClass="bg-cinza">
+			      					<f:facet name="header">
+			      						<h:outputText value="Título"/>
+			      					</f:facet>
+			      					<h:panelGroup rendered="#{itemPriori.titulo.length() gt 35}">
+			      						<h:outputText value="#{acompanhamentoController.obterTituloConcatenado(itemPriori.titulo).toUpperCase()}" />
+			      					</h:panelGroup>      					
+			      					<h:panelGroup rendered="#{itemPriori.titulo.length() le 35}">
+			      						<h:outputText value="#{itemPriori.titulo.toUpperCase()}" />
+			      					</h:panelGroup>      					
+			      				</h:column>
+			      				
+			      				<h:column headerClass="bg-cinza tbRespAtual">
+			      					<f:facet name="header">
+			      						<h:outputText value="Resp Atual" />
+			      					</f:facet>
+			      					<h:panelGroup>
+	      								<h:outputText rendered="#{itemPriori.prazoCaixaPostal gt 1 and (itemPriori.situacao.valor eq 1)}" 
+		      								styleClass="fa fa-circle text-green"/>
+	      								<h:outputText rendered="#{(itemPriori.prazoCaixaPostal eq 1 or itemPriori.prazoCaixaPostal eq 0) and (itemPriori.situacao.valor eq 1)}" 
+	      									styleClass="fa fa-circle text-orange"/>
+	      								<h:outputText rendered="#{itemPriori.prazoCaixaPostal lt 0  and (itemPriori.situacao.valor eq 1)}" 
+	      									styleClass="fa fa-circle text-red"/>
+	      									
+			      						<h:panelGroup rendered="#{itemPriori.externa}">
+			      							<a href="#" title="@Externa">
+					      						<h:outputText styleClass="caixaExterna" value="#{itemPriori.responsavelAtual}" />
+			      							</a>
+			      						</h:panelGroup>	
+										<h:panelGroup rendered="#{not itemPriori.externa}">
+				      						<h:outputText style="padding-left: 3px;" value="#{itemPriori.responsavelAtual}" />
+										</h:panelGroup>
+										
+			      					</h:panelGroup>      					
+			      				</h:column>
+			      				<h:column headerClass="bg-cinza tbPrazoCaixaPostal">
+			      					<f:facet name="header">
+			      						<h:outputText value="Prazo" />
+			      					</f:facet>
+			      					<h:panelGroup>
+			      						<h:outputText rendered="#{itemPriori.situacao.valor eq 1}"  value="#{itemPriori.prazoCaixaPostal}" />
+			      						<h:outputText rendered="#{itemPriori.situacao.valor ne 1}"  value="0" />
+			      					</h:panelGroup>      					
+			      				</h:column>
+			      				<h:column headerClass="bg-cinza">
+			      					<f:facet name="header">
+			      						<select id="headerColorPriori" style="width: 16px !important;" class="colorselector form-control">
+											<ui:repeat var="corDemanda" value="#{acompanhamentoController.listaPaletaCores}">
+												<ui:fragment rendered="#{acompanhamentoController.corDemandaFiltroPriori ne corDemanda}">
+													<option  value="#{corDemanda}" data-color="#{corDemanda}" />
+												</ui:fragment>
+												<ui:fragment rendered="#{acompanhamentoController.corDemandaFiltroPriori eq corDemanda}">
+													<option value="#{corDemanda}" data-color="#{corDemanda}" selected="selected" />
+												</ui:fragment>
+											</ui:repeat>
+		                                </select>
+			      					</f:facet>
+									<h:panelGroup>
+										<h:commandLink action="#{acompanhamentoController.redirectTratarDemanda(itemPriori.numero)}" target="_blank" styleClass="botaoDetalhar hide">
+											<f:ajax execute="@this"/>
+										</h:commandLink>
+									
+										<select style="width: 16px !important;" id="#{itemPriori.numero}" class="colorselector form-control">
+											<ui:repeat var="corDemanda" value="#{acompanhamentoController.listaPaletaCores}">
+												<ui:fragment rendered="#{itemPriori.colorStatus ne corDemanda}">
+													<option  value="#{corDemanda}" data-color="#{corDemanda}" />
+												</ui:fragment>
+												<ui:fragment rendered="#{itemPriori.colorStatus eq corDemanda}">
+													<option value="#{corDemanda}" data-color="#{corDemanda}" selected="selected" />
+												</ui:fragment>
+											</ui:repeat>
+										</select>
+									</h:panelGroup>					
+			      				</h:column>
+			      				<!-- <h:column headerClass="none hidden-xs ocultaConteudo">
+			      					<f:facet name="header">
+			      						<h:outputText value="Contrato" />
+			      					</f:facet>
+			      					<h:panelGroup>
+			      						<h:outputText value="#{itemPriori.listaContratosString}" />
+			      					</h:panelGroup>      					
+			      				</h:column>-->
+			      				
+			      				
+			      				<p:column headerClass="none hidden-xs ocultaConteudo" >
+				      				<h:dataTable styleClass="table-margintop-null" width="100%"
+										value="#{itemPriori.camposList}" var="itemPriorix" 
+										rendered="#{not empty itemPriori.camposList}">
+										<p:column>
+											<h:panelGroup>
+												<span class="dtr-title"><h:outputText class="text-bold" value="#{itemPriorix.camposObrigatorios.nome} " /></span> 
+												<span class="dtr-data"><h:outputText value="#{acompanhamentoController.maskCampoObrigtorio(itemPriorix)}" /></span>
+					      					</h:panelGroup> 
+										</p:column>
+									</h:dataTable>
+								</p:column>
+
+							</h:dataTable>
+							<script type="text/javascript">stateClearDataTables();</script>
+							<script type="text/javascript">montarDtPriori();</script>
+						</p:outputPanel>
+					</h:form>
+				</div>
+				
+				<h2>Demais Demandas</h2>
+				<div class="wrapTable">
+					<h:form id="frmDemaisDemandas" prependId="false" class="form-inline margin-top margin-bottom">
+						<div class="formFilter">
+							<div class="form-group input-group-sm">
+								<label for="cboSituacao2">Situação: </label>
+								<h:selectOneMenu id="cboSituacao2" styleClass="form-control"
+									style="margin-left: 5px"
+									converter="omnifaces.SelectItemsConverter"
+									value="#{acompanhamentoController.situacaoDemaisFiltro}">
+									<f:selectItem itemLabel="Todas" noSelectionOption="true"/>
+									<f:selectItems	value="#{acompanhamentoController.listaSituacoes}"
+										itemValue="#{situacao2}" var="situacao2"
+										itemLabel="#{situacao2.descricao}" />
+									<f:ajax listener="#{acompanhamentoController.alterarSituacaoComboDemaisDemandas()}"
+										 event="change" render="pnlDemaisDemandas" />
+								</h:selectOneMenu>
+							</div>
+							
+							<div class="form-group input-group-sm">
+								<label for="cboEnvolvimento">Envolvimento: </label>
+								<h:selectOneMenu id="cboEnvolvimento" styleClass="form-control"
+									style="margin-left: 5px"
+									value="#{acompanhamentoController.envolvimentoFiltro}">
+									<f:selectItem itemLabel="Todos" noSelectionOption="true"/>
+									<f:selectItems	value="#{acompanhamentoController.listaEnvolvimentos}"
+										itemValue="#{envolvimento}" var="envolvimento"
+										itemLabel="#{envolvimento.descricao}" />
+									<f:ajax listener="#{acompanhamentoController.alterarEnvolvimentoComboDemaisDemandas()}"
+										 event="change" render="pnlDemaisDemandas" />
+								</h:selectOneMenu> 
+							</div>
+						</div>
+						<p:outputPanel id="pnlDemaisDemandas">
+							<h:inputHidden id="irTbDemais" value="#{acompanhamentoController.demaisDemandasList.size()}" /> 
+							<h:dataTable id="tbDemaisDemandas"
+								styleClass="table table-striped table-hover table-bordered dt-responsive table-condensed"
+								width="100%"
+								value="#{acompanhamentoController.demaisDemandasList}"
+								var="itemDemais">
+		
+								<h:column headerClass="bg-cinza" >
+									<h:outputText/>
+								</h:column>
+								
+								<h:column headerClass="bg-cinza">
+									<f:facet name="header">
+										<h:outputText value="Número" />
+									</f:facet>
+									<h:panelGroup>
+										<h:outputText rendered="#{itemDemais.flagDemandaFilha}" value="#{itemDemais.idDemandaPai}/" />
+										<h:outputText value="#{itemDemais.numero}" />
+									</h:panelGroup>	
+								</h:column>
+			      				
+								<h:column headerClass="bg-cinza tbSituacao">
+									<f:facet name="header">
+										<h:outputText value="Situação" />
+									</f:facet>
+									<h:panelGroup>
+										<h:outputText rendered="#{itemDemais.flagDemandaPai}" 
+														style="padding-right: 4px;"
+			      										styleClass="fa fa-share-alt text-azul-caixa" 
+			      										title="Possui demanda vinculada"/>
+			      						<h:outputText rendered="#{itemDemais.situacao.valor eq 4 }" 
+			      										style="padding-right: 4px;"
+			      										styleClass="fa fa-edit text-azul-caixa" 
+			      										title="Demanda minutada"/>
+			      						<h:outputText rendered="#{itemDemais.flagConsulta}" 
+			      										style="padding-right: 4px;"
+			      										styleClass="fa fa-search text-azul-caixa" 
+			      										title="Demanda do tipo consulta"/>
+			      						<h:outputText rendered="#{itemDemais.flagRascunho}" 
+			      										style="padding-right: 4px;"
+			      										styleClass="fa fa-file-text text-azul-caixa" 
+			      										title="Possui rascunho"/>
+										<h:outputText value="#{itemDemais.situacao.descricao}" />
+									</h:panelGroup>
+								</h:column>
+								
+								<h:column headerClass="bg-cinza">
+									<f:facet name="header">
+										<h:outputText value="Prazo" title="Prazo Demanda"/>
+									</f:facet>
+									<h:panelGroup>
+										<h:outputText rendered="#{itemDemais.prazoDemanda gt 1 and (itemDemais.situacao.valor eq 1)}" 
+				      						styleClass="fa fa-circle text-green"/>
+				      					<h:outputText rendered="#{(itemDemais.prazoDemanda eq 1 or itemDemais.prazoDemanda eq 0) and (itemDemais.situacao.valor eq 1)}" 
+			      							styleClass="fa fa-circle text-orange"/>
+			      						<h:outputText rendered="#{itemDemais.prazoDemanda lt 0 and (itemDemais.situacao.valor eq 1)}" 
+			      							styleClass="fa fa-circle text-red"/>
+										<h:outputText rendered="#{itemDemais.situacao.valor eq 1}"
+											style="padding-left: 3px;" value="#{itemDemais.prazoDemanda}" />
+										<h:outputText rendered="#{itemDemais.situacao.valor ne 1}"
+			      							style="padding-left: 3px;" value="0" />
+									</h:panelGroup>
+								</h:column>
+								
+								<h:column headerClass="bg-cinza">
+									<f:facet name="header">
+										<h:outputText value="Data" />
+									</f:facet>
+									<h:panelGroup>
+										<h:outputText value="#{itemDemais.dataAberturaDemanda}">
+											<f:convertDateTime pattern="dd/MM/yyyy" />
+										</h:outputText>
+									</h:panelGroup>
+								</h:column>
+								
+								<h:column headerClass="bg-cinza">
+									<f:facet name="header">
+										<h:outputText value="Demandante" />
+									</f:facet>
+									<h:panelGroup>
+										<h:outputText value="#{itemDemais.demandante}" />
+									</h:panelGroup>
+								</h:column>
+								
+								<h:column headerClass="bg-cinza">
+									<f:facet name="header">
+										<h:outputText value="Aberta por" />
+									</f:facet>
+									<h:panelGroup>
+										<h:outputText value="#{itemDemais.matricula.toUpperCase()}" />
+									</h:panelGroup>
+								</h:column>
+
+								<!-- Assunto Resumido -->
+								<h:column headerClass="bg-cinza">
+									<f:facet name="header">
+										<h:outputText value="Assunto"/>
+									</f:facet>
+									<h:panelGroup rendered="#{itemDemais.assunto.length() gt 35}">
+			      						<h:outputText value="#{acompanhamentoController.obterAssuntoConcatenado(itemDemais.assunto).toUpperCase()}" />
+			      					</h:panelGroup>      					
+			      					<h:panelGroup  rendered="#{itemDemais.assunto.length() le 35}">
+			      						<h:outputText value="#{itemDemais.assunto.toUpperCase()}" />
+			      					</h:panelGroup>  
+								</h:column>
+								
+								<h:column headerClass="bg-cinza none hidden-xs ocultaConteudo">
+									<f:facet name="header">
+										<h:outputText value="Assunto" />
+									</f:facet>
+									<h:panelGroup>
+										<h:outputText value="#{itemDemais.assunto}" />
+									</h:panelGroup>
+								</h:column>
+								
+								<h:column headerClass="bg-cinza none hidden-xs ocultaConteudo">
+									<f:facet name="header">
+										<h:outputText value="Título" />
+									</f:facet>
+									<h:panelGroup>
+										<h:outputText value="#{itemDemais.titulo}" />
+									</h:panelGroup>
+								</h:column>
+								
+								<!-- Título Resumido -->
+								<h:column headerClass="bg-cinza">
+									<f:facet name="header">
+										<h:outputText value="Título"/>
+									</f:facet>
+									<h:panelGroup  rendered="#{itemDemais.titulo.length() gt 35}">
+			      						<h:outputText value="#{acompanhamentoController.obterTituloConcatenado(itemDemais.titulo).toUpperCase()}" />
+			      					</h:panelGroup>      					
+			      					<h:panelGroup  rendered="#{itemDemais.titulo.length() le 35}">
+			      						<h:outputText value="#{itemDemais.titulo.toUpperCase()}" />
+			      					</h:panelGroup>      
+								</h:column>
+								
+								<h:column headerClass="bg-cinza">
+									<f:facet name="header">
+										<h:outputText value="Resp Atual" />
+									</f:facet>
+									<h:panelGroup>
+										<h:outputText rendered="#{itemDemais.prazoCaixaPostal gt 1 and (itemDemais.situacao.valor eq 1)}" 
+				      						styleClass="fa fa-circle text-green"/>
+			      						<h:outputText rendered="#{(itemDemais.prazoCaixaPostal eq 1 or itemDemais.prazoCaixaPostal eq 0) and (itemDemais.situacao.valor eq 1)}" 
+			      							styleClass="fa fa-circle text-orange"/>
+			      						<h:outputText rendered="#{itemDemais.prazoCaixaPostal lt 0 and (itemDemais.situacao.valor eq 1)}" 
+			      							styleClass="fa fa-circle text-red"/>
+			      						<h:panelGroup rendered="#{itemDemais.externa}">
+			      							<a href="#" title="@Externa">
+					      						<h:outputText styleClass="caixaExterna" value="#{itemDemais.responsavelAtual}" />
+			      							</a>
+			      						</h:panelGroup>	
+										<h:panelGroup rendered="#{not itemDemais.externa}">
+				      						<h:outputText style="padding-left: 3px;" value="#{itemDemais.responsavelAtual}" />
+										</h:panelGroup>	
+									</h:panelGroup>
+								</h:column>
+								
+								<h:column headerClass="bg-cinza">
+									<f:facet name="header">
+										<h:outputText value="Prazo" />
+									</f:facet>
+									<h:panelGroup>
+										<h:outputText rendered="#{itemDemais.situacao.valor eq 1}" value="#{itemDemais.prazoCaixaPostal}" />
+										<h:outputText rendered="#{itemDemais.situacao.valor ne 1}" value="0" />
+									</h:panelGroup>
+								</h:column>
+								<h:column headerClass="bg-cinza">
+									<f:facet name="header" style="width: 16px !important;">
+			      						<select id="headerColorDemais" style="width: 16px !important;" class="colorselector form-control">
+											<ui:repeat var="corDemanda" value="#{acompanhamentoController.listaPaletaCores}">
+												<ui:fragment rendered="#{acompanhamentoController.corDemandaFiltroDemais ne corDemanda}">
+													<option  value="#{corDemanda}" data-color="#{corDemanda}"/>
+												</ui:fragment>
+												<ui:fragment rendered="#{acompanhamentoController.corDemandaFiltroDemais eq corDemanda}">
+													<option value="#{corDemanda}" data-color="#{corDemanda}" selected="selected" />
+												</ui:fragment>
+											</ui:repeat>
+		                                </select>
+									</f:facet>
+									<h:commandLink action="#{acompanhamentoController.redirectTratarDemanda(itemDemais.numero)}" target="_blank" styleClass="botaoDetalhar hide">
+											<f:ajax execute="@this"/>
+									</h:commandLink>
+									<h:panelGroup>
+										<h:panelGroup class="btn-colorselector" style="#{itemDemais.styleColorStatus}"/>
+									</h:panelGroup>
+								</h:column>
+								<!-- <h:column headerClass="none hidden-xs ocultaConteudo">
+			      					<f:facet name="header">
+			      						<h:outputText value="Contrato" />
+			      					</f:facet>
+			      					<h:panelGroup>
+			      						<h:outputText value="#{itemDemais.listaContratosString}" />
+			      					</h:panelGroup>      					
+			      				</h:column>-->
+			      				
+								<p:column headerClass="none hidden-xs ocultaConteudo" >
+				      				<h:dataTable styleClass="table-margintop-null" width="100%"
+										value="#{itemDemais.camposList}" var="itemDemaisx" 
+										rendered="#{not empty itemDemais.camposList}">
+										<p:column>
+											<h:panelGroup>
+												<span class="dtr-title"><h:outputText class="text-bold" value="#{itemDemaisx.camposObrigatorios.nome}" /></span> 
+												<span class="dtr-data"><h:outputText value="#{acompanhamentoController.maskCampoObrigtorio(itemDemaisx)}" /></span>
+					      					</h:panelGroup> 
+										</p:column>
+									</h:dataTable>
+								</p:column>
+			      				
+			      				
+			      				
+							</h:dataTable>
+							<script type="text/javascript">stateClearDataTables();</script>
+							<script type="text/javascript">montarDtDemais();</script>
+						</p:outputPanel>
+					</h:form>
+				</div>
+			</div>
+		</div>
+		
+		<h:form id="frmRMC">
+			<p:remoteCommand name="rmcAlterarCorDemanda" 
+				action="#{acompanhamentoController.alterarCorDemanda()}"
+				update=":frmDemaisDemandas">
+			</p:remoteCommand>
+			<p:remoteCommand name="rmcAlterarFiltroCorDemanda" 
+				action="#{acompanhamentoController.alterarFiltroCorDemandaPriori()}"
+				update=":frmDemandaAtuacao">
+			</p:remoteCommand>
+			<p:remoteCommand name="rmcAlterarFiltroCorDemandaDemais" 
+				action="#{acompanhamentoController.alterarFiltroCorDemandaDemais()}"
+				update=":frmDemaisDemandas">
+			</p:remoteCommand>
+		</h:form>
+	</ui:define>
+</ui:composition>

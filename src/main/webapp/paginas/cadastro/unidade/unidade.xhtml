@@ -1,0 +1,348 @@
+<ui:composition template="/WEB-INF/templates/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:param name="breadcrumbs" value="#{bundle['geral.breadcrumb.home']}" />
+	
+	<ui:define name="html-head">
+		<h:outputStylesheet library="css" name="cadastrar-unidade.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="datatables.min.css"></h:outputStylesheet>
+				
+		<h:outputScript library="js" name="jquery.mask.min.js" />
+		<h:outputScript library="js" name="datatables.min.js"></h:outputScript>
+		<h:outputScript library="js" name="cadastrar-unidade.js"/>
+	</ui:define>
+	
+
+	<ui:define name="conteudo-principal">
+		
+		<ol class="breadcrumb">
+            <li><strong>Você está em:</strong> </li>
+            <li>Cadastro<span class="caret-left"></span></li>
+            <li class="active">Unidade</li>
+        </ol>
+            
+		<h1>Unidade</h1>
+
+        <div class="alert hides">
+             
+        </div>
+
+		<div id="divListagem">
+			<h:form id="formListagem" prependId="false">
+			
+         		<h:messages id="messageListagem" errorClass="alert alert-danger" styleClass="messages"
+					infoClass="alert alert-success" warnClass="alert alert-info" 
+					showDetail="false" />
+		
+		        <section id="secao_1" class="">           
+		        	
+		        	<ui:fragment rendered="#{cadastrarUnidadeController.unidadeList ne null}">
+			            <div class="row">
+			                <div class="col-md-12">
+			                    <div class="form-group">
+			                        <button id="btn_novaUnidade" type="button" class="btn btn-primary" onclick="$('#btn_novaUnidadeHidden').click()">
+				                        <span class="glyphicon glyphicon-plus"></span> 
+				                        Nova Unidade
+			                        </button>
+			                        <h:commandLink id="btn_novaUnidadeHidden" styleClass="hides">
+			                        	<p:ajax listener="#{cadastrarUnidadeController.handlerModalNovaUnidade()}" oncomplete="abrirModalNovaUnidade();" update=":formModalCadastro "/>
+			                        </h:commandLink>
+			                    </div>
+			                </div>    
+			            </div>
+			            <h:dataTable id="dtbUnidade" styleClass="table table-striped  table-bordered" var="unidade" value="#{cadastrarUnidadeController.unidadeList}"
+			            	headerClass="bg-cinza" binding="#{tableUnidade}">
+			            	<h:column>
+								<f:facet name="header">
+									<h:outputText value="CGC" />
+								</f:facet>
+								<h:outputText value="#{unidade.cgcUnidade}" />						
+							</h:column>
+			            	<h:column>
+								<f:facet name="header">
+									<h:outputText value="Sigla" />
+								</f:facet>
+								<h:outputText value="#{unidade.sigla}" />						
+							</h:column>
+			            	<h:column>
+								<f:facet name="header">
+									<h:outputText value="Unidade" />
+								</f:facet>
+								<h:outputText value="#{unidade.nome}" />						
+							</h:column>
+			            	<h:column>
+								<f:facet name="header">
+									<h:outputText value="Tipo" />
+								</f:facet>
+								<h:outputText value="#{unidade.tipoUnidadeStr}" />						
+							</h:column>
+			            	<h:column>
+								<f:facet name="header">
+									<h:outputText value="Ações" />
+								</f:facet>
+								<h:panelGroup>
+									 <button type="button" class="btn btn-default btn-xs" onclick="rmcEditarUnidadel_#{tableUnidade.rowIndex}()">
+		                                <span class="glyphicon glyphicon-pencil editar_unidade" aria-hidden="true" title="Clique aqui para editar"></span>
+		                            </button>
+		                           
+		                            <p:remoteCommand name="rmcEditarUnidadel_#{tableUnidade.rowIndex}" actionListener="#{cadastrarUnidadeController.handlerModalEditarUnidade(unidade)}"
+			                                	update=":formModalCadastro" oncomplete="abrirModalEditarUnidade()"/>
+			                                	
+		                            <button type="button" class="btn btn-default btn-xs btn_excluir" onclick="confirmExcluir(rmcExcluirUnidade_#{unidade.id})">
+		                                <span class="glyphicon glyphicon-trash" aria-hidden="true " title="Clique aqui para excluir"></span>
+		                            </button>
+		                            
+		                            <p:remoteCommand name="rmcExcluirUnidade_#{unidade.id}" actionListener="#{cadastrarUnidadeController.excluirUnidade(unidade)}"
+		                             	update="@form" oncomplete="carregarDataTableUnidades()"/>
+			                                	
+								</h:panelGroup>
+							</h:column>
+									
+			            </h:dataTable>
+					</ui:fragment>
+		        </section>
+		        
+ 		        <p:remoteCommand update="@all" name="rmcRefreshTela" oncomplete="carregarDataTableUnidades()"/>
+		        
+			</h:form>
+  		</div>        
+        
+        <!-- INICIO MODAIS -->
+        
+        <!--MODAL EXCLUIR -->
+        <div class="modal fade modal_excluir" id="modal_excluir" role="dialog">
+            <div class="modal-dialog modal-excluir">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&#215;</button>
+                      <h4 class="modal-title">Atenção!</h4>
+                  </div>
+                  <div class="modal-body">
+                    <div class="alert-excluir">
+                    	Deseja excluir permanentemente o item?
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button id="confirma_exclusao" type="button" class="btn btn-primary" data-dismiss="modal">Sim</button>
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">Não</button>
+                  </div>
+              </div>
+            </div>
+        </div>
+        
+         <!--MODAL CADASTRO NOVA UNIDADE-->
+        <h:panelGroup id="modal_cadastro_unidade" layout="block" styleClass="modal fade">
+        	<h:form id="formModalCadastro" prependId="false">
+	            <div class="modal-dialog modal-lg">
+	              <div class="modal-content">
+	                <div class="modal-header">
+	                  <button type="button" class="close" data-dismiss="modal">&#215;</button>
+	                  <h4 class="modal-title">
+	                  	<ui:fragment rendered="#{cadastrarUnidadeController.unidade.id eq null}">
+		                  	Cadastro Unidade
+	                  	</ui:fragment>
+	                  	<ui:fragment rendered="#{cadastrarUnidadeController.unidade.id ne null}">
+		                  	Editar - Cadastro Unidade
+	                  	</ui:fragment>
+	                  </h4>
+	                </div>
+	                <div class="modal-body">
+	                
+                		<h:messages id="message" errorClass="alert alert-danger"
+								infoClass="alert alert-success" warnClass="alert alert-info"
+								showDetail="false" />
+								
+	                	<h:panelGroup id="divCamposUnidade" layout="block">
+		                     <div class="row">
+		                    	<div class="col-md-2">
+		                            <div class="form-group">
+		                                <label for="cgc_unidade" class="obrigatorio">CGC:</label>
+		                                <h:inputText id="cgcUnidade" value="#{cadastrarUnidadeController.unidade.cgcUnidade}" styleClass="form-control" maxlength="9"
+		                                	disabled="#{cadastrarUnidadeController.unidade.id ne null}">
+		                                	<p:ajax listener="#{cadastrarUnidadeController.pesquisarPorCGC()}" update="divCamposUnidade message" event="change"/>
+		                                </h:inputText>
+		                                
+		                                <script type="text/javascript">
+											$('#cgcUnidade').mask('999999999');
+	                                	</script>
+		                            </div>
+		                        </div>
+		                    	<div class="col-md-3">
+		                            <div class="form-group">
+		                                <label for="cgc_unidade" class="obrigatorio">Sigla:</label>
+		                                <h:inputText id="sigla_unidade" value="#{cadastrarUnidadeController.unidade.sigla}"  styleClass="form-control" maxlength="50">
+		                                </h:inputText>
+		                            </div>
+		                        </div>
+		
+		                        <div class="col-md-7">
+		                            <div class="form-group">
+		                                <label for="nome_unidade" class="obrigatorio">Nome:</label>
+		                                <h:inputText id="nome_unidade" value="#{cadastrarUnidadeController.unidade.nome}"  styleClass="form-control" maxlength="100"/>
+		                            </div>                
+		                        </div>
+		                    </div>
+		
+		                     <div class="row">
+		                    	<div class="col-md-3">
+		                            <div class="form-group">
+		                                <label for="unidade_externa" class="obrigatorio">Tipo:</label>
+		                                
+					                      <h:selectOneMenu id="tipo_unidade" styleClass="form-control" 
+							                 	value="#{cadastrarUnidadeController.unidade.tipoUnidade}" disabled="#{cadastrarUnidadeController.isEdicaoUnidade}" rendered="#{!cadastrarUnidadeController.isUnidadeMatrizOuFilial}">
+							                 	<f:selectItem itemLabel="Selecione" noSelectionOption="false"/>
+							                 	<f:selectItems var="item"
+							                 		value="#{cadastrarUnidadeController.tipoUnidadeList}" 
+							                 		itemLabel="#{item.label}" itemValue="#{item}">
+							                 	</f:selectItems>
+							                 	<p:ajax update="divCamposUnidade" process="divCamposUnidade" listener="#{cadastrarUnidadeController.selecionarTipoUnidade}"/>
+						                 </h:selectOneMenu>
+						                 
+						                 <h:selectOneMenu id="tipo_unidade_filtrada" styleClass="form-control" 
+							                 	value="#{cadastrarUnidadeController.unidade.tipoUnidade}" rendered="#{cadastrarUnidadeController.isUnidadeMatrizOuFilial}">
+							                 	<f:selectItem itemLabel="Selecione" noSelectionOption="false"/>
+							                 	<f:selectItems var="item"
+							                 		value="#{cadastrarUnidadeController.tipoUnidadeListFiltrada}" 
+							                 		itemLabel="#{item.label}" itemValue="#{item}">
+							                 	</f:selectItems>
+							                 	<p:ajax update="divCamposUnidade" process="divCamposUnidade" listener="#{cadastrarUnidadeController.selecionarTipoUnidade}"/>
+						                 </h:selectOneMenu>
+			                 
+		                            </div>                
+		                        </div>
+		                        
+		                        <div class="col-md-5">
+		                            <div class="form-group">
+		                                <label for="nome_unidade">Unidade de Subordinação:</label>
+		                                 <h:selectOneMenu id="unidade_subordinada" styleClass="form-control" disabled="#{cadastrarUnidadeController.ehUnidadeExterna()}" 
+							                 	value="#{cadastrarUnidadeController.unidade.unidadeSubordinacao}"
+							                 	converter="omnifaces.SelectItemsConverter">
+							                 	<f:selectItem itemLabel="SEM SUBORDINAÇÃO DE SUEG" noSelectionOption="true"/>
+							                 	<f:selectItems var="item"
+							                 		value="#{cadastrarUnidadeController.unidadeSubordinacaoList}" 
+							                 		itemLabel="#{item.sigla}" itemValue="#{item}">
+							                 	</f:selectItems>
+						                 </h:selectOneMenu>
+		                            </div>                
+		                        </div>
+		
+		                    	<div class="col-md-4">
+		                            <div class="checkbox">
+		                                <label class="margin-btn-top">
+<!-- 		                                	<input type="checkbox" id="rel_con_Assunto"/> -->
+		                                	<h:selectBooleanCheckbox id="rel_con_Assunto" value="#{cadastrarUnidadeController.unidade.isRelConsolidadoAssunto}"
+		                                		disabled="#{cadastrarUnidadeController.ehUnidadeExterna()}"  />
+		                                	<strong> Relatório Consolidado por Assunto</strong>
+		                                </label>
+		                            </div>                
+		                        </div>
+		
+		                    </div>
+						</h:panelGroup>
+						
+             		   	<h:panelGroup id="divCamposCaixaPostal" layout="block">
+						
+		                     <h2>Caixa Postal</h2>
+		                    
+		                     <div class="row">
+		                        <div class="col-md-2">
+		                            <div class="form-group">
+		                                <label for="sigla_cx_postal" class="obrigatorio">Sigla Caixa Postal</label>
+		                                <h:inputText id="sigla_cx_postal" styleClass="form-control" value="#{cadastrarUnidadeController.caixaPostal.sigla}"
+		                                	maxlength="20">
+	                                	</h:inputText>
+		                            </div>                
+		                        </div>
+		                        <div class="col-md-5">
+		                            <div class="form-group">
+		                                <label for="email_cx_postal" class="obrigatorio">E-mail:</label>
+		                                <h:inputText  id="email_cx_postal" styleClass="form-control" value="#{cadastrarUnidadeController.caixaPostal.email}"
+		                                	maxlength="200"/>
+		                            </div>                
+		                        </div>
+		                        <div class="col-md-2">
+		                            <div class="checkbox">
+		                                <label class="margin-btn-top">
+		                                	<h:selectBooleanCheckbox id="receber_email" value="#{cadastrarUnidadeController.caixaPostal.recebeEmail}"
+		                                		/>
+			                                <strong> Receber E-mail</strong>
+		                                </label>
+		                            </div>                
+		                        </div>
+		                        
+		                        <div class="col-md-3">
+		                            <button type="button" id="btn_salvar_cx_postal" class="btn btn-primary btn-block margin-btn-top " onclick="$('#btn_salvar_cx_postalHidden').click()">Salvar Caixa Postal</button>
+	                            	<h:commandLink id="btn_salvar_cx_postalHidden" styleClass="hides">
+			                        	<p:ajax listener="#{cadastrarUnidadeController.salvarCaixaPostal()}" update="@form" oncomplete="carregarDataTableCaixasPostais()"
+			                        		process="divCamposUnidade divCamposCaixaPostal"/>
+			                        </h:commandLink>
+		                        </div>
+		                    </div>
+		                    
+		                     <h:dataTable id="grid_cx_postal" styleClass="table table-striped  table-bordered" var="caixa" value="#{cadastrarUnidadeController.caixaPostalList}"
+				            	headerClass="bg-cinza" binding="#{table}"
+				            	rendered="#{true or not empty cadastrarUnidadeController.caixaPostalList}">
+				            	<h:column>
+									<f:facet name="header">
+										<h:outputText value="Sigla Caixa Postal" />
+									</f:facet>
+									<h:outputText value="#{caixa.sigla}" />						
+								</h:column>
+				            	<h:column>
+									<f:facet name="header">
+										<h:outputText value="E-mail" />
+									</f:facet>
+									<h:outputText value="#{caixa.email}" />						
+								</h:column>
+				            	<h:column>
+									<f:facet name="header">
+										<h:outputText value="Receber e-mail" />
+									</f:facet>
+									<h:outputText value="#{caixa.recebeEmail == true? 'Sim' : 'Não'}" />						
+								</h:column>
+				            	<h:column>
+									<f:facet name="header">
+										<h:outputText value="Ações" />
+									</f:facet>
+									<h:panelGroup>
+			                            <button type="button" class="btn btn-primary btn-xs btn_editar_cx_postal" onclick="rmcEditarCaixaPostal_#{table.rowIndex}()" >
+		                                    <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="Clique aqui para editar"></span>
+		                                </button>
+		                                <p:remoteCommand name="rmcEditarCaixaPostal_#{table.rowIndex}" actionListener="#{cadastrarUnidadeController.editarCaixaPostal(caixa)}"
+		                                	update=":formModalCadastro:divCamposCaixaPostal" oncomplete="carregarDataTableCaixasPostais()"/>
+		                                
+		                                <button type="button" class="btn btn-primary btn-xs"  onclick="confirmExcluir(rmcExcluirCaixaPostal_#{table.rowIndex})">
+		                                    <span class="glyphicon glyphicon-trash" aria-hidden="true" title="Clique aqui para excluir"></span>
+		                                </button>
+		                                
+		                                <p:remoteCommand name="rmcExcluirCaixaPostal_#{table.rowIndex}" actionListener="#{cadastrarUnidadeController.excluirCaixaPostal(caixa)}"
+	                             			update="@form" oncomplete="carregarDataTableCaixasPostais()"/>
+									</h:panelGroup>
+								</h:column>
+										
+				            </h:dataTable>
+	                	</h:panelGroup>
+	
+	                </div>
+	                <div class="modal-footer">
+	                  <button id="salvar_cadastro" type="button" class="btn btn-primary" onclick="$('#btn_salvar_unidade_Hidden').click()" disabled="#{empty cadastrarUnidadeController.caixaPostalList ? 'disabled' : ''}">Salvar</button>
+	                  
+	                  <h:commandLink id="btn_salvar_unidade_Hidden" styleClass="hides" disabled="#{empty cadastrarUnidadeController.caixaPostalList}">
+                       	<p:ajax listener="#{cadastrarUnidadeController.salvarUnidade()}" process="@form"/>
+                       </h:commandLink>
+			                        
+	                  <button type="button" class="btn btn-warning" data-dismiss="modal">Cancelar</button>
+	                </div>
+	              </div>
+	            </div>
+			</h:form>
+        </h:panelGroup>
+        
+        
+	</ui:define>
+	
+</ui:composition>

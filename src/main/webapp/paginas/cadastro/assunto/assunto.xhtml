@@ -1,0 +1,251 @@
+<ui:composition template="/WEB-INF/templates/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:param name="breadcrumbs" value="#{bundle['geral.breadcrumb.home']}" />
+
+	<ui:define name="html-head">
+		<h:outputStylesheet library="css" name="font-awesome.min.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="datatables.min.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="cadastrar-assunto.css"></h:outputStylesheet>
+		<h:outputScript library="js" name="datatables.min.js"></h:outputScript>
+		<h:outputScript library="js" name="cadastrar-assunto.js"></h:outputScript>
+	</ui:define>
+	
+	<ui:define name="conteudo-principal">
+		
+  		<ol class="breadcrumb">
+            <li><strong>Você está em:</strong> </li>
+            <li>Cadastro <span class="caret-left"></span></li>
+            <li class="active">Cadastro Assunto</li>
+        </ol>
+        <h1>Cadastro Assunto</h1>
+		
+		<h:form id="formCategorias" prependId="false">
+		
+			<h:messages id="message" errorClass="alert alert-danger"
+					infoClass="alert alert-success" warnClass="alert alert-info"
+					showDetail="false" globalOnly="true" />
+					
+			<p:remoteCommand name="atualizarForm" update="divCategorias" oncomplete="carregarComponentes()"/>
+			
+		
+		  	<ui:fragment rendered="#{empty cadastrarAssuntoController.assuntoEmDetalhe}">
+			  	<ui:fragment rendered="#{not empty cadastrarAssuntoController.abrangencia.id}">
+					<br/>
+					<div class="row">
+						<div class="col-md-12">
+							<button id="btn_inclui_topico"  type="button" class="btn btn-primary"><span class="glyphicon glyphicon-plus margin-icon-right"></span>Incluir Categoria</button>    
+						</div>    
+					</div>
+				</ui:fragment>
+		 	</ui:fragment>  
+		  <p:remoteCommand name="rmcHandlerAbrirNovaCategoriaModal" actionListener="#{cadastrarAssuntoController.handlerAbrirModalNovaCategoria()}"
+                      	 update=":formModalIncluir" oncomplete="abrirModalIncluirCategoria()"/>
+			
+		  <ui:fragment rendered="#{not empty cadastrarAssuntoController.assuntoEmDetalhe}">
+			    <ul class="posicao">
+		        	<li class="active">#{cadastrarAssuntoController.arvoreAssuntoStr}</li>
+		        </ul>
+	
+	        
+		        <div class="row">
+		            <div class="col-md-12">
+			            <a href="#" class="btn btn-warning" onclick="$('#btnHiddenInicio').click()"><span class="glyphicon glyphicon-step-backward margin-icon-right"></span>Início</a>
+                   		<h:commandLink id="btnHiddenInicio" action="#{cadastrarAssuntoController.voltarInicio()}" styleClass="hide"/>
+
+		                <a class="btn btn-warning" onclick="$('#btnHiddenVoltar').click()"><span class="glyphicon glyphicon-backward margin-icon-right"></span>Voltar</a>
+                   		<h:commandLink id="btnHiddenVoltar" action="#{cadastrarAssuntoController.voltar()}" styleClass="hide"/>
+                   		
+                   		<ui:fragment rendered="#{cadastrarAssuntoController.flagExibirBtnIncluirCategoria()}">
+			                <button id="btn_inclui_topico" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-plus margin-icon-right"></span>Incluir Categoria</button>
+                   		</ui:fragment>
+		                
+		                <button id="btn_inclui_assunto" type="button" class="btn btn-primary" onclick="$('#btnHiddenIncluirAssunto').click()"><span class="glyphicon glyphicon-plus margin-icon-right"></span>Incluir Assunto</button>
+                        <h:commandLink id="btnHiddenIncluirAssunto" action="#{cadastrarAssuntoController.abrirConfigurarAssunto()}" styleClass="hide"/>
+		               
+		            </div>    
+		        </div>
+	        
+		    </ui:fragment>
+			
+			<h:panelGroup id="divCategorias">
+				<table id="dtbCategorias" class=" table table-striped  table-bordered dt-responsive nowrap" width="100%">
+		            <thead>
+		                <tr class="bg-cinza">
+		                  <th width="" class="text-left">Categoria</th>
+		                  <th width="" class="text-center">Assunto</th>
+						  <th width="" class="text-center">Status</th>
+		                  <th width="" class="text-center">Ação</th>
+		               </tr>
+		            </thead>
+		            <tbody>
+		            <ui:repeat var="assunto" value="#{cadastrarAssuntoController.assuntosList}">
+		                <tr>
+		                    <td>
+		                    	<ui:fragment rendered="#{!assunto.flagAssunto}">
+			                    	<h:commandLink action="#{cadastrarAssuntoController.detalharAssunto(assunto)}" value="">
+				                    	<span class="fa fa-plus margin-icon-right" aria-hidden="true" ></span>
+				                    	#{assunto.nome}
+			                    	</h:commandLink>
+		                    	</ui:fragment>
+		                    	
+					          	<ui:fragment rendered="#{assunto.flagAssunto}">
+					          		#{assunto.nome}
+		                    	</ui:fragment>
+		                    </td>
+		                    <td>	
+		                    	<ui:fragment rendered="#{assunto.flagAssunto}">
+			                    	<span class="glyphicon glyphicon-ok text-azul-caixa" aria-hidden="true" ></span>
+		                    	</ui:fragment>
+		                    </td>
+		                    <td>
+		                    	<div class="btn-group">
+		                            #{assunto.ativo ? 'Ativo' : 'Inativo'}
+		                        </div>
+							</td>
+		                    <td>
+		                    	<div class="btn-group">
+		                            <button id="acoes_menu" class="btn btn-primary dropdown-toggle btn-xs" type="button" data-toggle="dropdown" title="Clique para ações">
+		                                <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true" ></span>
+		                            </button>
+		                            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+		                            	<ui:fragment rendered="#{!assunto.flagAssunto}">
+			                                <li>
+				                                <h:commandLink actionListener="#{cadastrarAssuntoController.handlerAbrirModalCancelarCategoria(assunto)}"  styleClass="btn_excluir_assunto">
+					                                <span class="fa fa-trash margin-icon-right" aria-hidden="true" ></span> 
+					                                <p:ajax oncomplete="abrirModalCancelarCategoria()" update=":formModalExcluirCategoria"/>
+					                                Excluir Categoria
+				                                </h:commandLink>
+				                                
+			                                </li>
+			                                
+		                            	</ui:fragment>
+		                                
+		                            	<ui:fragment rendered="#{assunto.flagAssunto}">
+			                                <li>
+<!-- 			                                	<a class="btn_configura_fluxo" onclick=""><span class="fa fa-gear margin-icon-right " aria-hidden="true" ></span> Configurar Fluxo</a> -->
+				                                 <h:commandLink action="#{cadastrarAssuntoController.editarConfigurarAssunto(assunto)}" styleClass="btn_configura_fluxo">
+						                                <span class="fa fa-gear margin-icon-right " aria-hidden="true" ></span>
+						                               Configurar Fluxo
+				                                </h:commandLink>
+			                                </li>
+			                                
+			                                
+				                                
+			                               <li>
+				                                <h:commandLink actionListener="#{cadastrarAssuntoController.handlerAbrirModalExcluirAssunto(assunto)}"  styleClass="btn_excluir_assunto">
+					                                <span class="fa fa-trash margin-icon-right" aria-hidden="true" ></span> 
+					                                <p:ajax oncomplete="abrirModalExcluirAssunto()" update=":formModalExcluirAssunto"/>
+					                                Excluir Assunto
+				                                </h:commandLink>
+				                                
+			                                </li>
+			                                
+			                                
+		                                </ui:fragment>
+		                            </ul>
+		                        </div>
+		                    </td>
+		                </tr>
+		            </ui:repeat>
+		            </tbody>
+		        </table>
+			</h:panelGroup>
+			
+		</h:form>
+		
+		<!--MODAL INCLUIR TÓPICO-->
+         <div class="modal fade" id="modal_novo_topico" role="dialog">
+            <div class="modal-dialog">
+            
+              <div class="modal-content">
+              	<h:form id="formModalIncluir" prependId="false">
+	                <div class="modal-header">
+	                  <button type="button" class="close" data-dismiss="modal">&#215;</button>
+	                  <h4 class="modal-title">Incluir Categoria</h4>
+	                </div>
+	                <div class="modal-body">
+	                	<h:messages id="messageModalIncluir"
+	                		styleClass="messages" errorClass="alert alert-danger" infoClass="alert alert-success" warnClass="alert alert-info" 
+	                		showDetail="false" globalOnly="false" />
+	                	
+	                    <div class="form-group">
+	                        <label for="assunto">Incluir Categoria:</label>
+	                        <h:inputText value="#{cadastrarAssuntoController.nomeCategoria}"  styleClass="form-control" 
+	                        	id="assunto" placeholder="Digite o nome da categoria a ser inserida"/>
+	                    </div>
+	                </div>
+	                <div class="modal-footer">
+	                  <button id="btn_salva_topico" type="button" class="btn btn-primary" onclick="rmcIncluirCategoria();">Salvar</button>
+	                  <p:remoteCommand name="rmcIncluirCategoria" actionListener="#{cadastrarAssuntoController.incluirCategoria()}" oncomplete="validarIncluirNovaCategoria(xhr, status, args)"
+	                    update=":formModalIncluir:messageModalIncluir :formCategorias:message"/>
+					  	
+	                  <button type="button" class="btn btn-warning" data-dismiss="modal">Cancelar</button>
+	                </div>
+              	</h:form>
+              </div>
+            </div>
+          </div>
+         <!--/MODAL INCLUIR TOPICO-->   
+		
+        <!--MODAL EXCLUIR -->
+        <div class="modal fade" id="modal_exclui_categoria" role="dialog">
+            <div class="modal-dialog modal-excluir">
+              <div class="modal-content">
+              	 <h:form id="formModalExcluirCategoria" prependId="false">
+	                  <div class="modal-header">
+	                      <button type="button" class="close" data-dismiss="modal">&#215;</button>
+	                      <h4 class="modal-title">Atenção!</h4>
+	                  </div>
+	                  <div class="modal-body">
+	                    <div class="alert-excluir">
+	                    	#{cadastrarAssuntoController.mensagemConfirmacaoExclusao}
+	                    </div>
+	                  </div>
+	                  <div class="modal-footer">
+	                    <button type="button" class="btn btn-primary"  onclick="rmcIncluirCategoria();">Sim</button>
+	                     <p:remoteCommand name="rmcIncluirCategoria" actionListener="#{cadastrarAssuntoController.excluirCategoria()}"
+	                    	update=":formCategorias:message" oncomplete="excluirCategoria()"/>
+	                    
+	                    <button type="button" class="btn btn-warning" data-dismiss="modal">Não</button>
+	                  </div>
+              	 </h:form>
+              	
+              </div>
+            </div>
+        </div>
+        
+        <!--MODAL EXCLUIR -->
+        <div class="modal fade" id="modal_exclui_assunto" role="dialog">
+            <div class="modal-dialog modal-excluir">
+              <div class="modal-content">
+              	 <h:form id="formModalExcluirAssunto" prependId="false">
+	                  <div class="modal-header">
+	                      <button type="button" class="close" data-dismiss="modal">&#215;</button>
+	                      <h4 class="modal-title">Atenção!</h4>
+	                  </div>
+	                  <div class="modal-body">
+	                    <div class="alert-excluir">
+	                    	#{cadastrarAssuntoController.mensagemConfirmacaoExclusao}
+	                    </div>
+	                  </div>
+	                  <div class="modal-footer">
+	                    <button type="button" class="btn btn-primary"  onclick="rmcExcluirAssunto();">Sim</button>
+	                     <p:remoteCommand name="rmcExcluirAssunto" actionListener="#{cadastrarAssuntoController.excluirAssunto()}"
+	                    	update=":formCategorias:message" oncomplete="excluirAssunto()"/>
+	                    
+	                    <button type="button" class="btn btn-warning" data-dismiss="modal">Não</button>
+	                  </div>
+              	 </h:form>
+              	
+              </div>
+            </div>
+        </div>
+		
+	</ui:define>
+	
+</ui:composition>

@@ -1,0 +1,83 @@
+<ui:composition template="/WEB-INF/templates/template_relatorio.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+	
+	<ui:define name="html-head">
+		<h:outputStylesheet library="css" name="font-awesome.min.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="relatorioHistoricoDemanda.css"></h:outputStylesheet>
+        <title>Histórico Demanda</title>
+		
+	</ui:define>
+	
+
+	<ui:define name="conteudo-principal">
+		<div class="container-fluid">
+			
+			
+	        <!--Print-->           	
+	        <img src="#{request.contextPath}/resources/images/logo-caixa-azul.svg" alt="CAIXA ECONÔMICA FEDERAL" style="height:28; width:122" class="logo-print margin-bottom pull-right"/>
+			<div class="clearfix"></div>
+	        <div class="titulo-relatorio-print">
+	        	<strong>SIARG - Sistema de Atendimento Rede Governo</strong>
+	        </div>
+			<div>
+	        	<strong>Histórico da Demanda:</strong> #{tratarDemandaController.numeroDemandaTratado}
+	        </div>
+	        <div >
+	        	<strong>Assunto:</strong> #{tratarDemandaController.demanda.assunto.nome}
+	        </div>
+	        <div class="margin-bottom" >
+	        	<strong>Gerado em:</strong>
+	        	<h:outputText value="#{tratarDemandaController.dataAtual}" >
+	        		<f:convertDateTime pattern="dd/MM/yyyy - HH:mm:ss" locale="pt_BR"/>
+	        	</h:outputText>
+	            <hr></hr>
+	            
+	        </div>
+			<!--/Prit-->
+		
+			<h:form prependId="false">
+	       		<ui:repeat var="atendimento" value="#{tratarDemandaController.historicoList}">
+					<div class="linha">
+			            <header>
+			                <ul>
+			                    <li><strong>Ação:</strong> #{atendimento.acao}</li>
+			                    <li><strong>Data de Atendimento:</strong> 
+	                				<h:outputText value="#{atendimento.dataAtendimento}">
+										<f:convertDateTime pattern="dd/MM/yyyy - HH:mm:ss" locale="pt_BR"/>
+	                           		</h:outputText>
+	                       		</li>
+			                    <li><strong>De:</strong> #{atendimento.origem} - <strong>Para:</strong> #{atendimento.destino}</li>
+			                    <li><strong>#{atendimento.matricula}</strong> - #{atendimento.nomeUsuario}</li>
+		                        <ui:fragment rendered="#{not empty atendimento.email}">
+	                               <li><strong>Com envio de e-mail</strong></li>
+	                            </ui:fragment>
+	                  	        <ui:fragment rendered="#{not empty atendimento.anexo}">
+	                              <li>
+									<strong>Anexo</strong>
+	                              </li>
+	                            </ui:fragment>
+	                            
+	                            
+			                </ul>
+			            </header>
+			            <p>
+			            	<h:outputText value="#{atendimento.descricao}" escape="false"/>
+			            </p>
+			        </div>
+			        <hr></hr>
+				</ui:repeat>
+			</h:form>
+		
+		 	
+	         <div class="text-center">   
+		    	<button type="button" class="btn btn-primary" onClick="window.print()"><span class="fa fa-print"></span> Imprimir</button>
+		    </div>
+				
+	    </div>
+	</ui:define>
+	
+</ui:composition>

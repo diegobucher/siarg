@@ -1,0 +1,41 @@
+.table .open>.dropdown-toggle.btn-primary {
+	color: #ffffff;
+	background-image: -webkit-linear-gradient(top, #f76106 0%, #bf3302 100%);
+	background-image: -o-linear-gradient(top, #f76106 0%, #bf3302 100%);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#f76106),to(#bf3302));
+	background-image: linear-gradient(to bottom, #f76106 0%, #bf3302 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff0ad4e',endColorstr='#ffeb9316', GradientType=0);
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled= false);
+	background-repeat: repeat-x;
+	border-color: #bf3302;
+}
+
+#wrapInputFile .input-group {
+	width: 100% !important;
+	z-index: 1;
+}
+
+table.dataTable.dtr-inline.collapsed>tbody>tr>td:first-child, table.dataTable.dtr-inline.collapsed>tbody>tr>th:first-child
+	{
+	position: relative;
+	padding-left: 10px;
+	cursor: pointer;
+}
+
+.colCinco {
+	width: 5px !important;
+}
+
+.colDuzentos {
+	width: 200px !important;	
+} 
+
+.colDuzentosQuarenta {
+	width: 240px !important;	
+} 
+.col50Porcento {
+	width: 50% !important;
+}
+.colTrinta{
+	width: 30px !important;
+}

@@ -1,0 +1,387 @@
+<ui:composition template="/WEB-INF/templates/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="html-head">
+
+		<h:outputStylesheet library="css" name="datatables.min.css" />
+		<h:outputStylesheet library="css" name="jquery-ui.min.css" />
+		<h:outputStylesheet library="css" name="siarg.css" />
+		<h:outputStylesheet library="css" name="datePickerCustom.css"/>
+		<h:outputStylesheet library="css" name="bootstrap-colorselector.css" />
+		
+
+		<h:outputScript library="js" name="datatables.min.js" />
+		<h:outputScript library="js" name="jquery-ui.min.js" />
+		<h:outputScript library="js" name="datepicker-pt-br.js" />
+		<h:outputScript library="js" name="jquery.mask.min.js" />
+		<h:outputScript library="js" name="mask-function.js" />
+		<h:outputScript library="js" name="maskIt.js" />
+		<h:outputScript library="js" name="datatables-pt-br.js" />
+		<h:outputScript library="js" name="bootstrap-colorselector.js" />
+		<h:outputScript library="js" name="demandasPorSituacao.js" />
+
+	</ui:define>
+
+	<ui:define name="conteudo-principal">
+		<ol class="breadcrumb">
+			<li><strong>Você está em:</strong></li>
+			<li>Relatório<span class="caret-left"></span></li>
+			<li class="active">Quantidade de Demandas por Situação</li>
+		</ol>
+
+		<h1>Relatórios</h1>
+		<h2>Quantidade de Demandas por Situação</h2>
+		
+			
+			<div class="row">
+	            <div class="col-md-12">
+					<h:form id="frmRelatorioDemandas" styleClass="form-inline"
+						prependId="false">
+						
+						<h:messages id="message" errorClass="alert alert-danger" infoClass="alert alert-info" warnClass="alert alert-success" showDetail="false" globalOnly="true" />
+						
+<!-- 	                <form class="form-inline"> -->
+		                <div class="margin-bottom">
+			                     <div class="form-group">
+			                         <label for="select_unidade" class="obrigatorio">Data Início</label><br/>
+			                         <h:inputText id="dtInicioPerInicial" class="form-control date" maxlength="10"
+											onkeyup="maskIt(this, event, '##/##/#####', false, false)"
+											value="#{relatorioDemandasPorSituacaoController.dtInicial}">
+									 </h:inputText>
+			                     </div>
+			                     <div class="form-group">
+			                         <label for="select_unidade" class="obrigatorio">Data Fim</label><br/>
+			                          <h:inputText id="dtFimPerInicial" class="form-control date" maxlength="10"
+											onkeyup="maskIt(this, event, '##/##/#####', false, false)"
+											value="#{relatorioDemandasPorSituacaoController.dtFinal}">
+									 </h:inputText>
+			                     </div>
+			                     <div class="form-group">
+			                        <label for="select_unidade">Unidade</label><br/>
+			                        <h:selectOneMenu id="idUnidade" styleClass="form-control"
+									converter="omnifaces.SelectItemsConverter"
+									value="#{relatorioDemandasPorSituacaoController.unidadeSelecionadaString}">
+									<f:selectItems
+										value="#{relatorioDemandasPorSituacaoController.listaUnidadesStringCombo}"
+										itemValue="#{unidadeDTO}" var="unidadeDTO" />
+								</h:selectOneMenu>
+			                    </div>
+			                 <script type="text/javascript">
+								aplicarMascaras();
+							 </script>
+			
+		                <h:commandLink id="btPesquisar" style="margin-left : 5px; margin-top: 25px !important"
+											styleClass="btn btn-primary btn-pesquisar"
+											value="Pesquisar" actionListener="#{relatorioDemandasPorSituacaoController.pesquisar()}" >
+											<f:ajax execute="@form" render="@form :formGrid"/>
+						</h:commandLink>
+		                </div>    
+                	</h:form>
+	            </div>    
+	        </div>
+			
+			<h:form id="formGrid" prependId="false">
+			
+		     <ui:fragment  rendered="#{relatorioDemandasPorSituacaoController.flagPesquisado}">
+		     
+			     <div class="row">
+					<div class="col-md-12">
+						<div class="form-group">
+			       			<p:commandLink update="messages" ajax="false"
+								styleClass="btn btn-primary margin-btn-top btnRelatorios" disabled="#{relatorioDemandasPorSituacaoController.tamanhoList == 0}">
+								<span>Excel</span>
+								<p:fileDownload value="#{relatorioDemandasPorSituacaoController.downloadExcelResultado()}" />
+							</p:commandLink>
+						</div>
+					</div>
+				</div>
+		     
+				 <table id="tableRelatorio" class=" table table-striped  table-bordered dt-responsive table-condensed " width="100%">
+		            <thead>
+		                <tr class="bg-cinza">
+		                  <th>Caixa Postal Envolvida</th>
+		                  <th class="text-right">Abertas</th>
+		                  <th class="text-right">Abertas dentro do prazo</th>
+		                  <th class="text-right">Abertas com prazo vencido</th>
+		                  <th class="text-right">Fechadas</th>
+		                  <th class="text-right">Fechadas fora do prazo</th>
+		                  <th class="text-right">Reabertas</th>
+		                  <th class="text-right">Canceladas</th>
+		                  <th class="text-right">Total</th>
+		               </tr>
+		            </thead>
+		            <tbody>
+		            	<ui:repeat var="item" value="#{relatorioDemandasPorSituacaoController.relatorioDemandasPorSituacaoList}" varStatus="status">
+			                <tr>
+			                	<td class="vertical-align">#{item.caixaPostalEnvolvida}</td>
+			                    <td class="vertical-align text-right">
+			                    	<h:commandLink value="#{item.qtdAbertas}" rendered="#{item.qtdAbertas > 0}" styleClass="linkQtd" onclick="bindActivo(this)">
+		                    			<p:ajax listener="#{relatorioDemandasPorSituacaoController.exibeDemandasSelecionadas(item, 'Aberta')}" update="@(.divDetalheAssunto)"/>
+		                    		</h:commandLink>
+			                    	<h:outputText value="#{item.qtdAbertas}" rendered="#{item.qtdAbertas == 0}" />
+			                    </td>
+			                    <td class="vertical-align text-right">
+			                   		 <h:commandLink value="#{item.qtdAbertasDentroPrazo}" rendered="#{item.qtdAbertasDentroPrazo > 0}" styleClass="linkQtd" onclick="bindActivo(this)">
+		                    			<p:ajax listener="#{relatorioDemandasPorSituacaoController.exibeDemandasSelecionadas(item, 'Aberta dentro do prazo')}" update="@(.divDetalheAssunto)"/>
+		                    		</h:commandLink>
+			                    	<h:outputText value="#{item.qtdAbertasDentroPrazo}" rendered="#{item.qtdAbertasDentroPrazo == 0}" />
+			                    </td>
+			                    <td class="vertical-align text-right">
+			                    	 <h:commandLink value="#{item.qtdAbertasPrazoVencido}" rendered="#{item.qtdAbertasPrazoVencido > 0}" styleClass="linkQtd" onclick="bindActivo(this)">
+		                    			<p:ajax listener="#{relatorioDemandasPorSituacaoController.exibeDemandasSelecionadas(item, 'Aberta com prazo vencido')}" update="@(.divDetalheAssunto)"/>
+		                    		</h:commandLink>
+			                    	<h:outputText value="#{item.qtdAbertasPrazoVencido}" rendered="#{item.qtdAbertasPrazoVencido == 0}" />
+			                    </td>
+			                    <td class="vertical-align text-right">
+			                    	<h:commandLink value="#{item.qtdFechadas}" rendered="#{item.qtdFechadas > 0}" styleClass="linkQtd" onclick="bindActivo(this)">
+		                    			<p:ajax listener="#{relatorioDemandasPorSituacaoController.exibeDemandasSelecionadas(item, 'Fechada')}" update="@(.divDetalheAssunto)"/>
+		                    		</h:commandLink>
+			                    	<h:outputText value="#{item.qtdFechadas}" rendered="#{item.qtdFechadas == 0}" />
+			                    </td>
+			                    <td class="vertical-align text-right">
+			                    	<h:commandLink value="#{item.qtdFechadasForaDoPrazo}" rendered="#{item.qtdFechadasForaDoPrazo > 0}" styleClass="linkQtd" onclick="bindActivo(this)">
+		                    			<p:ajax listener="#{relatorioDemandasPorSituacaoController.exibeDemandasSelecionadas(item, 'Fechada fora do prazo')}" update="@(.divDetalheAssunto)"/>
+		                    		</h:commandLink>
+			                    	<h:outputText value="#{item.qtdFechadasForaDoPrazo}" rendered="#{item.qtdFechadasForaDoPrazo == 0}" />
+			                    </td>
+			                    <td class="vertical-align text-right">
+			                    	<h:commandLink value="#{item.qtdReabertas}" rendered="#{item.qtdReabertas > 0}" styleClass="linkQtd" onclick="bindActivo(this)">
+		                    			<p:ajax listener="#{relatorioDemandasPorSituacaoController.exibeDemandasSelecionadas(item, 'Reaberta')}" update="@(.divDetalheAssunto)"/>
+		                    		</h:commandLink>
+			                    	<h:outputText value="#{item.qtdReabertas}" rendered="#{item.qtdReabertas == 0}" />
+			                    </td>
+			                    <td class="vertical-align text-right">
+			                    	<h:commandLink value="#{item.qtdCanceladas}" rendered="#{item.qtdCanceladas > 0}" styleClass="linkQtd" onclick="bindActivo(this)">
+		                    			<p:ajax listener="#{relatorioDemandasPorSituacaoController.exibeDemandasSelecionadas(item, 'Cancelada')}" update="@(.divDetalheAssunto)"/>
+		                    		</h:commandLink>
+			                    	<h:outputText value="#{item.qtdCanceladas}" rendered="#{item.qtdCanceladas == 0}" />
+			                    </td>
+			                    <td class="vertical-align text-right">#{item.qtdTotal}</td>
+			                </tr>
+		            	</ui:repeat>
+		            </tbody>
+		            <tfoot>
+                			<tr class="bg-cinza">
+                				<th class="vertical-align" rowspan="1" colspan="1">Total</th>
+                				<th class="text-right , vertical-align" rowspan="1" colspan="1">
+                					<h:outputText value="#{relatorioDemandasPorSituacaoController.totalAbertas}" />
+                				</th>
+                				<th class="text-right , vertical-align" rowspan="1" colspan="1">
+                					<h:outputText value="#{relatorioDemandasPorSituacaoController.totalAbertasDentroPrazo}" />
+                				</th>
+                				<th class="text-right , vertical-align" rowspan="1" colspan="1">
+                					<h:outputText value="#{relatorioDemandasPorSituacaoController.totalAbertasPrazoVencido}" />
+                				</th>
+                				<th class="text-right , vertical-align" rowspan="1" colspan="1">
+                					<h:outputText value="#{relatorioDemandasPorSituacaoController.totalFechadas}" />
+                				</th>
+                				<th class="text-right , vertical-align" rowspan="1" colspan="1">
+                					<h:outputText value="#{relatorioDemandasPorSituacaoController.totalFechadasForaPrazo}" />
+                				</th>
+                				<th class="text-right , vertical-align" rowspan="1" colspan="1">
+                					<h:outputText value="#{relatorioDemandasPorSituacaoController.totalReabertas}" />
+                				</th>
+                				<th class="text-right , vertical-align" rowspan="1" colspan="1">
+                					<h:outputText value="#{relatorioDemandasPorSituacaoController.totalCanceladas}" />
+                				</th>
+                				<th class="text-right , vertical-align" rowspan="1" colspan="1">
+                					<h:outputText value="#{relatorioDemandasPorSituacaoController.totalGeral}" />
+                				</th>
+                			</tr>
+            			</tfoot>
+		        </table>
+	        </ui:fragment>
+	        <script type="text/javascript">montarDataTable();</script>
+	        
+       		<h:panelGroup id="divDetalheAssunto" styleClass="divDetalheAssunto">
+       		<h:panelGroup rendered="#{relatorioDemandasPorSituacaoController.demandaSelecionadaDetalhe != null}">
+	        	<section id="secao_2" class="">
+		        	
+		        	<h2>Demonstrativo Analítico de Demandas</h2>
+	        		<div class="alert alert-info" >
+		           		<dl class="dl-alert">
+		                	<dt>Situação:</dt>
+		                    <dd>#{relatorioDemandasPorSituacaoController.detalheSituacao}</dd>
+		                	<dt>Caixa Postal:</dt>
+		                    <dd>#{relatorioDemandasPorSituacaoController.detalheCaixaPostal}</dd>
+		                	<dt>Quantidade:</dt>
+		                    <dd>#{relatorioDemandasPorSituacaoController.detalheQuantidade}</dd>
+		                </dl>
+		            </div>
+		            
+		            <div class="wrap_dtbAcompanhamento">
+		                        
+		                <p:commandLink update="messages" ajax="false" style="margin-left : 5px"
+										styleClass="btn btn-primary margin-btn-top btnRelatorios">
+							<span>Excel</span>
+							<p:fileDownload value="#{relatorioDemandasPorSituacaoController.downloadExcel()}" />
+						</p:commandLink>
+							
+		                <table id="dtbDetalhe" class="table table-striped table-hover table-bordered dt-responsive table-condensed dtbAcompanhamento" width="100%">
+		                  <thead>
+		                      <tr class="bg-cinza">
+		                        <th></th>
+		                        <th>Número</th>
+		                        <th>Situação</th>
+		                        <th title="Prazo Demanda">Prazo</th>
+		                        <th>Data</th>
+		                        <th>Demandante</th>
+		                        <th class="text-nowrap">Aberta por</th>
+		                        <th >Assunto</th>
+		                        <th class="none hidden-xs">Assunto:</th>
+		                        <th class="none hidden-xs">Título:</th>
+		                        <th class="none hidden-xs">Nº Contrato:</th>
+		                        <th>Título</th>
+		                        <th>Resp Atual</th>
+		                        <th>Prazo</th>
+		                        <th>
+		                        </th>
+		                     </tr>
+		                  </thead>
+		                  <tbody>
+	                  		  <ui:repeat var="demanda" value="#{relatorioDemandasPorSituacaoController.demandasPesquisadasDetalhe}">
+			                      <tr>
+			                          <td class=" expansao"></td>
+			                          <td class="linkTratar">
+										<h:panelGroup>
+											<h:commandLink id="idNumerSiarg" value="#{demanda.numeroDemandaFormatado}" 
+					                    		action="#{acompanhamentoController.redirectTratarDemanda(demanda.numero)}" />
+										</h:panelGroup>	
+			                          </td>
+			                          <td class="linkTratar">
+			                              <h:panelGroup>
+											<h:outputText rendered="#{demanda.flagDemandaPai}" 
+															style="padding-right: 4px;"
+				      										styleClass="fa fa-share-alt text-azul-caixa" 
+				      										title="Possui demanda vinculada"/>
+				      						<h:outputText rendered="#{demanda.situacao.valor eq 4 }" 
+				      										style="padding-right: 4px;"
+				      										styleClass="fa fa-edit text-azul-caixa" 
+				      										title="Demanda minutada"/>
+				      						<h:outputText rendered="#{demanda.flagConsulta}" 
+				      										style="padding-right: 4px;"
+				      										styleClass="fa fa-search text-azul-caixa" 
+				      										title="Demanda do tipo consulta"/>
+				      						<h:outputText rendered="#{demanda.flagRascunho}" 
+				      										style="padding-right: 4px;"
+				      										styleClass="fa fa-file-text text-azul-caixa" 
+				      										title="Possui rascunho"/>
+											<h:outputText value="#{demanda.situacao.descricao}" />
+										</h:panelGroup>                             	
+			                          </td>
+			                          <td class="linkTratar">
+			                              <h:panelGroup>
+											<h:outputText rendered="#{demanda.prazoDemanda gt 1 and (demanda.situacao.valor eq 1)}" 
+					      						styleClass="fa fa-circle text-green"/>
+					      					<h:outputText rendered="#{(demanda.prazoDemanda eq 1 or demanda.prazoDemanda eq 0) and (demanda.situacao.valor eq 1)}" 
+				      							styleClass="fa fa-circle text-orange"/>
+				      						<h:outputText rendered="#{demanda.prazoDemanda lt 0 and (demanda.situacao.valor eq 1)}" 
+				      							styleClass="fa fa-circle text-red"/>
+											<h:outputText rendered="#{demanda.situacao.valor eq 1}"
+												style="padding-left: 3px;" value="#{demanda.prazoDemanda}" />
+											<h:outputText rendered="#{demanda.situacao.valor ne 1}"
+				      							style="padding-left: 3px;" value="0" />
+										</h:panelGroup>
+			                          </td>
+			                          <td class="linkTratar">
+			                          	<h:outputText value="#{demanda.dataAberturaDemanda}">
+											<f:convertDateTime pattern="dd/MM/yyyy" />
+										</h:outputText>
+			                          </td>
+			                          <td class="linkTratar">
+			                          	<h:outputText value="#{demanda.demandante}" />
+			                          </td>
+			                          <td class="linkTratar">
+											<h:outputText value="#{demanda.matricula.toUpperCase()}" />
+			                          </td>
+			                          <td class="linkTratar" >
+			                            <div class="ocultaConteudo hidden-xs "> 
+			                            	
+											<h:panelGroup  rendered="#{demanda.assunto.length() gt 35}">
+					      						<h:outputText value="#{relatorioDemandasPorSituacaoController.obterAssuntoConcatenado(demanda.assunto).toUpperCase()}" />
+					      					</h:panelGroup>      					
+					      					<h:panelGroup  rendered="#{demanda.assunto.length() le 35}">
+					      						<h:outputText value="#{demanda.assunto.toUpperCase()}" />
+					      					</h:panelGroup>
+					      					      					
+			                            </div>
+		                              </td>
+			                          <td class="linkTratar"> 
+			                            	<h:panelGroup>
+												<h:outputText value="#{demanda.assunto}" />
+											</h:panelGroup>
+			                          </td>
+			                          <td class="linkTratar"> 
+			                          	<h:panelGroup>
+											<h:outputText value="#{demanda.titulo}" />
+										</h:panelGroup>
+			                          </td>
+			                          <td>
+		                          	  	<h:panelGroup>
+											<h:outputText value="#{demanda.listaContratosString}" />
+										</h:panelGroup>
+		                          	  </td>
+			                          <td class="linkTratar">
+			                          	<div class="ocultaConteudo hidden-xs"> 
+				                          	<h:panelGroup rendered="#{demanda.titulo.length() gt 35}">
+					      						<h:outputText value="#{relatorioDemandasPorSituacaoController.obterTituloConcatenado(demanda.titulo).toUpperCase()}" />
+					      					</h:panelGroup>      					
+					      					<h:panelGroup rendered="#{demanda.titulo.length() le 35}">
+					      						<h:outputText value="#{demanda.titulo.toUpperCase()}" />
+					      					</h:panelGroup>      
+										</div>
+									  </td>
+			                          <td class="linkTratar">
+			                              <h:panelGroup>
+											<h:outputText rendered="#{demanda.prazoCaixaPostal gt 1 and (demanda.situacao.valor eq 1)}" 
+					      						styleClass="fa fa-circle text-green"/>
+				      						<h:outputText rendered="#{(demanda.prazoCaixaPostal eq 1 or demanda.prazoCaixaPostal eq 0) and (demanda.situacao.valor eq 1)}" 
+				      							styleClass="fa fa-circle text-orange"/>
+				      						<h:outputText rendered="#{demanda.prazoCaixaPostal lt 0 and (demanda.situacao.valor eq 1)}" 
+				      							styleClass="fa fa-circle text-red"/>
+				      						<h:panelGroup rendered="#{demanda.externa}">
+				      							<a href="#" title="@Externa">
+						      						<h:outputText styleClass="caixaExterna" value="#{demanda.responsavelAtual}" />
+				      							</a>
+				      						</h:panelGroup>	
+											<h:panelGroup rendered="#{not demanda.externa}">
+					      						<h:outputText style="padding-left: 3px;" value="#{demanda.responsavelAtual}" />
+											</h:panelGroup>	
+										</h:panelGroup>
+			                          </td>
+			                          <td class="linkTratar">
+			                          	<h:panelGroup>
+											<h:outputText rendered="#{demanda.situacao.valor eq 1}" value="#{demanda.prazoCaixaPostal}" />
+											<h:outputText rendered="#{demanda.situacao.valor ne 1}" value="0" />
+										</h:panelGroup>
+			                          </td>
+			                          <td class="">
+			                          		<h:panelGroup>
+												<h:panelGroup class="btn-colorselector" style="#{demanda.styleColorStatus}"/>
+											</h:panelGroup>
+			                          </td>
+			                      </tr>
+	                  		  
+	                  		  </ui:repeat>
+		                     
+		                  </tbody>
+		              </table>
+				</div>        	
+		            
+	   		      <script type="text/javascript">montarDataTableDetalhe();</script>
+		        	
+       		  </section>
+       		</h:panelGroup>
+       		</h:panelGroup>
+	        
+	        
+		</h:form>
+			
+	        
+
+	</ui:define>
+</ui:composition>

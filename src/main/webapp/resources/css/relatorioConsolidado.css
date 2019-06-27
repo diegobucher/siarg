@@ -1,0 +1,44 @@
+.titulo-relatorio{
+	color:#FFF;
+	font-size:20px;
+	margin-top:20px
+	
+}
+
+.titulo-relatorio-print{ display:none; }
+	.logo-print{ display:none }
+	.titulo-relatorio{
+		color:#FFF;
+		font-size:20px;
+		margin-top:20px
+		
+	}
+
+	@media print{
+		.btn-primary{display:none !important;}
+		.bg-cinza{ 
+			background-color:#333 !important;
+			color:#fff !important; 
+		}
+		.head-tela{ display:none;}
+		.logo-print{ display:block !important; }
+		.titulo-relatorio-print{ 
+			display:block !important; 
+			font-size:18px !important;
+			border-bottom:1px solid #000;
+			margin-bottom:20px;
+		}
+		.table-striped > tbody > tr:nth-of-type(odd) {
+  			background-color: #f0f !important;
+		}
+		
+		.table > thead > tr > th {
+    		border-bottom: 2px solid #000;
+		}
+		.table > tbody > tr > td, .table > tfoot > tr > td {
+    		border-top: 1px solid #000;
+		}	
+		
+		
+		
+	}

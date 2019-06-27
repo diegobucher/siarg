@@ -1,0 +1,412 @@
+<ui:composition template="/WEB-INF/templates/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="html-head">
+
+		<h:outputStylesheet library="css" name="datatables.min.css" />
+		<h:outputStylesheet library="css" name="jquery-ui.min.css" />
+		<h:outputStylesheet library="css" name="siarg.css" />
+		<h:outputStylesheet library="css" name="datePickerCustom.css"/>
+
+		<h:outputScript library="js" name="datatables.min.js" />
+		<h:outputScript library="js" name="jquery-ui.min.js" />
+		<h:outputScript library="js" name="datepicker-pt-br.js" />
+		<h:outputScript library="js" name="jquery.mask.min.js" />
+		<h:outputScript library="js" name="mask-function.js" />
+		<h:outputScript library="js" name="maskIt.js" />
+		<h:outputScript library="js" name="datatables-pt-br.js" />
+		<h:outputScript library="js" name="bootstrap-colorselector.js" />
+		<h:outputScript library="js" name="quantidadeIteracoes.js" />
+	
+	</ui:define>
+
+	<ui:define name="conteudo-principal">
+		<ol class="breadcrumb">
+			<li><strong>Você está em:</strong></li>
+			<li>Relatório<span class="caret-left"></span></li>
+			<li class="active">Quantidade de Iterações e Tempo Médio</li>
+		</ol>
+
+		<h1>Relatórios</h1>
+		<h2>Quantidade de Iterações e Tempo Médio</h2>
+		
+			<h:form id="frmRelatorioAssunto" styleClass="form-inline"
+						prependId="false">
+			
+			<h:messages id="message" errorClass="alert alert-danger" infoClass="alert alert-info" warnClass="alert alert-success" showDetail="false" globalOnly="true" />
+			
+			<div class="row">
+	            <div class="col-md-12">
+	                <div class="margin-bottom">
+		                     <div class="form-group">
+		                         <label for="idDtInicio" class="obrigatorio">Data Início</label><br/>
+		                         <h:inputText id="idDtInicio" class="form-control dt_emissao datepicker date" maxlength="10"
+										onkeyup="maskIt(this, event, '##/##/#####', false, false)"
+										value="#{quantidadeIteracoesController.dataInicialString}">
+								 </h:inputText>
+		                     </div>
+		                     <div class="form-group">
+		                         <label for="idDtFim" class="obrigatorio">Data Fim</label><br/>
+		                          <h:inputText id="idDtFim" class="form-control dt_emissao datepicker date" maxlength="10"
+										onkeyup="maskIt(this, event, '##/##/#####', false, false)"
+										value="#{quantidadeIteracoesController.dataFinalString}">
+								 </h:inputText>
+		                     </div>
+		                      <div class="form-group">
+		                        <label for="idUnidade">Unidade</label><br/>
+		                        <h:selectOneMenu id="idUnidade" styleClass="form-control"
+								converter="omnifaces.SelectItemsConverter"
+								value="#{quantidadeIteracoesController.unidadeSelecionada}">
+								<f:selectItems
+									value="#{quantidadeIteracoesController.listaUnidadesStringCombo}"
+									itemValue="#{unidadeDTO}" var="unidadeDTO" />
+								</h:selectOneMenu>
+		                     </div>
+		                     
+		                     <h:commandLink id="btPesquisar" style="margin-left : 5px"
+										styleClass="btn btn-primary margin-btn-top"
+										value="Pesquisar" actionListener="#{quantidadeIteracoesController.pesquisar()}" >
+										<f:ajax execute="@form" render="@form :formGrid"/>
+							</h:commandLink>
+	                	</div>    
+		            </div>    
+		        </div>
+	        </h:form>
+			
+			<h:form id="formGrid" prependId="false">
+			<ui:fragment  rendered="#{quantidadeIteracoesController.flagPesquisando}">
+			
+		     <div class="row">
+				<div class="col-md-12">
+					<div class="form-group">
+		       			<p:commandLink update="messages" ajax="false"
+							styleClass="btn btn-primary margin-btn-top btnRelatorios" disabled="#{quantidadeIteracoesController.tamanhoList == 0}">
+							<span>Excel</span>
+							<p:fileDownload value="#{quantidadeIteracoesController.downloadExcel()}" />
+						</p:commandLink>
+		
+		                <p:commandLink update="messages" ajax="false" style="margin-left : 5px"
+							styleClass="btn btn-primary margin-btn-top btnRelatorios" disabled="#{quantidadeIteracoesController.tamanhoList == 0}">
+						<span>PDF</span>
+						<p:fileDownload value="#{quantidadeIteracoesController.downloadPdf()}" />
+						</p:commandLink>
+					</div>
+				</div>
+			</div>
+			
+			
+			<p:outputPanel id="pnlDataTable">
+		         <h:inputHidden id="irQuantidadeIteracoes" value="#{quantidadeIteracoesController.tamanhoList}" />
+				 <table id="tableRelatorio" class=" table table-striped  table-bordered dt-responsive table-condensed">
+		            <thead>
+		            <tr class="bg-cinza">
+		                	<th colspan="1" class="bg_invisible border_left"></th>
+		                	<th colspan="2" class="text-center">Questionar</th>   
+		                	<th colspan="2" class="text-center">Consultar</th>                    
+		                	<th colspan="2" class="text-center">Encaminhar</th>
+		                	<th colspan="2" class="text-center">Responder</th>
+		                </tr>
+		                <tr class="bg-cinza">
+				          <th>Caixa Postal</th>
+		                  <th>Qtde Iterações</th>
+		                  <th>Tempo Médio (Dias Úteis)</th>
+		                  <th>Qtde Iterações</th>
+		                  <th>Tempo Médio (Dias Úteis)</th>
+		                  <th>Qtde Iterações</th>
+		                  <th>Tempo Médio (Dias Úteis)</th>
+		                  <th>Qtde Iterações</th>
+		                  <th>Tempo Médio (Dias Úteis)</th>
+		               </tr>
+		            </thead>
+		            <tbody>
+		            	<ui:repeat var="item" value="#{quantidadeIteracoesController.quantidadeIteracoesDTOList}" varStatus="status">
+			                <tr>
+			                	<td class="text-left vertical-align">#{item.caixaPostal}</td>
+			                	
+			                    <td class="text-right vertical-align">
+			                    	<h:commandLink value="#{item.qtdeIteracoesQuestionar}" rendered="#{item.qtdeIteracoesQuestionar > 0}" styleClass="linkQtd" onclick="bindActivo(this)">
+		                    			<p:ajax listener="#{quantidadeIteracoesController.exibeDemandasSelecionadas(quantidadeIteracoesController.dataInicial, quantidadeIteracoesController.dataFinal, item, 'Questionar')}" 
+		                    			update="@(.divDetalheAssunto)"/>
+		                    		</h:commandLink>
+			                    	<h:outputText value="#{item.qtdeIteracoesQuestionar}" rendered="#{item.qtdeIteracoesQuestionar == 0}" />
+			                    </td>
+			                    
+			                    <td class="text-right vertical-align">
+			                    	<h:outputText value="#{item.tempoMedioQuestionar}">
+		                    			<f:convertNumber type="number" groupingUsed="true"  pattern="#,##0.00"/>
+		                    		</h:outputText>
+			                    </td>
+			                    
+			                    
+			                    <td class="text-right vertical-align">
+			                    	<h:commandLink value="#{item.qtdeIteracoesConsultar}" rendered="#{item.qtdeIteracoesConsultar > 0}" styleClass="linkQtd" onclick="bindActivo(this)">
+		                    			<p:ajax listener="#{quantidadeIteracoesController.exibeDemandasSelecionadas(quantidadeIteracoesController.dataInicial, quantidadeIteracoesController.dataFinal, item, 'Consultar')}" update="@(.divDetalheAssunto)"/>
+		                    		</h:commandLink>
+			                    	<h:outputText value="#{item.qtdeIteracoesConsultar}" rendered="#{item.qtdeIteracoesConsultar == 0}" />
+			                    </td>
+			                    
+			                    <td class="text-right vertical-align">
+			                    	<h:outputText value="#{item.tempoMedioConsultar}">
+		                    			<f:convertNumber type="number" groupingUsed="true"  pattern="#,##0.00"/>
+		                    		</h:outputText>
+			                    </td>
+			                    
+			                    <td class="text-right vertical-align">
+			                    	<h:commandLink value="#{item.qtdeIteracoesEncaminhar}" rendered="#{item.qtdeIteracoesEncaminhar > 0}" styleClass="linkQtd" onclick="bindActivo(this)">
+		                    			<p:ajax listener="#{quantidadeIteracoesController.exibeDemandasSelecionadas(quantidadeIteracoesController.dataInicial, quantidadeIteracoesController.dataFinal, item, 'Encaminhar')}" update="@(.divDetalheAssunto)"/>
+		                    		</h:commandLink>
+			                    	<h:outputText value="#{item.qtdeIteracoesEncaminhar}" rendered="#{item.qtdeIteracoesEncaminhar == 0}" />
+			                    </td>
+			                    
+			                    <td class="text-right vertical-align">
+			                    	<h:outputText value="#{item.tempoMedioEncaminhar}">
+		                    			<f:convertNumber type="number" groupingUsed="true"  pattern="#,##0.00"/>
+		                    		</h:outputText>
+			                    </td>
+			                    
+			                    <td class="text-right vertical-align">
+			                    	<h:commandLink value="#{item.qtdeIteracoesResponder}" rendered="#{item.qtdeIteracoesResponder > 0}" styleClass="linkQtd" onclick="bindActivo(this)">
+		                    			<p:ajax listener="#{quantidadeIteracoesController.exibeDemandasSelecionadas(quantidadeIteracoesController.dataInicial, quantidadeIteracoesController.dataFinal, item, 'Responder')}" update="@(.divDetalheAssunto)"/>
+		                    		</h:commandLink>
+			                    	<h:outputText value="#{item.qtdeIteracoesResponder}" rendered="#{item.qtdeIteracoesResponder == 0}" />
+			                    </td>
+			                    
+			                    <td class="text-right vertical-align">
+			                    	<h:outputText value="#{item.tempoMedioResponder}">
+		                    			<f:convertNumber type="number" groupingUsed="true"  pattern="#,##0.00"/>
+		                    		</h:outputText>
+			                    </td>
+			                </tr>
+		            	</ui:repeat>
+		            </tbody>
+		            <tfoot>
+		            	<tr class="bg-cinza">
+		                	<th colspan="1" class="text-left">Total Unidade</th>
+		                	<th colspan="1" class="text-right">#{quantidadeIteracoesController.totalQtdIteracoesQuestionar}</th>
+		                	<th colspan="1" class="text-right">
+		                		<h:outputText value="#{quantidadeIteracoesController.totalTempoMedioQuestionar}">
+	                    			<f:convertNumber type="number" groupingUsed="true"  pattern="#,##0.00"/>
+	                    		</h:outputText>
+		                	</th>
+		                	<th colspan="1" class="text-right">#{quantidadeIteracoesController.totalQtdIteracoesConsultar}</th>
+		                	<th colspan="1" class="text-right">
+								<h:outputText value="#{quantidadeIteracoesController.totalTempoMedioConsultar}">
+	                    			<f:convertNumber type="number" groupingUsed="true"  pattern="#,##0.00"/>
+	                    		</h:outputText>
+		                	</th>
+		                	<th colspan="1" class="text-right">#{quantidadeIteracoesController.totalQtdIteracoesEncaminhar}</th>
+		                	<th colspan="1" class="text-right">
+		                		<h:outputText value="#{quantidadeIteracoesController.totalTempoMedioEncaminhar}">
+	                    			<f:convertNumber type="number" groupingUsed="true"  pattern="#,##0.00"/>
+	                    		</h:outputText>
+		                	</th>
+							<th colspan="1" class="text-right">#{quantidadeIteracoesController.totalQtdIteracoesResponder}</th>
+		                	<th colspan="1" class="text-right">
+		                		<h:outputText value="#{quantidadeIteracoesController.totalTempoMedioResponder}">
+	                    			<f:convertNumber type="number" groupingUsed="true"  pattern="#,##0.00"/>
+	                    		</h:outputText>
+		                	</th>
+		            	</tr>
+			        </tfoot>
+		        </table>
+	        <script type="text/javascript">data();</script>
+	        <script type="text/javascript">montarDataTable();</script>
+       	</p:outputPanel>
+       	
+       	
+       	<h:panelGroup id="divDetalheAssunto" styleClass="divDetalheAssunto">
+       		<h:panelGroup rendered="#{quantidadeIteracoesController.qtdIteracoesDTO != null}">
+	        	<section id="secao_2" class="">
+		        	
+		        	<h2>Demonstrativo Analítico de Demandas</h2>
+	        		<div class="alert alert-info" >
+		           		<dl class="dl-alert">
+		                	<dt>Caixa Postal:</dt>
+		                	<dd>#{quantidadeIteracoesController.detalheCaixaPostal}</dd>
+		                	<dt>Ação:</dt>
+		                    <dd>#{quantidadeIteracoesController.detalheSituacao}</dd>
+		                	<dt>Quantidade:</dt>
+		                    <dd>#{quantidadeIteracoesController.detalheQuantidade}</dd>
+		                    <dt>Tempo Médio:</dt>
+		                    <dd>
+		                    	<h:outputText value="#{quantidadeIteracoesController.detalheTempoMedio}">
+		                    		<f:convertNumber type="number" groupingUsed="true"  pattern="#,##0.00"/>
+		                    	</h:outputText>
+		                    </dd>
+		                </dl>
+		            </div>
+		            
+		            <div class="wrap_dtbAcompanhamento">
+		                        
+		                <p:commandLink update="messages" ajax="false" style="margin-left : 5px"
+										styleClass="btn btn-primary margin-btn-top btnRelatorios">
+							<span>Excel</span>
+							<p:fileDownload value="#{quantidadeIteracoesController.downloadExcelDetalhe()}" />
+						</p:commandLink>
+							
+		                <table id="dtbDetalhe" class="table table-striped table-hover table-bordered dt-responsive table-condensed dtbAcompanhamento" width="100%">
+		                  <thead>
+		                      <tr class="bg-cinza">
+		                        <th></th>
+		                        <th>Número</th>
+		                        <th>Situação</th>
+		                        <th title="Prazo Demanda">Prazo</th>
+		                        <th>Data</th>
+		                        <th>Demandante</th>
+		                        <th class="text-nowrap">Aberta por</th>
+		                        <th >Assunto</th>
+		                        <th class="none hidden-xs">Assunto:</th>
+		                        <th class="none hidden-xs">Título:</th>
+		                        <th class="none hidden-xs">Nº Contrato:</th>
+		                        <th>Título</th>
+		                        <th>Resp Atual</th>
+		                        <th>Prazo</th>
+		                        <th>
+		                        </th>
+		                     </tr>
+		                  </thead>
+		                  <tbody>
+	                  		  <ui:repeat var="demanda" value="#{quantidadeIteracoesController.demandasPesquisadasDetalhe}">
+			                      <tr>
+			                          <td class=" expansao"></td>
+			                          <td class="linkTratar">
+										<h:panelGroup>
+											<h:commandLink id="idNumerSiarg" value="#{demanda.numeroDemandaFormatado}" 
+					                    		action="#{acompanhamentoController.redirectTratarDemanda(demanda.numero)}" />
+										</h:panelGroup>	
+			                          </td>
+			                          <td class="linkTratar">
+			                              <h:panelGroup>
+											<h:outputText rendered="#{demanda.flagDemandaPai}" 
+															style="padding-right: 4px;"
+				      										styleClass="fa fa-share-alt text-azul-caixa" 
+				      										title="Possui demanda vinculada"/>
+				      						<h:outputText rendered="#{demanda.situacao.valor eq 4 }" 
+				      										style="padding-right: 4px;"
+				      										styleClass="fa fa-edit text-azul-caixa" 
+				      										title="Demanda minutada"/>
+				      						<h:outputText rendered="#{demanda.flagConsulta}" 
+				      										style="padding-right: 4px;"
+				      										styleClass="fa fa-search text-azul-caixa" 
+				      										title="Demanda do tipo consulta"/>
+				      						<h:outputText rendered="#{demanda.flagRascunho}" 
+				      										style="padding-right: 4px;"
+				      										styleClass="fa fa-file-text text-azul-caixa" 
+				      										title="Possui rascunho"/>
+											<h:outputText value="#{demanda.situacao.descricao}" />
+										</h:panelGroup>                             	
+			                          </td>
+			                          <td class="linkTratar">
+			                              <h:panelGroup>
+											<h:outputText rendered="#{demanda.prazoDemanda gt 1 and (demanda.situacao.valor eq 1)}" 
+					      						styleClass="fa fa-circle text-green"/>
+					      					<h:outputText rendered="#{(demanda.prazoDemanda eq 1 or demanda.prazoDemanda eq 0) and (demanda.situacao.valor eq 1)}" 
+				      							styleClass="fa fa-circle text-orange"/>
+				      						<h:outputText rendered="#{demanda.prazoDemanda lt 0 and (demanda.situacao.valor eq 1)}" 
+				      							styleClass="fa fa-circle text-red"/>
+											<h:outputText rendered="#{demanda.situacao.valor eq 1}"
+												style="padding-left: 3px;" value="#{demanda.prazoDemanda}" />
+											<h:outputText rendered="#{demanda.situacao.valor ne 1}"
+				      							style="padding-left: 3px;" value="0" />
+										</h:panelGroup>
+			                          </td>
+			                          <td class="linkTratar">
+			                          	<h:outputText value="#{demanda.dataAberturaDemanda}">
+											<f:convertDateTime pattern="dd/MM/yyyy" />
+										</h:outputText>
+			                          </td>
+			                          <td class="linkTratar">
+			                          	<h:outputText value="#{demanda.demandante}" />
+			                          </td>
+			                          <td class="linkTratar">
+											<h:outputText value="#{demanda.matricula.toUpperCase()}" />
+			                          </td>
+			                          <td class="linkTratar" >
+			                            <div class="ocultaConteudo hidden-xs "> 
+			                            	
+											<h:panelGroup  rendered="#{demanda.assunto.length() gt 35}">
+					      						<h:outputText value="#{relatorioDemandasPorSituacaoController.obterAssuntoConcatenado(demanda.assunto).toUpperCase()}" />
+					      					</h:panelGroup>      					
+					      					<h:panelGroup  rendered="#{demanda.assunto.length() le 35}">
+					      						<h:outputText value="#{demanda.assunto.toUpperCase()}" />
+					      					</h:panelGroup>
+					      					      					
+			                            </div>
+		                              </td>
+			                          <td class="linkTratar"> 
+			                            	<h:panelGroup>
+												<h:outputText value="#{demanda.assunto}" />
+											</h:panelGroup>
+			                          </td>
+			                          <td class="linkTratar"> 
+			                          	<h:panelGroup>
+											<h:outputText value="#{demanda.titulo}" />
+										</h:panelGroup>
+			                          </td>
+			                          <td>
+		                          	  	<h:panelGroup>
+											<h:outputText value="#{demanda.listaContratosString}" />
+										</h:panelGroup>
+		                          	  </td>
+			                          <td class="linkTratar">
+			                          	<div class="ocultaConteudo hidden-xs"> 
+				                          	<h:panelGroup rendered="#{demanda.titulo.length() gt 35}">
+					      						<h:outputText value="#{relatorioDemandasPorSituacaoController.obterTituloConcatenado(demanda.titulo).toUpperCase()}" />
+					      					</h:panelGroup>      					
+					      					<h:panelGroup rendered="#{demanda.titulo.length() le 35}">
+					      						<h:outputText value="#{demanda.titulo.toUpperCase()}" />
+					      					</h:panelGroup>      
+										</div>
+									  </td>
+			                          <td class="linkTratar">
+			                              <h:panelGroup>
+											<h:outputText rendered="#{demanda.prazoCaixaPostal gt 1 and (demanda.situacao.valor eq 1)}" 
+					      						styleClass="fa fa-circle text-green"/>
+				      						<h:outputText rendered="#{(demanda.prazoCaixaPostal eq 1 or demanda.prazoCaixaPostal eq 0) and (demanda.situacao.valor eq 1)}" 
+				      							styleClass="fa fa-circle text-orange"/>
+				      						<h:outputText rendered="#{demanda.prazoCaixaPostal lt 0 and (demanda.situacao.valor eq 1)}" 
+				      							styleClass="fa fa-circle text-red"/>
+				      						<h:panelGroup rendered="#{demanda.externa}">
+				      							<a href="#" title="@Externa">
+						      						<h:outputText styleClass="caixaExterna" value="#{demanda.responsavelAtual}" />
+				      							</a>
+				      						</h:panelGroup>	
+											<h:panelGroup rendered="#{not demanda.externa}">
+					      						<h:outputText style="padding-left: 3px;" value="#{demanda.responsavelAtual}" />
+											</h:panelGroup>	
+										</h:panelGroup>
+			                          </td>
+			                          <td class="linkTratar">
+			                          	<h:panelGroup>
+											<h:outputText rendered="#{demanda.situacao.valor eq 1}" value="#{demanda.prazoCaixaPostal}" />
+											<h:outputText rendered="#{demanda.situacao.valor ne 1}" value="0" />
+										</h:panelGroup>
+			                          </td>
+			                          <td class="">
+			                          		<h:panelGroup>
+												<h:panelGroup class="btn-colorselector" style="#{demanda.styleColorStatus}"/>
+											</h:panelGroup>
+			                          </td>
+			                      </tr>
+	                  		  
+	                  		  </ui:repeat>
+		                     
+		                  </tbody>
+		              </table>
+				</div>        	
+		            
+	   		      <script type="text/javascript">montarDataTableDetalhe();</script>
+		        	
+       		  </section>
+       		</h:panelGroup>
+       		</h:panelGroup>
+       	
+       	</ui:fragment>
+		</h:form>
+
+	</ui:define>
+</ui:composition>

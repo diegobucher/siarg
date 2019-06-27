@@ -1,0 +1,125 @@
+<ui:composition template="/WEB-INF/templates/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="html-head">
+
+		<h:outputStylesheet library="css" name="datatables.min.css" />
+		<h:outputStylesheet library="css" name="jquery-ui.min.css" />
+		<h:outputStylesheet library="css" name="relatorio-analitico.css" />
+
+		<h:outputScript library="js" name="datatables.min.js" />
+		<h:outputScript library="js" name="jquery-ui.min.js" />
+		<h:outputScript library="js" name="datepicker-pt-br.js" />
+		<h:outputScript library="js" name="jquery.mask.min.js" />
+		<h:outputScript library="js" name="mask-function.js" />
+		<h:outputScript library="js" name="maskIt.js" />
+		<h:outputScript library="js" name="relatorio-analitico.js" />
+
+	</ui:define>
+
+	<ui:define name="conteudo-principal">
+		<ol class="breadcrumb">
+			<li><strong>Você está em:</strong></li>
+			<li>Relatórios <span class="caret-left"></span></li>
+			<li class="active"> Visão GIGOV - Consolidado por Assunto</li>
+		</ol>
+
+		<h1>Relatórios</h1>
+		<h2> Visão GIGOV - Consolidado por Assunto</h2>
+
+		<h:form id="frmRelAnalPorAsunto" styleClass="form-inline"
+			prependId="false">
+
+			<h:messages id="message" errorClass="alert alert-danger"
+				infoClass="alert alert-info" warnClass="alert alert-success"
+				showDetail="false" globalOnly="true" />
+
+			<div class="row">
+				<div class="col-md-12">
+					<div class="margin-bottom">
+						<div class="form-group">
+							<label for="select_unidade" class="">Unidade</label>
+	           				<br />
+							<h:selectOneMenu id="idUnidade" styleClass="form-control" 
+								converter="omnifaces.SelectItemsConverter"
+								value="#{relatorioAnaliticoPorAssuntoController.unidadeSelecionada}">
+								<f:selectItem itemLabel="TODAS" noSelectionOption="true" />  
+								<f:selectItems value="#{relatorioAnaliticoPorAssuntoController.listaUnidades}"  
+												itemValue="#{unidade}" 
+												var="unidade" 
+												itemLabel="#{unidade.sigla} - #{unidade.cgcUnidade}" />
+							</h:selectOneMenu>
+						</div>
+
+						<div class="form-group">
+							<label for="idDtInicio" class="obrigatorio">Data Início</label><br />
+							<h:inputText id="idDtInicio" class="form-control datepicker date data"
+								maxlength="10"
+								onkeyup="maskIt(this, event, '##/##/#####', false, false)"
+								value="#{relatorioAnaliticoPorAssuntoController.dataInicialString}">
+							</h:inputText>
+						</div>
+						<div class="form-group">
+							<label for="idDtFim" class="obrigatorio">Data Fim</label><br />
+							<h:inputText id="idDtFim" class="form-control datepicker date data"
+								maxlength="10"
+								onkeyup="maskIt(this, event, '##/##/#####', false, false)"
+								value="#{relatorioAnaliticoPorAssuntoController.dataFinalString}">
+							</h:inputText>
+						</div>
+						<h:commandLink id="btPesquisar" style="margin-left : 5px"
+							styleClass="btn btn-primary" value="Pesquisar"
+							action="#{relatorioAnaliticoPorAssuntoController.pesquisar()}">
+							<f:ajax execute="@form" render=":frmRelAnalPorAsunto" />
+						</h:commandLink>
+
+						<div class="pull-right">
+							<p:commandLink update="messages" ajax="false"
+								style="margin-left : 5px"
+								styleClass="btn btn-primary margin-btn-top btnRelatorios">
+								<span>Excel</span>
+								<p:fileDownload
+									value="#{relatorioAnaliticoPorAssuntoController.downloadExcel()}" />
+							</p:commandLink>
+						</div>
+					</div>
+				</div>
+			</div>
+			<script type="text/javascript">data();</script>
+			<br />
+			<p:outputPanel id="pnlDataTable">
+				<h:inputHidden id="irDtRelatorioAnalitico" value="#{relatorioAnaliticoPorAssuntoController.tamanhoList}" />
+				<table id="dtRelatorioAnalitico"
+					class="table table-bordered table-striped table-bordered table-condensed">
+					<thead>
+						<tr class="bg-cinza">
+							<th class="text-center">Unidade</th>
+							<th class="text-center">CGC</th>
+							<th class="text-center">Assunto</th>
+							<th class="text-center">Qtde Abertas</th>
+							<th class="text-center">Qtde Fechadas</th>
+							<th class="text-center">Área Demandada</th>
+						</tr>
+					</thead>
+					<tbody>
+						<ui:repeat var="item" value="#{relatorioAnaliticoPorAssuntoController.relatorio}">
+							<tr>
+								<td>#{item.unidadeDemandante.sigla}</td>
+								<td class="text-center" >#{item.unidadeDemandante.cgcUnidade}</td>
+								<td>#{item.assunto}</td>
+								<td>#{item.qtdAberta}</td>
+								<td>#{item.qtdFechada}</td>
+								<td class="text-center">#{item.unidadeDemandadaCompleta}</td>
+							</tr>
+						</ui:repeat>
+					</tbody>
+				</table>
+				<script type="text/javascript">montarDataTable();</script>
+			</p:outputPanel>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head>
+
+<!-- 	<title>#{bundle['geral.nomesistema']}</title> -->
+	<meta http-equiv="X-UA-Compatible" content="IE=10" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	
+	<h:outputStylesheet library="css" name="bootstrap.min.css" />
+	<h:outputStylesheet library="css" name="font-awesome.min.css"/>
+	<h:outputStylesheet library="css" name="jquery-ui.min.css"/>
+	<h:outputStylesheet library="css" name="caixa-theme.css" />
+    <h:outputStylesheet library="css" name="estilo.css" />
+
+	<h:outputScript library="js" name="jquery-3.1.1.min.js" />
+	<h:outputScript library="js" name="bootstrap.min.js" />
+	<h:outputScript library="js" name="jquery-ui.min.js" />
+	<h:outputScript library="js" name="ie10-viewport-bug-workaround.js" />
+	<h:outputScript library="js" name="jquery.mask.min.js" />
+	<h:outputScript library="js" name="mask-function.js" />
+	
+	<ui:insert name="html-head" />
+	
+	
+</h:head>
+<h:body>
+    
+     <div class="container-fluid header-gradient margin-bottom head-tela">
+        	<div class="row">
+                <div class="col-md-12">
+                	<h5 class="titulo-relatorio pull-left"><strong>SIARG</strong> - Sistema de Atendimento Rede Governo</h5>
+                  	<img src="#{request.contextPath}/resources/images/logo-caixa.svg" alt="CAIXA ECONÔMICA FEDERAL" style="height:28; width:122" class="logo-caixa pull-right"/>
+                    
+                </div>
+            </div>
+    </div>
+    
+	<div>
+		<ui:insert name="conteudo-principal" />
+	</div>
+	
+	 <footer class="footer">
+      <div class="container">
+       <ul>
+         <li>#{bundle['geral.caixaEconomica']}</li>
+         <li>SIARG - Sistema de Atendimento Rede Governo</li>
+         
+       </ul>
+      </div>
+    </footer>
+
+</h:body>
+
+</html>

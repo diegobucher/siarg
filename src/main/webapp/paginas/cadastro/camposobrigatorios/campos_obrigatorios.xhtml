@@ -1,0 +1,304 @@
+<ui:composition template="/WEB-INF/templates/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	>
+
+	<ui:param name="breadcrumbs" value="#{bundle['geral.breadcrumb.home']}" />
+	
+	<ui:define name="html-head">
+		<h:outputStylesheet library="css" name="cadastrar-campos-obrigatorios.css"></h:outputStylesheet>
+		<h:outputStylesheet library="css" name="datatables.min.css"></h:outputStylesheet>
+				
+		<h:outputScript library="js" name="jquery.mask.min.js"/>
+		<h:outputScript library="js" name="datatables.min.js"/>
+		<h:outputScript library="js" name="cadastrar-campos-obrigatorios.js"/>
+		<!--  <h:outputScript library="js" name="mask-function.js"/>-->
+		
+		
+	</ui:define>
+	
+	<ui:define name="conteudo-principal">
+		
+		<ol class="breadcrumb">
+            <li><strong>Você está em:</strong> </li>
+            <li>Cadastro<span class="caret-left"></span></li>
+            <li class="active">Campos Obrigatórios</li>
+        </ol>
+            
+		<h1>Campos Obrigatórios</h1>
+
+        <div class="alert hides">
+        </div>
+
+		<div id="divListagem">
+			<h:form id="formListagem" prependId="false">
+			
+         		<h:messages id="messageListagem" errorClass="alert alert-danger" styleClass="messages"
+					infoClass="alert alert-success" warnClass="alert alert-info" 
+					showDetail="false" />
+		
+		        <section id="secao_1" class="">           
+		        	
+		        	<ui:fragment rendered="#{cadastrarCamposObrigatoriosController.camposObrigatoriosList ne null}">
+			            <div class="row">
+			                <div class="col-md-12" >
+			                    <div class="form-group">
+			                        <button id="btn_novoCampoObrigatorio" type="button" class="btn btn-primary" onclick="$('#btn_novoCampoObrigatorioHidden').click()">
+				                        <span class="glyphicon glyphicon-plus"></span> 
+				                        Novo
+			                        </button>
+			                        <h:commandLink id="btn_novoCampoObrigatorioHidden" styleClass="hides">
+			                        	<p:ajax listener="#{cadastrarCamposObrigatoriosController.handlerModalNovosCamposObrigatorios()}"  oncomplete="abrirModalNovosCamposObrigatorios();" update=":formModalCadastro"/>
+			                        </h:commandLink>
+			                    </div>
+			                </div>    
+			            </div>
+						<h:dataTable id="dtbCampo" styleClass="table table-striped  table-bordered" var="camposObrigatorios" value="#{cadastrarCamposObrigatoriosController.camposObrigatoriosList}" headerClass="bg-cinza" binding="#{tableCamposObrigatorios}">
+			            	<div class="col-md-3">
+			            	<h:column>
+								<f:facet name="header">
+								<div align="left" style="width: 300px;">
+									<h:outputText value="Nome" align="center"/>
+								</div>
+								</f:facet>
+								<h:outputText value="#{camposObrigatorios.nome}" />						
+							</h:column>
+							</div>
+							
+							<div class="col-md-3">
+			            	<h:column>
+								<f:facet name="header">
+									<h:outputText value="Tipo" />
+								</f:facet>
+								<h:outputText value="#{camposObrigatorios.getTipo().getLabel()}" />						
+							</h:column>
+							</div>
+
+							<div class="col-md-2">
+								<h:column>
+									<f:facet name="header">
+										<div align="right">
+											<h:outputText value="Tamanho" />
+										</div>
+									</f:facet>
+									<div align="right">
+										<h:outputText value="#{camposObrigatorios.tamanho}" />
+									</div>
+								</h:column>
+							</div>
+
+							<div class="col-md-2">
+								<div>
+									<h:column>
+										<f:facet name="header">
+											<div align="right">
+												<h:outputText value="Mascara" />
+											</div>
+										</f:facet>
+										<div align="right">
+											<h:outputText value="#{camposObrigatorios.mascara}" />
+										</div>
+									</h:column>
+								</div>
+							</div>
+
+
+							<div class="col-md-2">
+			            	<h:column>
+								<f:facet name="header">
+									<h:outputText value="Ações" />
+								</f:facet>
+								<h:panelGroup>
+								
+			                    <h:commandLink styleClass="btn btn-primary btn-xs">
+			                         <span class="glyphicon glyphicon-pencil editar_campo" aria-hidden="true" title="Clique aqui para editar"></span>
+			                         	<p:ajax listener="#{cadastrarCamposObrigatoriosController.handlerModalEditarCamposObrigatorios(camposObrigatorios)}" value="#{message}" update=":formModalCadastro" oncomplete="abrirModalNovosCamposObrigatorios()" />
+			                      </h:commandLink >
+
+								   <button type="button" class="btn btn-primary btn-xs btn_excluir" onclick="confirmExcluir(rmcExcluirCamposObrigatorios_#{camposObrigatorios.id})">
+		                                <span class="glyphicon glyphicon-trash" aria-hidden="true " title="Clique aqui para excluir"></span>
+		                            </button>
+		                            
+		                            <p:remoteCommand name="rmcExcluirCamposObrigatorios_#{camposObrigatorios.id}" actionListener="#{cadastrarCamposObrigatoriosController.excluirCamposObrigatorios(camposObrigatorios)}"
+		                             	update="@form" oncomplete="carregarDataTableCamposObrigatorios()"/>
+								</h:panelGroup>
+							</h:column>
+							</div>
+									
+			            </h:dataTable>
+					</ui:fragment>
+		        </section>
+		        
+ 		        <p:remoteCommand update="@all" name="rmcRefreshTela" oncomplete="carregarDataTableCamposObrigatorios()"/>
+		        
+			</h:form>
+  		</div>        
+        
+        <!-- INICIO MODAIS -->
+        
+        <!--MODAL EXCLUIR -->
+        <div class="modal fade modal_excluir" id="modal_excluir" role="dialog">
+            <div class="modal-dialog modal-excluir">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&#215;</button>
+                      <h4 class="modal-title">Atenção!</h4>
+                  </div>
+                  <div class="modal-body">
+                    <div class="alert-excluir">
+                    	Deseja excluir permanentemente o item?
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button id="confirma_exclusao" type="button" class="btn btn-primary" data-dismiss="modal">Sim</button>
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">Não</button>
+                  </div>
+              </div>
+            </div>
+        </div>
+        
+         <!--MODAL DE CADASTRO CAMPOS OBRIGATÓRIOS-->
+        <h:panelGroup id="modal_cadastro_campo_obrig" layout="block" styleClass="modal fade">
+        	<h:form id="formModalCadastro" prependId="false">
+	            <div class="modal-dialog">
+	              <div class="modal-content">
+	                <div class="modal-header">
+	                  <button type="button" class="close" data-dismiss="modal">&#215;</button>
+	                  <h4 class="modal-title">
+	                  	<ui:fragment rendered="#{cadastrarCamposObrigatoriosController.camposObrigatorios.id eq null}">
+		                  	Cadastro de Campos Obrigatórios 	
+	                  	</ui:fragment>
+	                  	<ui:fragment rendered="#{cadastrarCamposObrigatoriosController.camposObrigatorios.id ne null}">
+		                  	Editar - Cadastro Campos Obrigatórios
+	                  	</ui:fragment>
+	                  </h4>
+	                </div>
+						<div class="modal-body">
+
+							<h:messages id="message" errorClass="alert alert-danger"
+								infoClass="alert alert-success" warnClass="alert alert-info"
+								showDetail="false" />
+								
+							<h:panelGroup id="divCamposObrigatorios" layout="block">
+								<div class="row" style="padding-bottom: 2%">
+									<div class="form-group">
+										<div class="col-md-2">
+											<label for="nome" class="obrigatorio">Nome:</label>
+										</div>
+										<div class="col-md-10">
+											<h:inputText id="nome"
+												value="#{cadastrarCamposObrigatoriosController.camposObrigatorios.nome}"
+												styleClass="form-control" maxlength="50"
+												update="nome message" />
+										</div>
+									</div>
+								</div>
+
+								<div class="row"></div>
+
+								<div class="row" style="padding-bottom: 2%">
+									<div class="form-group">
+										<div class="col-md-2">
+											<label for="nome" class="obrigatorio">Descrição:</label>
+										</div>
+										<div class="col-md-10">
+											<h:inputText id="descrição"
+												value="#{cadastrarCamposObrigatoriosController.camposObrigatorios.descricao}"
+												styleClass="form-control" maxlength="100" />
+										</div>
+									</div>
+								</div>
+
+
+								<div class="row" style="padding-bottom: 2%">
+									<div class="form-group">
+										<div class="col-md-2">
+											<label for="tipo" class="obrigatorio">Tipo:</label>
+										</div>
+
+										<div class="col-md-10">
+											<h:selectOneMenu id="tipo"
+												value="#{cadastrarCamposObrigatoriosController.camposObrigatorios.tipo}"
+												styleClass="form-control" maxlength="50">
+												<f:selectItem itemLabel="Selecione.."
+													noSelectionOption="false" />
+												<f:selectItems
+													value="#{cadastrarCamposObrigatoriosController.tiposCampo}"
+													var="item" itemLabel="#{item.label}" itemValue="#{item}" />
+											</h:selectOneMenu>
+										</div>
+									</div>
+								</div>
+
+
+								<div class="row" style="padding-bottom: 2%">
+									<div class="form-group">
+										<div class="col-md-2">
+											<label for="mascara">Mascara:</label>
+										</div>
+										<div class="row">
+											<div class="col-md-1" style="width: 3.333333%">
+												<h:selectBooleanCheckbox class="checkbox-inline"
+													value="#{cadastrarCamposObrigatoriosController.mascaraHabilitada}"  >
+													<p:ajax update="tamanhoId message mascaraId vlrId"/>
+													
+												</h:selectBooleanCheckbox>
+											</div>
+											<div class="col-md-8" style="width: 77.666667%">
+												<h:inputText id="mascaraId" class="form-control"
+													value="#{cadastrarCamposObrigatoriosController.camposObrigatorios.mascara}"
+													maxlength="30"
+													disabled="#{!cadastrarCamposObrigatoriosController.mascaraHabilitada}" />
+											</div>
+										</div>
+									</div>
+								</div>
+									<div class="row" style="padding-bottom: 2%">
+										<div class="form-group">
+											<div class="col-md-2">
+												<label for="tamanho">Tamanho:</label>
+											</div>
+											<div class="col-md-10">
+												<h:inputText id="tamanhoId"
+													value="#{cadastrarCamposObrigatoriosController.camposObrigatorios.tamanho}"
+													styleClass="form-control" maxlength="2"
+													disabled="#{cadastrarCamposObrigatoriosController.mascaraHabilitada}"  >
+												</h:inputText>
+												
+											</div>
+										</div>
+									</div>
+									
+									<h:form id="vlrId">
+									  <script type="text/javascript">
+												$('#tamanhoId').mask('99');
+	                                 </script>
+									</h:form>
+								
+							</h:panelGroup>
+	                </div>
+	                <div class="modal-footer">
+	                
+	                 <button id="salvar_cadastro" type="button" class="btn btn-primary" onclick="$('#btn_salvar_obrigatorios_Hidden').click()">Salvar</button>
+	                  
+	                  <h:commandLink id="btn_salvar_obrigatorios_Hidden" styleClass="hides">
+                       	<p:ajax listener="#{cadastrarCamposObrigatoriosController.salvarCamposObrigatorios()}" update=":formModalCadastro " process="@form"/>
+                       </h:commandLink>
+                       
+	                  <button id ="cancelar_cadastro" type="button" class="btn btn-warning" data-dismiss="modal" onclick="$('#btn_cancelar_obrigatorios_Hidden').click()">Cancelar</button>
+	                  
+	                   <h:commandLink id="btn_cancelar_obrigatorios_Hidden" styleClass="hides">
+                       		<p:ajax listener="#{cadastrarCamposObrigatoriosController.carregaLista()}" update=":formModalCadastro " process="@form"/>
+                       </h:commandLink>
+	                </div>
+	              </div>
+	            </div>
+			</h:form>
+			
+        </h:panelGroup>
+	</ui:define>
+	
+</ui:composition>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:of="http://omnifaces.org/functions"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:caixa="http://java.sun.com/jsf/composite/caixa"
+	xmlns:pt= "http://xmlns.jcp.org/jsf/passthrough">
+<h:head>
+	<f:view contentType="text/html;charset=UTF-8" encoding="UTF-8" />
+	
+	<f:facet name="first">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta charset="UTF-8" />
+	</f:facet>
+
+	<title>#{bundle['geral.nomesistema']}</title> 
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<h:outputStylesheet library="css" name="bootstrap.min.css" />
+	<h:outputStylesheet library="css" name="caixa-theme.css" />
+	
+	<h:outputScript library="js" name="jquery-3.1.1.min.js" />
+	<h:outputScript library="js" name="bootstrap.min.js" />
+	<h:outputScript library="js" name="jquery.blockUI.js" />
+	<h:outputScript library="js" name="jquery.mask.min.js" />
+	
+	<h:outputScript library="js" name="geral.js" />
+	<h:outputScript library="js" name="template.js" />
+
+	<ui:insert name="html-head" />
+	
+	<script type="text/javascript">
+		var ctx = "${facesContext.externalContext.requestContextPath}/";
+	</script>
+
+</h:head>
+
+<h:body>
+
+	<!-- 	<div id="controls-wrapper"></div> -->
+	<h:form id="formTop">
+		<div class="container-fluid header-gradient hidden-xs">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+						<img src="#{request.contextPath}/resources/images/logo-caixa.svg"	alt="CAIXA ECONÔMICA FEDERAL" style="height: 28; width: 122" class="logo-caixa" />
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="container-fluid header-color hidden-xs">
+			<div class="container">
+				<div class="row">
+					<div class=" col-md-6">
+						<h1 class="sigla-sitema ">
+							#{bundle['geral.nomesistema']} <span>-
+								#{bundle['geral.subnomesistema']}</span>
+						</h1>
+					</div>
+					<div class=" col-md-6">
+						<div class="identificacao pull-right hidden-xs hidden-sm ">
+							<ul class="identificacao-usuario">
+								<li>Olá <h:outputText value="#{controleAcesso.primeiroNomeUsuario}" />,
+									Seja bem-vindo.
+								</li>
+								<li><h:outputText value="#{dataDiaExtenso}" /></li>
+							</ul>
+							<div class="btn-group margin-right bnt-identificacao-top">
+								<div class="dropdown">
+									<button class="btn btn-primary dropdown-toggle btn-sm"
+										type="button" data-toggle="dropdown">
+										Infos <span class="caret"></span>
+									</button>
+									<ul class="dropdown-menu box-infos">
+										<li class="dropdown-header">Responsável</li>
+										<li><a href="#">#{controleAcesso.usuarioLdap.nomeUsuario}</a></li>
+										<li role="separator" class="divider"></li>
+										<li class="dropdown-header">Perfil:</li>
+										<li><a href="#">#{controleAcesso.perfilUsuario}#{controleAcesso.gerente ? ' - Gerencial' : ''}</a></li>
+									</ul>
+								</div>
+							</div>
+							<h:commandLink value="" action="#{controleAcesso.logout()}"
+								title="Clique aqui para sair"
+								styleClass="btn btn-warning btn-sm pull-right bnt-identificacao-top">
+								<span>Sair</span>
+							</h:commandLink>
+							<div class="clearfix"></div>
+						</div>
+						<!--/btn-group-->
+					</div>
+				</div>
+				<!--/row-->
+			</div>
+		</div>
+	</h:form>
+
+	<!--	Conteúdo principal - Centro da Página. -->
+	<div class="container">
+		<ui:insert name="breadcrumb" />
+		<ui:insert name="conteudo-principal" />
+
+		<div id="idLoad" class="modal-carregando">
+			<div class="aguarde">
+				<p>Aguarde</p>
+			</div>
+		</div>
+		<div id="modal_aguarde"></div>
+
+		<p:ajaxStatus id="ajaxStatusPanel" onstart="showStatus();" oncomplete="hideStatus();"></p:ajaxStatus>
+	</div>
+	
+	<!-- 	Rodapé da página. -->
+	 <footer class="footer">
+      <div class="container">
+       <ul>
+         <li>#{bundle['geral.caixaEconomica']}</li>
+         <li>#{bundle['geral.rodape']}<span class="pull-right">#{bundle['geral.versao']}</span></li>
+       </ul>
+      </div>
+    </footer>
+</h:body>
+</html>

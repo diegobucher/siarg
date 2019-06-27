@@ -1,0 +1,136 @@
+<ui:composition template="/WEB-INF/templates/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="html-head">
+
+		<h:outputStylesheet library="css" name="datatables.min.css" />
+		<h:outputStylesheet library="css" name="jquery-ui.min.css" />
+		<h:outputStylesheet library="css" name="siarg.css" />
+		<h:outputStylesheet library="css" name="datePickerCustom.css" />
+		<h:outputStylesheet library="css" name="bootstrap-colorselector.css" />
+
+		<h:outputScript library="js" name="datatables.min.js" />
+		<h:outputScript library="js" name="jquery-ui.min.js" />
+		<h:outputScript library="js" name="datepicker-pt-br.js" />
+		<h:outputScript library="js" name="jquery.mask.min.js" />
+		<h:outputScript library="js" name="mask-function.js" />
+		<h:outputScript library="js" name="maskIt.js" />
+		<h:outputScript library="js" name="datatables-pt-br.js" />
+		<h:outputScript library="js" name="bootstrap-colorselector.js" />
+		<h:outputScript library="js" name="indicadorDemandasFechadas.js" />
+
+	</ui:define>
+
+	<ui:define name="conteudo-principal">
+		<ol class="breadcrumb">
+			<li><strong>Você está em:</strong></li>
+			<li>Relatório<span class="caret-left"></span></li>
+			<li class="active">Indicador de Demandas Atendidas (Fechadas)
+				fora do Prazo</li>
+		</ol>
+
+		<h1>Relatórios</h1>
+		<h2>Indicador de Demandas Atendidas (Fechadas) Fora do Prazo</h2>
+
+
+		<div class="row">
+			<div class="col-md-12">
+				<h:form id="frmRelatorioDemandas" styleClass="form-inline"
+					prependId="false">
+
+					<h:messages id="message" errorClass="alert alert-danger"
+						infoClass="alert alert-info" warnClass="alert alert-success"
+						showDetail="false" globalOnly="true" />
+
+					<!-- 	                <form class="form-inline"> -->
+					<div class="margin-bottom">
+						<div class="form-group">
+							<label for="select_unidade" class="obrigatorio">Data
+								Início</label><br />
+							<h:inputText id="dtInicioPerInicial" class="form-control date"
+								maxlength="10"
+								onkeyup="maskIt(this, event, '##/##/#####', false, false)"
+								value="#{indicadorFechadasForaDoPrazoController.dtInicial}">
+							</h:inputText>
+						</div>
+						<div class="form-group">
+							<label for="select_unidade" class="obrigatorio">Data Fim</label><br />
+							<h:inputText id="dtFimPerInicial" class="form-control date"
+								maxlength="10"
+								onkeyup="maskIt(this, event, '##/##/#####', false, false)"
+								value="#{indicadorFechadasForaDoPrazoController.dtFinal}">
+							</h:inputText>
+						</div>
+						<div class="form-group">
+							<label for="select_unidade">Unidade</label><br />
+							<h:selectOneMenu id="idUnidade" styleClass="form-control"
+								converter="omnifaces.SelectItemsConverter"
+								value="#{indicadorFechadasForaDoPrazoController.unidadeSelecionadaString}">
+								<f:selectItems
+									value="#{indicadorFechadasForaDoPrazoController.listaUnidadesStringCombo}"
+									itemValue="#{unidadeDTO}" var="unidadeDTO" />
+							</h:selectOneMenu>
+						</div>
+						<script type="text/javascript">
+								aplicarMascaras();
+							 </script>
+
+						<h:commandLink id="btPesquisar"
+							style="margin-left : 5px; margin-top: 25px !important"
+							styleClass="btn btn-primary btn-pesquisar" value="Pesquisar"
+							actionListener="#{indicadorFechadasForaDoPrazoController.pesquisar()}">
+							<f:ajax execute="@form" render="@form :formGrid" />
+						</h:commandLink>
+					</div>
+				</h:form>
+			</div>
+		</div>
+
+		<h:form id="formGrid" prependId="false">
+
+			<ui:fragment rendered="#{indicadorFechadasForaDoPrazoController.flagPesquisado}">
+
+				<table id="tableRelatorio"
+					class=" table table-striped  table-bordered dt-responsive table-condensed "
+					width="100%">
+					<thead>
+						<tr class="bg-cinza">
+							<th>Unidade</th>
+							<th class="text-right">Quantidade de demandas atendidas (fechadas) no período</th>
+							<th class="text-right">Quantidade de demandas atendidas (fechadas) fora do prazo</th>
+							<th class="text-right">Indicador: % demandas atendidas fora do prazo</th>
+						</tr>
+					</thead>
+					<tbody>
+						<ui:repeat var="item"
+							value="#{indicadorFechadasForaDoPrazoController.indicadorFechadasForaDoPrazoList}"
+							varStatus="status">
+							<tr>
+								<td class="text-left">#{item.caixaPostal}</td>
+								<td class="text-right">#{item.qtFechadaPrazo}</td>
+								<td class="text-right">#{item.qtFechadaForaPrazo}</td>
+								<td class="text-right">#{item.indicador}</td>
+								
+							</tr>
+						</ui:repeat>
+					</tbody>
+				</table>
+ 
+				
+			</ui:fragment>
+		
+			<script type="text/javascript">montarDataTable();</script>
+
+
+
+
+		</h:form>
+
+
+
+	</ui:define>
+</ui:composition>

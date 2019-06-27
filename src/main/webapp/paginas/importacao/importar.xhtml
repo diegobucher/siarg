@@ -1,0 +1,82 @@
+<ui:composition template="/WEB-INF/templates/template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:param name="breadcrumbs" value="#{bundle['geral.breadcrumb.home']}" />
+
+	<ui:define name="html-head">
+		<h:outputStylesheet library="css" name="importar.css"></h:outputStylesheet>
+	
+		<h:outputScript library="js" name="bootstrap-filestyle.min.js"></h:outputScript>
+		<h:outputScript library="js" name="importar.js"></h:outputScript>
+	</ui:define>
+	
+	<ui:define name="conteudo-principal">
+		
+  		<ol class="breadcrumb">
+            <li><strong>Você está em:</strong> </li>
+            <li class="active"> Importação Assuntos / Demandas</li>
+        </ol>
+        
+        <h1>Importação Assuntos / Demandas</h1>
+		
+		<h:form id="formImportacao" enctype="multipart/form-data" prependId="false" acceptcharset="utf-8">
+		
+			<h:messages id="message"  errorClass="alert alert-danger" infoClass="alert alert-success" 
+				warnClass="alert alert-info" showDetail="false" globalOnly="true" />
+			
+			<h:panelGroup rendered="#{importacaoController.quantidadeErros > 0 }">
+				<ul id="message">
+					<li class="alert alert-danger">	
+					Foi(ram) encontrado(s) #{importacaoController.quantidadeErros} erro(s) no arquivo importado. <h:commandLink actionListener="#{importacaoController.downloadLogErros()}" value="Clique aqui" /> para baixar o log de erro(s). 
+					</li>
+				</ul>
+			</h:panelGroup>
+			
+	        <div class="row">
+	        	<div class="col-md-12">
+	        		<h:selectOneRadio value="#{importacaoController.tipoImportacaoEnum}" styleClass="combo" >
+	        			<f:selectItems value="#{importacaoController.tipoImportacaoEnumList}" var="tipo" itemValue="#{tipo}" itemLabel="#{tipo.descricao}"/>
+	        			<p:ajax listener="#{importacaoController.handlerChangeTipoPlanilha()}" update="@form" oncomplete="carregarFileStyle()"/>
+	        		</h:selectOneRadio>
+	            </div>
+	        </div>
+	        
+	        <h:panelGroup layout="block" id="divUpload">
+		        <h:panelGroup layout="block" rendered="#{importacaoController.tipoImportacaoEnum ne null}">
+			        <section id="secttion_1" class="">
+						<h3>#{importacaoController.tipoImportacaoEnum.descricao}</h3>
+			            <div class="row">
+			                <div class="col-md-6">
+			                	<div class="form-group ">
+			                		 <p:fileUpload id="anexo" allowTypes="/(\.|\/)(xls)$/" mode="simple"  styleClass="filestyle"
+										value="#{importacaoController.planilhaImportacaoFile}" skinSimple="false">
+									 </p:fileUpload>
+						 			 <script type="text/javascript">carregarFileStyle();</script>
+									 
+			                    </div>
+			                </div>
+			            	<div class="col-md-6">
+			                	<div class="form-group">
+			                		<button type="button" id="btnImportarFile" class="btn btn-primary" title="Importar" onclick="importarPlanilha()">
+			                			<span class=" fa fa-upload"></span> Importar 
+		                			</button>
+		                			<h:commandButton id="btnHidImportarPlanilha" actionListener="#{importacaoController.importarPlanilha()}" 
+		                				value="" styleClass="hides"/>
+			                		<h:commandButton id="btnHidCancelar" action="/paginas/demanda/acompanhamento/acompanhamento.xhtml" value="" styleClass="hides" />
+			                    </div>
+			                </div>
+			            </div>        
+			        </section>		
+		        </h:panelGroup>
+	        </h:panelGroup>
+	        
+			
+		</h:form>
+		
+
+	</ui:define>
+</ui:composition>

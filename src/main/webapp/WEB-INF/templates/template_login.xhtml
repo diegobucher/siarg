@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head>
+
+	<title>#{bundle['geral.nomesistema']}</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=10" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	
+	<h:outputStylesheet library="css" name="bootstrap.min.css" />
+	<h:outputStylesheet library="css" name="font-awesome.min.css"/>
+	<h:outputStylesheet library="css" name="jquery-ui.min.css"/>
+	<h:outputStylesheet library="css" name="caixa-theme.css" />
+    <h:outputStylesheet library="css" name="estilo.css" />
+
+	<h:outputScript library="js" name="jquery-3.1.1.min.js" />
+	<h:outputScript library="js" name="bootstrap.min.js" />
+	<h:outputScript library="js" name="jquery-ui.min.js" />
+	<h:outputScript library="js" name="ie10-viewport-bug-workaround.js" />
+	<h:outputScript library="js" name="jquery.mask.min.js" />
+	<h:outputScript library="js" name="mask-function.js" />
+	
+</h:head>
+<h:body>
+
+	<div id="controls-wrapper"></div>
+    <div class="container-fluid header-gradient hidden-xs">
+    	<div class="container">
+        	<div class="row">
+            	<div class="col-md-12">
+                	<img src="#{request.contextPath}/resources/images/logo-caixa.svg" alt="CAIXA ECONÔMICA FEDERAL" style="height:28; width:122" class="logo-caixa"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+      <div class="container-fluid header-color ">
+    	<div class="container">
+        	<div class="row">
+                <div class=" col-md-6">
+                	<span class="pull-left margin-right visible-xs"> 
+                		<img src="#{request.contextPath}/resources/images/logo-caixa.svg" alt="CAIXA ECONÔMICA FEDERAL" style="height:28; width:122"/>
+                	</span>
+                  <h1 class="sigla-sitema ">#{bundle['geral.nomesistema']}
+					<span class="hidden-xs">- #{bundle['geral.subnomesistema']}</span>
+                  </h1>
+                </div>
+                <div class=" col-md-6">
+                </div>    
+            </div><!--/row-->
+    	</div>
+    </div>
+
+	<div class="container">
+		<ui:insert name="conteudo-principal" />
+	</div>
+	
+	 <footer class="footer">
+      <div class="container">
+       <ul>
+         <li>#{bundle['geral.caixaEconomica']}</li>
+         <li>#{bundle['geral.rodape']}<span class="pull-right">#{bundle['geral.versao']}</span></li>
+       </ul>
+      </div>
+    </footer>
+
+</h:body>
+
+</html>

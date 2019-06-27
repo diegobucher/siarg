@@ -1,0 +1,31 @@
+.table .open>.dropdown-toggle.btn-primary {
+	color: #ffffff;
+	background-image: -webkit-linear-gradient(top, #f76106 0%, #bf3302 100%);
+	background-image: -o-linear-gradient(top, #f76106 0%, #bf3302 100%);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#f76106),
+		to(#bf3302));
+	background-image: linear-gradient(to bottom, #f76106 0%, #bf3302 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff0ad4e',
+		endColorstr='#ffeb9316', GradientType=0);
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled= false);
+	background-repeat: repeat-x;
+	border-color: #bf3302;
+}
+
+#wrapInputFile .input-group {
+	width: 100% !important;
+	z-index: 1;
+}
+
+/**Allysson Improta*/
+.message-box ul {
+	-webkit-padding-start: 0px;
+	padding-left: 0px;
+	margin: 0px;
+	list-style: none;
+	
+}
+
+.displayNone {
+	display: none;
+}
